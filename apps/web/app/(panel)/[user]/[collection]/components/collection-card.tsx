@@ -1,17 +1,21 @@
 
 import { cn } from "@workspace/ui/lib/utils"
 import Image from "next/image"
+import Link from "next/link"
 
 type CollectionCardProps = {
+  scope?: string
+  id: string
   src: string
   title: string
 }
 
-export default function CollectionCard({ src, title }: CollectionCardProps) {
+export default function CollectionCard({ id, src, title, scope = "" }: CollectionCardProps) {
 
   const isVideo = src.endsWith(".mp4")
   const isGif = src.endsWith(".gif")
 
+  const href = scope ? `/${scope}/${id}` : `/${id}`
   return (
     <div className="group w-full break-inside-avoid">
       <figure
@@ -22,6 +26,7 @@ export default function CollectionCard({ src, title }: CollectionCardProps) {
           "group-hover:scale-102 will-change-transform delay-200"
         )}
       >
+        <Link href={href} className="absolute inset-0" />
         {
           isVideo &&
           <video src={src} className="block static!" muted autoPlay aria-label={title} />

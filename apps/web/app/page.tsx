@@ -6,8 +6,8 @@ export default function Page() {
   return (
     <>
       <header className="w-full px-6 h-12 py-2">
-        <div className="container w-full mx-auto">
-          <ImcWithTextIcon className="w-fit h-8" />
+        <div className="container w-full mx-auto h-full flex items-center">
+          <ImcWithTextIcon className="w-fit h-6" />
         </div>
       </header>
       <main className="px-6">
