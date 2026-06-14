@@ -51,6 +51,25 @@ const serif = localFont({
   fallback: ["serif"],
 });
 
+export const metadata: Metadata = {
+  title: "IMC | Хранилище ваших вдохновлений",
+  description: "IMC — это онлайн-репозиторий для хранения и управления коллекциями вдохновлений.",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    {
+      media: "(prefers-color-scheme: light)",
+      color: "#ffffff",
+    },
+    {
+      media: "(prefers-color-scheme: dark)",
+      color: "#000000",
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
