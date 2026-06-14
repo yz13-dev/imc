@@ -1,19 +1,42 @@
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
+import { ImcIcon, ImcWithTextIcon } from "@workspace/ui/components/logo/imc";
+import Image from "next/image";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
+    <>
+      <header className="w-full px-6 h-12 py-2">
+        <div className="container w-full mx-auto">
+          <ImcWithTextIcon className="w-fit h-8" />
         </div>
-        <div className="text-muted-foreground font-mono text-xs">
-          (Press <kbd>d</kbd> to toggle dark mode)
+      </header>
+      <main className="px-6">
+        <div className="container mx-auto py-24">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-6xl font-medium max-w-2xl">
+              Храните свои вдохновления здесь
+            </h1>
+            <div className="flex flex-col max-w-xs gap-4">
+              <p className="text-lg text-muted-foreground">
+                Без лимитов хранилища, коллекций. Просто и удобно.
+              </p>
+              <Button
+                size="lg"
+                className="h-12 px-6 text-base gap-3"
+              >
+                <ImcIcon className="size-6 **:fill-background" />
+                <span>Начать коллекцию</span>
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+        <div className="container mx-auto">
+          <div className="w-full aspect-video relative drop-shadow-2xl outline-8 border outline-offset-2 outline-secondary rounded-2xl [&_img]:rounded-2xl bg-muted">
+            <Image src="/hero/demo-shot.png" fill alt="Demo shot" />
+          </div>
+        </div>
+      </main>
+
+    </>
   )
 }

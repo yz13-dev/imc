@@ -1,15 +1,55 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
-
-import "@workspace/ui/globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
+import "@workspace/ui/globals.css";
 import { cn } from "@workspace/ui/lib/utils";
+import localFont from "next/font/local";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
 
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
+const sans = localFont({
+  src: [
+    { path: "./fonts/golos-text-regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/golos-text-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/golos-text-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/golos-text-700.woff2", weight: "700", style: "normal" },
+    // { path: "./fonts/google-sans-regular.woff2", weight: "400", style: "normal" },
+    // { path: "./fonts/google-sans-500.woff2", weight: "500", style: "normal" },
+  ],
+  variable: "--font-sans",
+  display: "swap",
+  preload: true,
+  fallback: ["system-ui", "Inter", "sans-serif"],
+});
+
+const pixel = localFont({
+  src: "./fonts/geist-pixel-square.woff2",
+  variable: "--font-pixel",
+  display: "optional",
+  preload: false,
+  fallback: ["system-ui"],
+});
+const mono = localFont({
+  src: [
+    { path: "./fonts/jetbrains-mono-regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/jetbrains-mono-500.woff2", weight: "500", style: "normal" },
+  ],
   variable: "--font-mono",
-})
+  display: "optional",
+  preload: false,
+  fallback: ["mono"],
+});
+const serif = localFont({
+  src: [
+    { path: "./fonts/playfair-display-regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/playfair-display-italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/playfair-display-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/playfair-display-500-italic.woff2", weight: "500", style: "italic" },
+    { path: "./fonts/playfair-display-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/playfair-display-600-italic.woff2", weight: "600", style: "italic" },
+  ],
+  variable: "--font-serif",
+  display: "optional",
+  preload: false,
+  fallback: ["serif"],
+});
 
 export default function RootLayout({
   children,
@@ -18,9 +58,9 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ru"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className={cn("antialiased", sans.variable, mono.variable, serif.variable, pixel.variable)}
     >
       <body>
         <ThemeProvider>{children}</ThemeProvider>
