@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS cards (
     default gen_random_uuid(),
 
   -- Владелец карточки
-  user_id uuid not null
+  user_id BIGSERIAL not null
     references users(id)
     on delete cascade,
 
@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS cards (
   updated_at timestamptz not null
     default now()
 );
-create index idx_cards_user_id
+CREATE INDEX IF NOT EXISTS idx_cards_user_id
   on cards(user_id);
 
-create index idx_cards_created_at
+CREATE INDEX IF NOT EXISTS idx_cards_created_at
   on cards(user_id, created_at desc);

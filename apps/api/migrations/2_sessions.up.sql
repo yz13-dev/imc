@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS sessions (
   PRIMARY KEY (id),
 CONSTRAINT fk_sessions_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
-CREATE UNIQUE INDEX idx_sessions_token ON sessions (token);
-CREATE INDEX idx_sessions_user_id ON sessions (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token ON sessions (token);
+CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions (user_id);

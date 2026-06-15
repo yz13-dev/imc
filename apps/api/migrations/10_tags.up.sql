@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS tags (
   id uuid primary key
     default gen_random_uuid(),
 
-  user_id uuid not null
+  user_id BIGSERIAL not null
     references users(id)
     on delete cascade,
 
@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS tags (
 
   unique(user_id, name)
 );
-create index idx_tags_user_id
+CREATE INDEX IF NOT EXISTS idx_tags_user_id
   on tags(user_id);

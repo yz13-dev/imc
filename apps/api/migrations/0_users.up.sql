@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(255),
   PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX idx_users_email ON users (email);
-CREATE INDEX idx_users_username ON users (username);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users (username);

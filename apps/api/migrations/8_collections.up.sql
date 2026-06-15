@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS collections (
   id uuid primary key
     default gen_random_uuid(),
 
-  user_id uuid not null
+  user_id BIGSERIAL not null
     references users(id)
     on delete cascade,
 
@@ -17,5 +17,5 @@ CREATE TABLE IF NOT EXISTS collections (
     default now()
 );
 
-create index idx_collections_user_id
+CREATE INDEX IF NOT EXISTS idx_collections_user_id
   on collections(user_id);

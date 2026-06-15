@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS accounts (
   PRIMARY KEY (id),
 CONSTRAINT fk_accounts_users_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
-CREATE INDEX idx_accounts_user_id_provider ON accounts (user_id);
-CREATE UNIQUE INDEX idx_accounts_provider_provider_account_id ON accounts (provider, provider_account_id);
+CREATE INDEX IF NOT EXISTS idx_accounts_user_id_provider ON accounts (user_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_provider_provider_account_id ON accounts (provider, provider_account_id);

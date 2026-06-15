@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS rate_limits (
   last_request_at BIGINT NOT NULL,
   PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX idx_rate_limits_key ON rate_limits (key);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_rate_limits_key ON rate_limits (key);

@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS verifications (
   updated_at TIMESTAMPTZ NOT NULL,
   PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX idx_verifications_value ON verifications (value);
-CREATE INDEX idx_verifications_subject ON verifications (subject);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_verifications_value ON verifications (value);
+CREATE INDEX IF NOT EXISTS idx_verifications_subject ON verifications (subject);

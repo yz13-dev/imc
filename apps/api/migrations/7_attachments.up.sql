@@ -1,7 +1,7 @@
 
-CREATE TYPE IF NOT EXISTS attachment_kind AS ENUM (
-  "image",
-  "video"
+CREATE TYPE attachment_kind AS ENUM (
+  'image',
+  'video'
 );
 CREATE TABLE IF NOT EXISTS attachments (
   -- ID вложения
@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS attachments (
   card_id uuid not null
     references cards(id)
     on delete cascade,
+  type attachment_kind not null,
   -- MIME type
   mime_type text not null,
   -- Путь в storage (НЕ URL)
@@ -47,14 +48,10 @@ CREATE TABLE IF NOT EXISTS attachments (
     )
 );
 -- Быстро получить вложения карточки
-CREATE INDEX idx_card_attachments_card_id
-  ON card_attachments(card_id);
-
--- Сортировка внутри карточки
-CREATE INDEX idx_card_attachments_sort
-  ON card_attachments(card_id, sort_order);
+CREATE INDEX IF NOT EXISTS idx_attachments_card_id
+  ON attachments(card_id);
 
 -- Только одна обложка на карточку
-CREATE UNIQUE INDEX idx_card_attachment_single_cover
-  ON card_attachments(card_id)
+CREATE UNIQUE INDEX IF NOT EXISTS idx_attachment_single_cover
+  ON attachments(card_id)
   WHERE is_cover = true;
