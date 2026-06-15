@@ -92,11 +92,11 @@ export default async function Page({ params, searchParams }: PageProps) {
   const scope = `${user}/${collection}`
   return (
     <>
-      <header className="h-12 bg-background/60 backdrop-blur-md sticky top-0 py-2 px-6 flex items-center justify-between">
+      <header className="h-14 bg-background/60 backdrop-blur-md sticky top-0 py-2 px-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon"><SidebarIcon /></Button>
           <Link href="/">
-            <ImcIcon className="size-6" />
+            <ImcIcon className="size-7" />
           </Link>
           <span className="text-muted-foreground">/</span>
           <Select
