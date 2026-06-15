@@ -167,4 +167,41 @@
     background-size: var(--pattern-size) var(--pattern-size);
   }
 
+  .imgDark {
+    display: none;
+  }
+
+  .light {
+    .imgLight {
+      display: unset;
+    }
+
+    .imgDark {
+      display: none;
+    }
+  }
+
+  .dark {
+    .imgLight {
+      display: none;
+    }
+
+    .imgDark {
+      display: unset;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html {
+      color-scheme: dark;
+    }
+
+    .imgLight {
+      display: none;
+    }
+
+    .imgDark {
+      display: unset;
+    }
+  }
 }
