@@ -13,6 +13,8 @@ import (
 	"github.com/thecodearcher/limen"
 	gormadapter "github.com/thecodearcher/limen/adapters/gorm"
 	config "github.com/yz13-dev/imc/api"
+	"github.com/yz13-dev/imc/api/internal/handlers"
+	internalMiddleware "github.com/yz13-dev/imc/api/internal/middleware"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -47,13 +49,6 @@ func main() {
 		log.Fatalf("Failed to create limen: %v", err)
 	}
 
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Println("origin:", r.Header.Get("Origin"))
-			next.ServeHTTP(w, r)
-		})
-	})
-
 	handler := auth.Handler()
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +77,13 @@ func main() {
 		})
 	})
 	r.Handle("/auth/*", handler)
+
+	r.Group(func(r chi.Router) {
+		r.Use(internalMiddleware.DBInstance(gormdb))
+		r.Use(internalMiddleware.UserInstance(auth))
+
+		r.Get("/collections", handlers.GetCollectionsHandler)
+	})
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		timestamp := time.Now()
