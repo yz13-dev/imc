@@ -1,6 +1,9 @@
 package config
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/thecodearcher/limen"
 	credentialpassword "github.com/thecodearcher/limen/plugins/credential-password"
 )
@@ -12,6 +15,23 @@ func NewAuthConfig(adapter limen.DatabaseAdapter) *limen.Config {
 		CLI: &limen.CLIConfig{
 			Enabled: true,
 		},
+		HTTP: limen.NewDefaultHTTPConfig(
+			limen.WithHTTPSessionCookieName("imc_session"),
+			limen.WithHTTPCookieSameSite(http.SameSiteNoneMode),
+			limen.WithHTTPCookieSecure(false),
+			limen.WithHTTPCookieHTTPOnly(true),
+			limen.WithHTTPOriginCheck(true),
+			limen.WithHTTPCookieCrossDomainEnabled(),
+			limen.WithHTTPTrustedOrigins([]string{
+				"http://localhost:3000",
+				"http://127.0.0.1:3000",
+				"http://[::1]:3000",
+			}),
+		),
+		Session: limen.NewDefaultSessionConfig(
+			limen.WithSessionDuration(7*24*time.Hour), // 7 days
+			limen.WithSessionUpdateAge(24*time.Hour),  // refresh every 1 day of activity
+		),
 		Plugins: []limen.Plugin{
 			credentialpassword.New(
 				credentialpassword.WithRequireUsernameOnSignUp(true),

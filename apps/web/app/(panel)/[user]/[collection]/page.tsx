@@ -1,10 +1,8 @@
 
 import { Button } from "@workspace/ui/components/button"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group"
-import { ImcIcon } from "@workspace/ui/components/logo/imc"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { ListFilterIcon, PlusIcon, SearchIcon, SidebarIcon } from "lucide-react"
-import Link from "next/link"
 import CollectionCard from "./components/collection-card"
 
 
@@ -95,10 +93,6 @@ export default async function Page({ params, searchParams }: PageProps) {
       <header className="h-14 bg-background/60 backdrop-blur-md sticky top-0 py-2 px-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon"><SidebarIcon /></Button>
-          <Link href="/">
-            <ImcIcon className="size-7" />
-          </Link>
-          <span className="text-muted-foreground">/</span>
           <Select
             defaultValue={collection}
           >

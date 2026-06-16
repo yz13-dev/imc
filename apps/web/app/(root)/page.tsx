@@ -2,8 +2,9 @@ import { Button } from "@workspace/ui/components/button";
 import { ImcWithTextIcon } from "@workspace/ui/components/logo/imc";
 import { Separator } from "@workspace/ui/components/separator";
 import ThemeImage from "@workspace/ui/components/theme-image";
-import { ArrowRightIcon, ArrowUpIcon } from "lucide-react";
-import Link from "next/link";
+import { ArrowUpIcon } from "lucide-react";
+import { Suspense } from "react";
+import LoginButtons, { LoginButtonsSkeleton } from "./components/login-buttons";
 
 export default function Page() {
 
@@ -15,10 +16,9 @@ export default function Page() {
             <ImcWithTextIcon className="w-fit h-7" />
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Button nativeButton={false} render={<Link href="/auth/signin" />}>
-              <span>Войти</span>
-              <ArrowRightIcon />
-            </Button>
+            <Suspense fallback={<LoginButtonsSkeleton />}>
+              <LoginButtons />
+            </Suspense>
           </div>
         </div>
       </header>

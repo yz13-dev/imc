@@ -47,7 +47,40 @@ func main() {
 		log.Fatalf("Failed to create limen: %v", err)
 	}
 
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			log.Println("origin:", r.Header.Get("Origin"))
+			next.ServeHTTP(w, r)
+		})
+	})
+
 	handler := auth.Handler()
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			origin := r.Header.Get("Origin")
+
+			if origin == "http://localhost:3000" {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+				w.Header().Set(
+					"Access-Control-Allow-Headers",
+					"Content-Type, Authorization",
+				)
+				w.Header().Set(
+					"Access-Control-Allow-Methods",
+					"GET, POST, PUT, PATCH, DELETE, OPTIONS",
+				)
+			}
+
+			// Ответ на preflight
+			if r.Method == http.MethodOptions {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		})
+	})
 	r.Handle("/auth/*", handler)
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
