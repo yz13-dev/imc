@@ -11,6 +11,11 @@ CREATE TABLE IF NOT EXISTS attachments (
   card_id uuid not null
     references cards(id)
     on delete cascade,
+
+  user_id BIGSERIAL not null
+    references users(id)
+    on delete cascade,
+
   type attachment_kind not null,
   -- MIME type
   mime_type text not null,
@@ -47,6 +52,9 @@ CREATE TABLE IF NOT EXISTS attachments (
       file_size is null or file_size > 0
     )
 );
+
+CREATE INDEX IF NOT EXISTS idx_attachments_user_id
+  on attachments(user_id);
 -- Быстро получить вложения карточки
 CREATE INDEX IF NOT EXISTS idx_attachments_card_id
   ON attachments(card_id);

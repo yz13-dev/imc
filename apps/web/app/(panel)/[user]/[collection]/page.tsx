@@ -1,4 +1,5 @@
 
+import { getCollectionCards } from "@/lib/api/collection-cards"
 import { Button } from "@workspace/ui/components/button"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
@@ -18,6 +19,9 @@ type PageProps = {
 export default async function Page({ params, searchParams }: PageProps) {
   const { user, collection } = await params
   const { id } = await searchParams
+
+  const collectionCards = await getCollectionCards(collection)
+  console.log("collectionCards", collectionCards)
 
   const collections = [
     {

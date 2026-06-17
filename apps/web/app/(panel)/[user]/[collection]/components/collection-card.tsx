@@ -23,7 +23,7 @@ export default function CollectionCard({ id, src, title, scope = "" }: Collectio
           "w-full relative bg-muted transition-all",
           "rounded-2xl [&_img]:rounded-2xl [&_video]:rounded-2xl",
           "outline-2 outline-offset-2 outline-transparent group-hover:outline-foreground",
-          "group-hover:scale-102 will-change-transform delay-200"
+          "group-hover:scale-102 will-change-transform"
         )}
       >
         <Link href={href} className="absolute inset-0" />

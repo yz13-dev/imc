@@ -9,7 +9,6 @@ import (
 	"github.com/yz13-dev/imc/api/internal/services"
 )
 
-// func(w http.ResponseWriter, r *http.Request)
 func GetMyCollectionsHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {

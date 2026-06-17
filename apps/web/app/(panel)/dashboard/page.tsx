@@ -1,3 +1,4 @@
+import { getCards } from "@/lib/api/cards";
 import { getCollections } from "@/lib/api/collections";
 import { Button } from "@workspace/ui/components/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
@@ -8,7 +9,11 @@ import SidebarTrigger from "../components/sidebar-trigger";
 
 
 export default async function Page() {
+
+  const cards = await getCards()
   const collections = await getCollections();
+
+  console.log("cards", cards)
   console.log("collections", collections)
 
   return (

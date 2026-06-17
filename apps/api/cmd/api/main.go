@@ -95,7 +95,10 @@ func main() {
 
 		// my routes
 		r.Route("/v1/my/", func(r chi.Router) {
+			r.Get("/attachments", handlers.GetMyCardsHandler)
+			r.Get("/cards", handlers.GetMyCardsHandler)
 			r.Get("/collections", handlers.GetMyCollectionsHandler)
+			r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
 		})
 		// public routes
 		r.Route("/v1/{user}/", func(r chi.Router) {

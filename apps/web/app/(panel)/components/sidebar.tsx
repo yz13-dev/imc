@@ -1,5 +1,6 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
 import { InboxIcon, LayoutDashboardIcon, PlusIcon, SquareLibraryIcon, Trash2Icon } from "lucide-react";
+import Link from "next/link";
 
 
 export default function AppSidebar() {
@@ -10,13 +11,13 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton render={<Link href="/dashboard" />}>
                   <LayoutDashboardIcon />
                   <span>Все</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton render={<Link href="/inbox" />}>
                   <InboxIcon />
                   <span>Входящие</span>
                 </SidebarMenuButton>
