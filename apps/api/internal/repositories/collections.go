@@ -12,3 +12,17 @@ func GetCollections(UserID int64, db *gorm.DB) ([]models.Collection, error) {
 	}
 	return collections, nil
 }
+
+func NewCollection(data *models.NewCollection, db *gorm.DB) (*models.Collection, error) {
+	collection := &models.Collection{
+		Name:        data.Name,
+		Description: data.Description,
+		UserID:      data.UserID,
+	}
+
+	created := db.Create(&collection)
+	if created.Error != nil {
+		return nil, created.Error
+	}
+	return collection, nil
+}

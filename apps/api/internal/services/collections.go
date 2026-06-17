@@ -12,4 +12,13 @@ func GetCollections(UserID int64, db *gorm.DB) ([]models.Collection, error) {
 		return nil, err
 	}
 	return collections, nil
+
+}
+
+func CreateCollection(data *models.NewCollection, db *gorm.DB) (*models.Collection, error) {
+	collection, err := repositories.NewCollection(data, db)
+	if err != nil {
+		return nil, err
+	}
+	return collection, nil
 }

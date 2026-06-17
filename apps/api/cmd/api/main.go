@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 	"github.com/thecodearcher/limen"
 	gormadapter "github.com/thecodearcher/limen/adapters/gorm"
@@ -50,39 +51,56 @@ func main() {
 	}
 
 	handler := auth.Handler()
-	r.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			origin := r.Header.Get("Origin")
+	// r.Use(func(next http.Handler) http.Handler {
+	// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 		origin := r.Header.Get("Origin")
 
-			if origin == "http://localhost:3000" {
-				w.Header().Set("Access-Control-Allow-Origin", origin)
-				w.Header().Set("Access-Control-Allow-Credentials", "true")
-				w.Header().Set(
-					"Access-Control-Allow-Headers",
-					"Content-Type, Authorization",
-				)
-				w.Header().Set(
-					"Access-Control-Allow-Methods",
-					"GET, POST, PUT, PATCH, DELETE, OPTIONS",
-				)
-			}
+	// 		if origin == "http://localhost:3000" {
+	// 			w.Header().Set("Access-Control-Allow-Origin", origin)
+	// 			w.Header().Set("Access-Control-Allow-Credentials", "true")
+	// 			w.Header().Set(
+	// 				"Access-Control-Allow-Headers",
+	// 				"Content-Type, Authorization",
+	// 			)
+	// 			w.Header().Set(
+	// 				"Access-Control-Allow-Methods",
+	// 				"GET, POST, PUT, PATCH, DELETE, OPTIONS",
+	// 			)
+	// 		}
 
-			// Ответ на preflight
-			if r.Method == http.MethodOptions {
-				w.WriteHeader(http.StatusNoContent)
-				return
-			}
+	// 		// Ответ на preflight
+	// 		if r.Method == http.MethodOptions {
+	// 			w.WriteHeader(http.StatusNoContent)
+	// 			return
+	// 		}
 
-			next.ServeHTTP(w, r)
-		})
-	})
+	// 		next.ServeHTTP(w, r)
+	// 	})
+	// })
+	r.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://imc.yz13.dev", "http://localhost:3000"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 	r.Handle("/auth/*", handler)
 
 	r.Group(func(r chi.Router) {
 		r.Use(internalMiddleware.DBInstance(gormdb))
 		r.Use(internalMiddleware.UserInstance(auth))
 
-		r.Get("/collections", handlers.GetCollectionsHandler)
+		// my routes
+		r.Route("/v1/my/", func(r chi.Router) {
+			r.Get("/collections", handlers.GetMyCollectionsHandler)
+		})
+		// public routes
+		r.Route("/v1/{user}/", func(r chi.Router) {
+
+		})
 	})
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

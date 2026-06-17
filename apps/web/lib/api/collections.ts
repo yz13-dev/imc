@@ -5,7 +5,7 @@ export async function getCollections() {
   try {
     const { data, error } = await axios<any[]>({
       baseURL: "http://localhost:8080",
-      url: "/collections"
+      url: "/v1/my/collections"
     })
 
     if (error) {
