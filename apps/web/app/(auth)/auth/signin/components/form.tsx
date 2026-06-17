@@ -1,6 +1,8 @@
 "use client"
 
+import { API_URL } from "@/lib/api/const"
 import { axios } from "@/lib/axios-client"
+import { sendTokenToExtension } from "@/lib/extensions"
 import { useForm } from "@tanstack/react-form-nextjs"
 import { Button } from "@workspace/ui/components/button"
 import { Field, FieldError } from "@workspace/ui/components/field"
@@ -11,6 +13,7 @@ import { EyeClosedIcon, EyeIcon, KeyIcon, MailIcon, UserCircle2Icon } from "luci
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import z from "zod"
+
 
 const formSchema = z.object({
   "email-or-username": z
@@ -26,13 +29,12 @@ const formSchema = z.object({
 })
 
 const signIn = async (email: string, password: string) => {
-  const base = `http://localhost:8080`
   try {
     const { data, error } = await axios({
+      baseURL: API_URL,
       method: "POST",
-      url: new URL("/auth/signin/credential", base).toString(),
+      url: new URL("/auth/signin/credential", API_URL).toString(),
       headers: {
-        Origin: "http://localhost:3000",
         "Content-Type": "application/json",
       },
       withCredentials: true,
@@ -87,6 +89,8 @@ export default function Form({ next = "/" }: { next?: string }) {
               id: toastId
             })
           } else {
+            // @ts-expect-error
+            sendTokenToExtension(data!.token)
             toast.success("Вход выполнен", {
               id: toastId
             })
@@ -107,6 +111,8 @@ export default function Form({ next = "/" }: { next?: string }) {
               id: toastId
             })
           } else {
+            // @ts-expect-error
+            sendTokenToExtension(data!.token)
             toast.success("Вход выполнен", {
               id: toastId
             })

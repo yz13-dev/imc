@@ -23,12 +23,23 @@ func NewAuthConfig(adapter limen.DatabaseAdapter) *limen.Config {
 			limen.WithHTTPOriginCheck(true),
 			limen.WithHTTPCookieCrossDomainEnabled(),
 			limen.WithHTTPTrustedOrigins([]string{
+				"moz-extension://*",
+				"chrome-extension://*",
+				"http://localhost:5173",
 				"http://localhost:3000",
 				"http://127.0.0.1:3000",
 				"http://[::1]:3000",
 			}),
+			limen.WithHTTPSessionTransformer(func(user map[string]any, sessionResult *limen.SessionResult) (map[string]any, error) {
+				out := map[string]any{"user": user}
+				if sessionResult != nil {
+					out["token"] = sessionResult.Token
+				}
+				return out, nil
+			}),
 		),
 		Session: limen.NewDefaultSessionConfig(
+			limen.WithBearerEnabled(),
 			limen.WithSessionDuration(7*24*time.Hour), // 7 days
 			limen.WithSessionUpdateAge(24*time.Hour),  // refresh every 1 day of activity
 		),

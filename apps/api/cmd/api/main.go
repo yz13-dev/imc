@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -51,40 +53,42 @@ func main() {
 	}
 
 	handler := auth.Handler()
-	// r.Use(func(next http.Handler) http.Handler {
-	// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 		origin := r.Header.Get("Origin")
-
-	// 		if origin == "http://localhost:3000" {
-	// 			w.Header().Set("Access-Control-Allow-Origin", origin)
-	// 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-	// 			w.Header().Set(
-	// 				"Access-Control-Allow-Headers",
-	// 				"Content-Type, Authorization",
-	// 			)
-	// 			w.Header().Set(
-	// 				"Access-Control-Allow-Methods",
-	// 				"GET, POST, PUT, PATCH, DELETE, OPTIONS",
-	// 			)
-	// 		}
-
-	// 		// Ответ на preflight
-	// 		if r.Method == http.MethodOptions {
-	// 			w.WriteHeader(http.StatusNoContent)
-	// 			return
-	// 		}
-
-	// 		next.ServeHTTP(w, r)
-	// 	})
-	// })
 	r.Use(cors.Handler(cors.Options{
+		Debug: true,
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"https://imc.yz13.dev", "http://localhost:3000"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		// AllowedOrigins: []string{"https://imc.yz13.dev", "http://localhost:3000", "http://localhost:5173"},
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
+			log.Println("origin:", origin)
+			// 1. Разрешаем пустой Origin (нужно для GET-запросов из background скрипта)
+			if origin == "" {
+				return true
+			}
+
+			// 2. Разрешаем расширение Chrome (для POST/PUT запросов из WXT dev server)
+			if strings.HasPrefix(origin, "chrome-extension://") {
+				return true
+			}
+			if strings.HasPrefix(origin, "moz-extension://") {
+				return true
+			}
+
+			// 3. Проверяем ваши стандартные локальные и продакшн домены
+			allowed := []string{
+				"https://imc.yz13.dev",
+				"http://localhost:3000",
+				"http://localhost:5173",
+			}
+			if slices.Contains(allowed, origin) {
+				return true
+			}
+
+			// Все остальные запросы блокируются
+			return false
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 	r.Handle("/auth/*", handler)
@@ -131,5 +135,5 @@ func main() {
 		port = "8080"
 	}
 	log.Println("listening on port", port)
-	http.ListenAndServe(":"+port, r)
+	http.ListenAndServeTLS(":"+port, "cert.pem", "key.pem", r)
 }
