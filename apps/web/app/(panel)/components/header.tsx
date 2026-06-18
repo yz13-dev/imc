@@ -4,12 +4,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ListFilterIcon, PlusIcon, SearchIcon } from "lucide-react";
 import SidebarTrigger from "./sidebar-trigger";
 
-
-
-
-export default function Header() {
+export default function Header({ children }: { children?: React.ReactNode }) {
   return (
-    <header className="h-14 bg-background/60 backdrop-blur-md sticky top-0 py-2 px-6 flex items-center justify-between">
+    <header className="h-14 bg-background/90 backdrop-blur-md sticky top-0 py-2 px-6 z-20 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <SidebarTrigger />
         <Select
@@ -23,16 +20,7 @@ export default function Header() {
         </Select>
         <Button variant="outline" size="icon"><ListFilterIcon /></Button>
       </div>
-      <div className="w-full px-4 flex items-center gap-2">
-        <Button variant="outline">
-          <span>Website</span>
-          <span className="text-muted-foreground">0</span>
-        </Button>
-        <Button variant="outline">
-          <span>UI</span>
-          <span className="text-muted-foreground">0</span>
-        </Button>
-      </div>
+      {children}
       <div className="flex items-center gap-2">
         <Button variant="outline" size="icon"><PlusIcon /></Button>
         <InputGroup>

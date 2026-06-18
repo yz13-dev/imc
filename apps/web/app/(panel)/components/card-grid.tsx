@@ -1,7 +1,6 @@
-import { getRefSrc } from "@/lib/ref-src"
-import type { Attachment } from "@/types/attachments"
-import CollectionCard from "../[user]/[collection]/components/collection-card"
-
+import { getRefSrc } from "@/lib/ref-src";
+import type { Attachment } from "@/types/attachments";
+import CollectionCard from "../[user]/[collection]/components/collection-card";
 
 
 type CardGridProps = {

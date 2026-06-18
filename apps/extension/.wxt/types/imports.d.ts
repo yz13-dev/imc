@@ -5,9 +5,11 @@ declare global {
   const InvalidMatchPattern: typeof import('wxt/utils/match-patterns').InvalidMatchPattern
   const MatchPattern: typeof import('wxt/utils/match-patterns').MatchPattern
   const browser: typeof import('wxt/browser').browser
+  const checkSource: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/source').checkSource
   const createIframeUi: typeof import('wxt/utils/content-script-ui/iframe').createIframeUi
   const createIntegratedUi: typeof import('wxt/utils/content-script-ui/integrated').createIntegratedUi
   const createShadowRootUi: typeof import('wxt/utils/content-script-ui/shadow-root').createShadowRootUi
+  const createSource: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/source').createSource
   const defineAppConfig: typeof import('wxt/utils/define-app-config').defineAppConfig
   const defineBackground: typeof import('wxt/utils/define-background').defineBackground
   const defineContentScript: typeof import('wxt/utils/define-content-script').defineContentScript

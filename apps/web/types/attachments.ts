@@ -17,3 +17,23 @@ export type Attachment = {
   user_id: number
   label: string
 }
+
+export type Tag = {
+  id: string
+  user_id: number
+  name: string
+  created_at: Date
+}
+
+export type AttachmentTag = {
+  id: string
+  attachment_id: string
+  tag_id: string
+  created_at: string
+  updated_at: string
+}
+
+
+export type AttachmentWithTags = Attachment & {
+  tags: (AttachmentTag & { tag: Tag })[]
+}

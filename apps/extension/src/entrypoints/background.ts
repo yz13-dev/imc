@@ -38,18 +38,18 @@ export default defineBackground(() => {
       const isImageOrVideo = info.mediaType === "image" || info.mediaType === "video";
       if (!isImageOrVideo) return;
 
+      const url = new URL(tab!.url!);
       const { status, data: user } = await getUser();
       console.log("user", user)
       if (status !== 200 || !user) {
         browser.tabs.create({
-          url: "http://localhost:5173/auth/signin",
+          url: `http://localhost:5173/auth/signin?next=${url.toString()}`,
         });
         return;
       }
 
       const sourceTitle = tab?.title
 
-      const url = new URL(tab!.url!);
       const sourceUrl = url.toString()
 
       let sourceFavicon = tab?.favIconUrl?.startsWith("data:") ? null : tab?.favIconUrl;
@@ -67,6 +67,8 @@ export default defineBackground(() => {
         url: sourceUrl,
         favicon: sourceFavicon,
       }
+
+      await createSource({ title: sourceTitle || url.hostname, url: sourceUrl, favicon: sourceFavicon || undefined })
 
       const filenameArray = (info?.srcUrl || "")?.split("/")
       const filename = filenameArray?.[filenameArray.length - 1];

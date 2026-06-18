@@ -21,7 +21,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { id } = await searchParams
 
   const collectionCards = await getCollectionCards(collection)
-  console.log("collectionCards", collectionCards)
+  // console.log("collectionCards", collectionCards)
 
   const collections = [
     {

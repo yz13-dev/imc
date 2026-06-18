@@ -9,8 +9,8 @@ export default async function Page() {
   const cards = await getCards()
   const collections = await getCollections();
 
-  console.log("cards", cards)
-  console.log("collections", collections)
+  // console.log("cards", cards)
+  // console.log("collections", collections)
 
   return (
     <>

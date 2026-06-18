@@ -1,12 +1,12 @@
 
-import type { Attachment } from "@/types/attachments";
+import type { AttachmentWithTags } from "@/types/attachments";
 import { axios } from "../axios";
 import { getApiUrl } from "../url";
 
 
-export async function getAttachments(): Promise<Attachment[] | null> {
+export async function getAttachments(): Promise<AttachmentWithTags[] | null> {
   try {
-    const { data, error } = await axios<any[]>({
+    const { data, error } = await axios<AttachmentWithTags[]>({
       url: getApiUrl("/v1/my/attachments")
     })
 
@@ -22,9 +22,9 @@ export async function getAttachments(): Promise<Attachment[] | null> {
   }
 }
 
-export async function getAttachment(attachmentID: string): Promise<Attachment | null> {
+export async function getAttachment(attachmentID: string): Promise<AttachmentWithTags | null> {
   try {
-    const { data, error } = await axios<Attachment>({
+    const { data, error } = await axios<AttachmentWithTags>({
       url: getApiUrl(`/v1/my/attachments/${attachmentID}`)
     })
 

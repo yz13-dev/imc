@@ -1,3 +1,4 @@
+"use client"
 import { getRefSrc } from "@/lib/ref-src"
 import { getApiUrl } from "@/lib/url"
 import { cn } from "@workspace/ui/lib/utils"
@@ -22,6 +23,7 @@ export default function RefContent({ src, className = "", children, mimeType, al
   const refSrc = getApiUrl(`/v1/my/attachments/${resolvedId || src}/file`)
   return (
     <figure
+      key={src}
       className={cn(
         "w-full relative",
         className

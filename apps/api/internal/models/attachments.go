@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Attachment struct {
 	ID         string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
@@ -17,6 +19,11 @@ type Attachment struct {
 	CreatedAt  time.Time `gorm:"default:now()" json:"created_at"`
 	UserID     int64     `json:"user_id"`
 	Label      string    `json:"label"`
+}
+
+type AttachmentWithTags struct {
+	Attachment
+	AttachmentTags []AttachmentTag `gorm:"foreignKey:AttachmentID" json:"tags"`
 }
 
 type NewAttachment struct {

@@ -3,8 +3,14 @@ import Link from "next/link";
 import Form from "./components/form";
 
 
+type PageProps = {
+  searchParams: Promise<{ next?: string }>;
+};
+export default async function Page({ searchParams }: PageProps) {
 
-export default function Page() {
+  const { next } = await searchParams;
+
+
   return (
     <div className="max-w-md mx-auto flex flex-col gap-8">
       <div className="flex flex-col gap-3 text-balance">
@@ -14,7 +20,7 @@ export default function Page() {
         </p>
       </div>
       <div className="flex flex-col gap-6">
-        <Form />
+        <Form next={next} />
       </div>
       <FieldSeparator>Или</FieldSeparator>
       <span className="text-muted-foreground text-sm mx-auto">

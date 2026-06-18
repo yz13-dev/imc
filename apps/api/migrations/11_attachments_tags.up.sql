@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS attachments_tags (
-  id UUID PRIMARY KEY,
-  attachment_id INTEGER NOT NULL,
-  tag_id INTEGER NOT NULL,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  attachment_id UUID NOT NULL,
+  tag_id UUID NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (attachment_id) REFERENCES attachments(id) ON DELETE CASCADE,

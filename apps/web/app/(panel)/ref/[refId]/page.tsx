@@ -3,6 +3,7 @@ import { getRefSrc } from "@/lib/ref-src"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Link2Icon } from "lucide-react"
+import { AnimatePresence } from "motion/react"
 import { notFound } from "next/navigation"
 import RefContent from "../../components/ref-content"
 
@@ -23,6 +24,7 @@ export default async function Page({ params }: PageProps) {
   if (!refSrc) return notFound()
 
   const title = attachment.label || refSrc || "-"
+  const tags = attachment.tags || [];
 
   return (
     <>
@@ -30,10 +32,12 @@ export default async function Page({ params }: PageProps) {
         <div className="size-full flex flex-row">
           <div className="h-full w-2/3 md:p-12 p-4 flex items-center justify-center">
             <div className="w-full aspect-video bg-muted rounded-2xl">
-              <RefContent
-                src={refSrc}
-                mimeType={attachment.mime_type}
-              />
+              <AnimatePresence>
+                <RefContent
+                  src={refSrc}
+                  mimeType={attachment.mime_type}
+                />
+              </AnimatePresence>
             </div>
           </div>
           <div className="h-full w-1/3 md:p-12 p-4">
@@ -57,8 +61,12 @@ export default async function Page({ params }: PageProps) {
                     Тэги
                   </span>
                   <div className="flex items-start gap-1 flex-wrap">
-                    <Badge variant="outline" className="text-base py-1 h-fit">UI</Badge>
-                    <Badge variant="outline" className="text-base py-1 h-fit">Website</Badge>
+                    {
+                      tags.map(tag => {
+
+                        return <Badge key={tag.tag_id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.tag.name}</Badge>
+                      })
+                    }
                   </div>
                 </div>
                 <div className="px-3 flex flex-col gap-1.5">

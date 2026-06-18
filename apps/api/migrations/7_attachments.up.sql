@@ -16,6 +16,10 @@ CREATE TABLE IF NOT EXISTS attachments (
     references users(id)
     on delete cascade,
 
+  source_id uuid
+    references sources(id)
+    on delete cascade,
+
   type attachment_kind not null,
   label text,
   -- MIME type

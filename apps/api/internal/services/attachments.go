@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.Attachment, error) {
+func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	attachments, err := repositories.GetInboxAttachments(UserID, db)
 	if err != nil {
 		return nil, err
@@ -22,10 +22,10 @@ func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (mo
 	return attachment, nil
 }
 
-func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.AttachmentWithTags, error) {
 	attachment, err := repositories.GetAttachment(UserID, attachmentID, db)
 	if err != nil {
-		return models.Attachment{}, err
+		return models.AttachmentWithTags{}, err
 	}
 	return attachment, nil
 }

@@ -11,3 +11,59 @@ export function getSourceData() {
     favicon
   };
 }
+
+
+
+
+export async function createSource({ title, url, favicon }: { title: string; url: string, favicon?: string }) {
+  const urlInstance = new URL(url)
+  const domain = urlInstance.hostname;
+  const slug = urlInstance.pathname;
+  try {
+    const token = await getToken()
+
+    if (!token) throw new Error("No token found");
+
+    const response = await fetch("https://localhost:8080/v1/source/new", {
+      method: "POST",
+      body: JSON.stringify({ name: title, domain, slug, favicon_url: favicon }),
+      credentials: "include",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    });
+
+    return response.json();
+
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
+
+export async function checkSource({ url }: { url: string }) {
+
+  const urlInstance = new URL(url)
+  const domain = urlInstance.hostname;
+  const slug = urlInstance.pathname;
+
+  const token = await getToken()
+  if (!token) return null
+
+  try {
+    const response = await fetch(`https://localhost:8080/v1/source/check?source=${domain}&slug=${slug}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    });
+
+    return response.json()
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
