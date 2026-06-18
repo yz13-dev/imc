@@ -1,11 +1,21 @@
 
+export async function getToken() {
+  try {
+    const storage = await browser.storage.local.get(['imc_token']);
+    const token = storage.imc_token as string | undefined;
 
+    if (!token) throw new Error("No token found");
+    return token;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 export async function getUser() {
   try {
 
-    const storage = await browser.storage.local.get(['imc_token']);
-    const token = storage.imc_token as string | undefined;
+    const token = await getToken()
 
     if (!token) throw new Error("No token found");
     const response = await fetch("https://localhost:8080/auth/me", {

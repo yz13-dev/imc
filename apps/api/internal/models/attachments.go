@@ -1,8 +1,26 @@
 package models
 
+import "time"
+
 type Attachment struct {
-	ID         string `gorm:"primaryKey"`
-	CardID     string
+	ID         string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
+	CardID     *string   `json:"card_id"`
+	Type       string    `json:"type"`
+	MimeType   string    `json:"mime_type"`
+	Src        string    `json:"src"`
+	Width      int       `json:"width"`
+	Height     int       `json:"height"`
+	DurationMS int       `json:"duration_ms"`
+	FileSize   int64     `json:"file_size"`
+	IsCover    bool      `json:"is_cover"`
+	Blurhash   string    `json:"blurhash"`
+	CreatedAt  time.Time `gorm:"default:now()" json:"created_at"`
+	UserID     int64     `json:"user_id"`
+	Label      string    `json:"label"`
+}
+
+type NewAttachment struct {
+	CardID     *string
 	Type       string
 	MimeType   string
 	Src        string
@@ -12,5 +30,7 @@ type Attachment struct {
 	FileSize   int64
 	IsCover    bool
 	Blurhash   string
-	CreatedAt  string
+	CreatedAt  time.Time `gorm:"default:now()"`
+	UserID     int64
+	Label      string
 }

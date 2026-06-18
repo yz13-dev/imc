@@ -1,7 +1,7 @@
 "use server"
 
-import { API_URL } from "./api/const";
 import { axios } from "./axios";
+import { getApiUrl } from "./url";
 
 
 
@@ -9,8 +9,7 @@ export async function getMe() {
   try {
     const { data, error } = await axios({
       method: "GET",
-      baseURL: API_URL,
-      url: "/auth/me",
+      url: getApiUrl("/auth/me"),
     })
     if (error) throw error;
     return data;

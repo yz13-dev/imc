@@ -1,45 +1,36 @@
 
+import RefContent from "@/app/(panel)/components/ref-content"
 import { cn } from "@workspace/ui/lib/utils"
-import Image from "next/image"
 import Link from "next/link"
 
 type CollectionCardProps = {
   scope?: string
+  mimeType: string
   id: string
   src: string
   title: string
+  className?: string
+  style?: React.CSSProperties
 }
 
-export default function CollectionCard({ id, src, title, scope = "" }: CollectionCardProps) {
-
-  const isVideo = src.endsWith(".mp4")
-  const isGif = src.endsWith(".gif")
+export default function CollectionCard({ mimeType, id, src, title, scope = "", className, style = {} }: CollectionCardProps) {
 
   const href = scope ? `/${scope}/${id}` : `/${id}`
   return (
     <div className="group w-full break-inside-avoid">
-      <figure
+      <RefContent
+        mimeType={mimeType}
+        src={src}
         className={cn(
-          "w-full relative bg-muted transition-all",
           "rounded-2xl [&_img]:rounded-2xl [&_video]:rounded-2xl",
           "outline-2 outline-offset-2 outline-transparent group-hover:outline-foreground",
-          "group-hover:scale-102 will-change-transform"
+          "group-hover:scale-102 will-change-transform transition-all",
+          className
         )}
+        style={style}
       >
         <Link href={href} className="absolute inset-0" />
-        {
-          isVideo &&
-          <video src={src} className="block static!" muted autoPlay aria-label={title} />
-        }
-        {
-          isGif &&
-          <Image src={src} className="block static!" unoptimized fill alt={title} />
-        }
-        {
-          !isVideo && !isGif &&
-          <Image src={src} className="block static!" fill alt={title} />
-        }
-      </figure>
+      </RefContent>
       <div className="pt-2 px-2">
         <span className="text-sm text-muted-foreground">{title}</span>
       </div>

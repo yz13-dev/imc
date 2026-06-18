@@ -13,3 +13,19 @@ func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.Attachment, error)
 	}
 	return attachments, nil
 }
+
+func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (models.Attachment, error) {
+	attachment, err := repositories.PostNewAttachment(UserID, db, data)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
+func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+	attachment, err := repositories.GetAttachment(UserID, attachmentID, db)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}

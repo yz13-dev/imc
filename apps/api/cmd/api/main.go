@@ -99,7 +99,10 @@ func main() {
 
 		// my routes
 		r.Route("/v1/my/", func(r chi.Router) {
-			r.Get("/attachments", handlers.GetMyCardsHandler)
+			r.Get("/attachments", handlers.GetInboxAttachments)
+			r.Post("/attachments/new", handlers.PostNewAttachment)
+			r.Get("/attachments/{attachmentID}", handlers.GetAttachment)
+			r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
 			r.Get("/cards", handlers.GetMyCardsHandler)
 			r.Get("/collections", handlers.GetMyCollectionsHandler)
 			r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)

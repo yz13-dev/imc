@@ -1,13 +1,12 @@
 
 import { axios } from "../axios";
-import { API_URL } from "./const";
+import { getApiUrl } from "../url";
 
 
 export async function getCollectionCards(collection: string) {
   try {
     const { data, error } = await axios<any[]>({
-      baseURL: API_URL,
-      url: `/v1/my/collections/${collection}/cards`
+      url: getApiUrl("/v1/my/collections/${collection}/cards")
     })
 
     if (error) {

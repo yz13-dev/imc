@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS attachments (
   id uuid primary key
     default gen_random_uuid(),
   -- Карточка, которой принадлежит вложение
-  card_id uuid not null
+  card_id uuid
     references cards(id)
     on delete cascade,
 
@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS attachments (
     on delete cascade,
 
   type attachment_kind not null,
+  label text,
   -- MIME type
   mime_type text not null,
   -- Путь в storage (НЕ URL)

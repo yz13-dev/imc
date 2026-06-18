@@ -1,3 +1,4 @@
+import { fetchAttachments, uploadAttachment } from "@/utils/attachments";
 import { getUser } from "@/utils/auth";
 
 export default defineBackground(() => {
@@ -75,6 +76,13 @@ export default defineBackground(() => {
         title: `${sourceTitle} - ${filename}`,
         filename,
       }
+
+      if (info.srcUrl) {
+        const blob = await fetchAttachments(info.srcUrl)
+        const attachment = await uploadAttachment(blob)
+        console.log("attachment", attachment)
+      }
+
       console.log("favicon", sourceFavicon)
       console.log("source", source)
       console.log(attachment);

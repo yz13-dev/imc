@@ -14,11 +14,14 @@ declare global {
   const defineUnlistedScript: typeof import('wxt/utils/define-unlisted-script').defineUnlistedScript
   const defineWxtPlugin: typeof import('wxt/utils/define-wxt-plugin').defineWxtPlugin
   const fakeBrowser: typeof import('wxt/testing').fakeBrowser
+  const fetchAttachments: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/attachments').fetchAttachments
   const getAppConfig: typeof import('wxt/utils/app-config').getAppConfig
   const getSourceData: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/source').getSourceData
+  const getToken: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/auth').getToken
   const getUser: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/auth').getUser
   const injectScript: typeof import('wxt/utils/inject-script').injectScript
   const storage: typeof import('wxt/utils/storage').storage
+  const uploadAttachment: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/attachments').uploadAttachment
   const useAppConfig: typeof import('wxt/utils/app-config').useAppConfig
   const useCallback: typeof import('react').useCallback
   const useContext: typeof import('react').useContext
