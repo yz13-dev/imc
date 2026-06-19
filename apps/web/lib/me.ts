@@ -12,7 +12,14 @@ export async function getMe(): Promise<User | null> {
       url: getApiUrl("/auth/me"),
     })
     if (error) throw error;
-    return data.user;
+
+    const user = data.user;
+    if (!user) return null;
+
+    // @ts-expect-error
+    delete user.password;
+
+    return user;
   } catch (error) {
     console.error(error)
     return null;

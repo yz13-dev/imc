@@ -3,6 +3,7 @@ import { GlobalStoreProvider } from "@/lib/global-store";
 import { getMe } from "@/lib/me";
 import { UserProvider } from "@/lib/user";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
+import { redirect } from "next/navigation";
 import AppSidebar from "./components/sidebar";
 
 
@@ -16,10 +17,12 @@ export default async function Layout({ children }: LayoutProps) {
   const collectionsPromise = getCollections()
 
   const [user, collections] = await Promise.all([userPromise, collectionsPromise])
+  if (!user) return redirect("/")
 
   const username = user?.username
-  console.log("user", user)
-  console.log("username", username)
+  // console.log("user", user)
+  // console.log("username", username)
+
   return (
     <UserProvider user={user}>
       <GlobalStoreProvider collections={collections || []}>
