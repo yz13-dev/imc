@@ -29,6 +29,9 @@ export default defineConfig({
 
     action: {
       default_title: "IMC",
+      theme_icons: [
+        { dark: "/imc-dark.png", light: "/imc-light.png", size: 64 }
+      ]
     },
 
     browser_specific_settings: {

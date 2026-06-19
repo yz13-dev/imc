@@ -49,7 +49,7 @@ export default async function Page({ params }: PageProps) {
               />
             </AnimatePresence>
           </div>
-          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-0 bottom-0 md:p-12 p-4 bg-linear-to-b from-transparent to-background">
+          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 bg-linear-to-b from-transparent to-background">
             <div className="w-full space-y-4">
               <div className="flex flex-col gap-2">
                 <h1 className="text-4xl font-medium">
@@ -66,9 +66,12 @@ export default async function Page({ params }: PageProps) {
               </div>
               <div className="w-full bg-card border rounded-2xl py-3 space-y-3">
                 <div className="px-3 flex flex-col gap-1.5">
-                  <span className="uppercase text-sm text-muted-foreground">
-                    Тэги
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="capitalize text-base text-muted-foreground">
+                      Тэги
+                    </span>
+                    <Button variant="secondary" size="xs"><span>Добавить</span><PlusIcon /></Button>
+                  </div>
                   <div className="flex items-start gap-1 flex-wrap">
                     {tags.length === 0 && <span className="text-muted-foreground h-8">—</span>}
                     {
@@ -77,11 +80,10 @@ export default async function Page({ params }: PageProps) {
                         return <Badge key={tag.tag_id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.tag.name}</Badge>
                       })
                     }
-                    <Button variant="secondary" size="sm"><span>Добавить</span><PlusIcon /></Button>
                   </div>
                 </div>
                 <div className="px-3 flex flex-col gap-1.5">
-                  <span className="uppercase text-sm text-muted-foreground">
+                  <span className="capitalize text-base text-muted-foreground">
                     Источник
                   </span>
                   {

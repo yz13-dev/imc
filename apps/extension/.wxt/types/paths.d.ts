@@ -11,6 +11,8 @@ declare module "wxt/browser" {
     | "/imc-16-16.png"
     | "/imc-32-32.png"
     | "/imc-48-48.png"
+    | "/imc-dark.png"
+    | "/imc-light.png"
   type HtmlPublicPath = Extract<PublicPath, `${string}.html`>
   export interface WxtRuntime {
     getURL(path: PublicPath): string;

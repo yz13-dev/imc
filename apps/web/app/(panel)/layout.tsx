@@ -20,6 +20,7 @@ export default async function Layout({ children }: LayoutProps) {
   if (!user) return redirect("/")
 
   const username = user?.username
+  const email = user?.email
   // console.log("user", user)
   // console.log("username", username)
 
@@ -27,7 +28,7 @@ export default async function Layout({ children }: LayoutProps) {
     <UserProvider user={user}>
       <GlobalStoreProvider collections={collections || []}>
         <SidebarProvider>
-          <AppSidebar username={username || undefined} collections={collections || []} />
+          <AppSidebar username={username || undefined} email={email || undefined} collections={collections || []} />
           <div className="w-full">
             {children}
           </div>

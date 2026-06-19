@@ -1,15 +1,17 @@
 import type { Collection } from "@/types/collections";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
 import { InboxIcon, LayoutDashboardIcon, PlusIcon, SquareLibraryIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import NewCollectionModal from "./modals/new-collection";
 
 type AppSidebarProps = {
   username?: string
+  email?: string
   collections?: Collection[]
 }
 
-export default function AppSidebar({ username = "", collections = [] }: AppSidebarProps) {
+export default function AppSidebar({ username = "", email = "", collections = [] }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -63,6 +65,18 @@ export default function AppSidebar({ username = "", collections = [] }: AppSideb
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+          <Avatar>
+            <AvatarImage src={undefined} />
+            <AvatarFallback className="uppercase">{username.slice(0, 2)}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">{username}</span>
+            <span className="text-xs text-muted-foreground">{email}</span>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   )
 }

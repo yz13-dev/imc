@@ -51,6 +51,13 @@
   ],
   "content_security_policy": "script-src 'self' http://localhost:3000; object-src 'self';",
   "browser_action": {
-    "default_title": "IMC"
+    "default_title": "IMC",
+    "theme_icons": [
+      {
+        "dark": "/imc-dark.png",
+        "light": "/imc-light.png",
+        "size": 64
+      }
+    ]
   }
 }
