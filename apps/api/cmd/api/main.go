@@ -109,6 +109,7 @@ func main() {
 				r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
 				r.Get("/cards", handlers.GetMyCardsHandler)
 				r.Get("/collections", handlers.GetMyCollectionsHandler)
+				r.Post("/collections/new", handlers.PostMyNewCollectionHandler)
 				r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
 			})
 			//

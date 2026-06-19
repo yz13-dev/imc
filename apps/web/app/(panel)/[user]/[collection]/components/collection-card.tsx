@@ -26,8 +26,8 @@ export default function CollectionCard({ mimeType, id, src, title, scope = "", c
           src={src}
           className={cn(
             "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm",
-            "outline-4 outline-transparent group-hover:outline-foreground/10",
-            "group-hover:scale-102 will-change-transform transition-all",
+            "outline-4 outline-transparent group/-hover:outline-foreground/10 bg-foreground/10",
+            "group-hover:scale-102 will-change-transform transition-all p-1",
             className
           )}
           blurhash={blurhash}

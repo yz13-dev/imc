@@ -40,7 +40,7 @@ export default defineBackground(() => {
 
       const url = new URL(tab!.url!);
       const { status, data: user } = await getUser();
-      console.log("[ USER ]", user.username)
+      console.log("[ USER ]", user)
       if (status !== 200 || !user) {
         browser.tabs.create({
           url: `http://localhost:5173/auth/signin?next=${url.toString()}`,
@@ -62,21 +62,21 @@ export default defineBackground(() => {
         sourceFavicon = response?.favicon;
       }
 
-      const source = {
-        title: sourceTitle,
-        url: sourceUrl,
-        favicon: sourceFavicon,
-      }
+      // const source = {
+      //   title: sourceTitle,
+      //   url: sourceUrl,
+      //   favicon: sourceFavicon,
+      // }
 
 
-      const filenameArray = (new URL(info?.srcUrl || "").pathname)?.split("/")
-      const filename = filenameArray?.[filenameArray.length - 1];
+      // const filenameArray = (new URL(info?.srcUrl || "").pathname)?.split("/")
+      // const filename = filenameArray?.[filenameArray.length - 1];
 
-      const attachment = {
-        src: info?.srcUrl,
-        title: `${sourceTitle} - ${filename}`,
-        filename,
-      }
+      // const attachment = {
+      //   src: info?.srcUrl,
+      //   title: `${sourceTitle} - ${filename}`,
+      //   filename,
+      // }
 
       if (info.srcUrl) {
 
@@ -87,17 +87,27 @@ export default defineBackground(() => {
 
         const attachmentUrl = parseImageUrl(info.srcUrl)
         console.log("[ CLEARED-ATTACHMENT-URL ]", attachmentUrl)
-        attachment.src = attachmentUrl
 
-        // const blob = await fetchAttachments(info.srcUrl)
-        // const attachment = await uploadAttachment(blob)
+        const blob = await fetchAttachments(attachmentUrl)
+        const attachment = await uploadAttachment(blob)
+        if (attachment) console.log("[ ATTACHMENT-UPLOADED ]", !!attachment)
         // console.log("attachment", attachment)
 
-        // const id = attachment.id
+        const id = attachment.id
 
-        // if (id) {
-        // await createSource({ title: sourceTitle || url.hostname, url: sourceUrl, favicon: sourceFavicon || undefined, attachment_id: id })
-        // }
+        if (id) {
+          if (checkedSource?.exist === true) {
+            console.log("[ CONNECT ]", checkedSource.id, id)
+            await connectSource({ sourceID: checkedSource.id, attachmentID: id })
+          } else {
+            console.log("[ CREATE ]", sourceTitle || url.hostname, attachmentUrl)
+            const source = await createSource({ title: sourceTitle || url.hostname, url: attachmentUrl, favicon: sourceFavicon || undefined, attachment_id: id })
+            if (source) {
+              console.log("[ CONNECT ]", source.id, id)
+              await connectSource({ sourceID: source.id, attachmentID: id })
+            }
+          }
+        }
       }
 
 

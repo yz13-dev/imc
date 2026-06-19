@@ -4,6 +4,7 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   srcDir: "./src",
+  debug: true,
   manifest: {
     name: "IMC",
     short_name: "IMC",

@@ -18,7 +18,7 @@ func NewSource(data models.NewSource, db *gorm.DB) (*models.Source, error) {
 func GetCheckSource(domain string, slug string, db *gorm.DB) (*models.SourceCheck, error) {
 	source, err := repositories.GetSourceCheck(domain, slug, db)
 	if err != nil {
-		return nil, err
+		return source, err
 	}
 	return source, nil
 }

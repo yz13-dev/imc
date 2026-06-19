@@ -6,6 +6,7 @@ declare global {
   const MatchPattern: typeof import('wxt/utils/match-patterns').MatchPattern
   const browser: typeof import('wxt/browser').browser
   const checkSource: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/source').checkSource
+  const connectSource: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/source').connectSource
   const createIframeUi: typeof import('wxt/utils/content-script-ui/iframe').createIframeUi
   const createIntegratedUi: typeof import('wxt/utils/content-script-ui/integrated').createIntegratedUi
   const createShadowRootUi: typeof import('wxt/utils/content-script-ui/shadow-root').createShadowRootUi

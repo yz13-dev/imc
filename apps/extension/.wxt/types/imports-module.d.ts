@@ -21,5 +21,5 @@ declare module '#imports' {
   export { fetchAttachments, uploadAttachment } from '../src/utils/attachments';
   export { getToken, getUser } from '../src/utils/auth';
   export { parseImageUrl } from '../src/utils/images';
-  export { getSourceData, createSource, checkSource } from '../src/utils/source';
+  export { getSourceData, createSource, checkSource, connectSource } from '../src/utils/source';
 }

@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/av
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { ButtonGroup, ButtonGroupSeparator } from "@workspace/ui/components/button-group"
-import { ExternalLinkIcon, Link2Icon } from "lucide-react"
+import { ExternalLinkIcon, Link2Icon, PlusIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import Header from "../../components/header"
 import RefContent from "../../components/ref-content"
 
 
@@ -31,6 +32,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
+      <Header />
       <div className="w-full min-h-svh">
         <div className="size-full flex lg:flex-row flex-col">
           <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
@@ -40,6 +42,7 @@ export default async function Page({ params }: PageProps) {
                 mimeType={attachment.mime_type}
                 blurhash={attachment.blurhash}
                 alt={title}
+                className="rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm"
                 style={{
                   aspectRatio: `${attachment.width}/${attachment.height}`
                 }}
@@ -67,13 +70,14 @@ export default async function Page({ params }: PageProps) {
                     Тэги
                   </span>
                   <div className="flex items-start gap-1 flex-wrap">
-                    {tags.length === 0 && <span className="text-muted-foreground">—</span>}
+                    {tags.length === 0 && <span className="text-muted-foreground h-8">—</span>}
                     {
                       tags.map(tag => {
 
                         return <Badge key={tag.tag_id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.tag.name}</Badge>
                       })
                     }
+                    <Button variant="secondary" size="sm"><span>Добавить</span><PlusIcon /></Button>
                   </div>
                 </div>
                 <div className="px-3 flex flex-col gap-1.5">
@@ -88,16 +92,16 @@ export default async function Page({ params }: PageProps) {
                     <ButtonGroup className="shrink w-full">
                       <Button className="justify-start w-full shrink overflow-hidden" variant="secondary">
                         <Avatar className="size-4">
-                          <AvatarImage src={attachment.source.favicon_url || undefined} />
+                          <AvatarImage src={attachment.source.domain.favicon_url || undefined} />
                           <AvatarFallback>
                             <Link2Icon />
                           </AvatarFallback>
                         </Avatar>
                         <span className="line-clamp-1">
                           {
-                            attachment.source.name
-                              ? attachment.source.name
-                              : attachment.source?.domain + attachment.source?.slug
+                            attachment.source.domain.name
+                              ? attachment.source.domain.name
+                              : attachment.source?.domain + attachment.source.domain?.slug
                           }
                         </span>
                       </Button>
@@ -106,7 +110,7 @@ export default async function Page({ params }: PageProps) {
                         variant="secondary"
                         size="icon"
                         nativeButton={false}
-                        render={<Link target="_blank" href={new URL(attachment.source.slug, `https://${attachment.source.domain}`).toString()} />}
+                        render={<Link target="_blank" href={new URL(attachment.source.domain.slug, `https://${attachment.source.domain.domain}`).toString()} />}
                       >
                         <ExternalLinkIcon />
                       </Button>

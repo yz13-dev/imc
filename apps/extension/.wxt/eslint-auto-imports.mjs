@@ -33,6 +33,7 @@ const globals = {
   "WxtWindowEventMap": true,
   "browser": true,
   "checkSource": true,
+  "connectSource": true,
   "createIframeUi": true,
   "createIntegratedUi": true,
   "createShadowRootUi": true,

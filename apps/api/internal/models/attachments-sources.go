@@ -13,7 +13,7 @@ type AttachmentSource struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 
-	Source Source `gorm:"foreignKey:SourceID;references:ID" json:"source"`
+	Source Source `gorm:"foreignKey:SourceID;references:ID" json:"domain"`
 }
 
 func (AttachmentSource) TableName() string {

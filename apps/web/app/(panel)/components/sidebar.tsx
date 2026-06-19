@@ -1,9 +1,15 @@
+import type { Collection } from "@/types/collections";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
 import { InboxIcon, LayoutDashboardIcon, PlusIcon, SquareLibraryIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
+import NewCollectionModal from "./modals/new-collection";
 
+type AppSidebarProps = {
+  username?: string
+  collections?: Collection[]
+}
 
-export default function AppSidebar() {
+export default function AppSidebar({ username = "", collections = [] }: AppSidebarProps) {
   return (
     <Sidebar>
       <SidebarContent>
@@ -33,17 +39,26 @@ export default function AppSidebar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Коллекции</SidebarGroupLabel>
-          <SidebarGroupAction>
-            <PlusIcon />
-          </SidebarGroupAction>
+          <NewCollectionModal>
+            <SidebarGroupAction>
+              <PlusIcon />
+            </SidebarGroupAction>
+          </NewCollectionModal>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <SquareLibraryIcon />
-                  <span>Коллекция #1</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {
+                collections
+                  .map(collection => {
+                    return (
+                      <SidebarMenuItem key={collection.id}>
+                        <SidebarMenuButton render={<Link href={`/${username}/${collection.id}`} />}>
+                          <SquareLibraryIcon />
+                          <span>{collection.name}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  })
+              }
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

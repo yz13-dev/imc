@@ -35,42 +35,47 @@ export default function RefContent({ blurhash, src, className = "", children, mi
       style={style}
     >
       {children}
-      {
-        isVideo &&
-        <video
-          src={refSrc}
-          className="size-full"
-          muted
-          autoPlay
-          aria-label={alt}
-        />
-      }
-      {
-        isGif &&
-        <Image
-          src={refSrc}
-          className="size-full object-cover"
-          unoptimized
-          fill
-          loading="lazy"
-          placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
-          blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
-          alt={alt}
-        />
-      }
-      {
-        !isVideo && !isGif &&
-        <Image
-          src={refSrc}
-          className="size-full object-cover"
-          unoptimized
-          fill
-          loading="lazy"
-          placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
-          blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
-          alt={alt}
-        />
-      }
+      <div className="size-full relative">
+        {
+          isVideo &&
+          <video
+            src={refSrc}
+            draggable={false}
+            className="size-full"
+            muted
+            autoPlay
+            aria-label={alt}
+          />
+        }
+        {
+          isGif &&
+          <Image
+            src={refSrc}
+            draggable={false}
+            className="size-full object-cover"
+            unoptimized
+            fill
+            loading="lazy"
+            placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
+            blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
+            alt={alt}
+          />
+        }
+        {
+          !isVideo && !isGif &&
+          <Image
+            src={refSrc}
+            draggable={false}
+            className="size-full object-cover"
+            unoptimized
+            fill
+            loading="lazy"
+            placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
+            blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
+            alt={alt}
+          />
+        }
+      </div>
     </figure>
   )
 }

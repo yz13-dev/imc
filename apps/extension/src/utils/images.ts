@@ -12,6 +12,9 @@ export function parseImageUrl(baseUrl: string): string {
     if (domain.endsWith("twimg.com")) {
       url = cleanXcomUrl(url)
     }
+    if (domain.endsWith("dribbble.com")) {
+      url = cleanDribbbleUrl(url)
+    }
 
     return url.toString()
   } catch {
@@ -23,6 +26,14 @@ function cleanXcomUrl(url: URL): URL {
   const hasNameParam = url.searchParams.has("name")
   if (hasNameParam) {
     url.searchParams.delete("name")
+  }
+  return url
+}
+
+function cleanDribbbleUrl(url: URL): URL {
+  const hasNameParam = url.searchParams.has("resize")
+  if (hasNameParam) {
+    url.searchParams.delete("resize")
   }
   return url
 }

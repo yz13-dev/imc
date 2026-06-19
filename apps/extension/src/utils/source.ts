@@ -67,3 +67,23 @@ export async function checkSource({ url }: { url: string }): Promise<{ id: strin
     return null
   }
 }
+
+export async function connectSource({ sourceID, attachmentID }: { sourceID: string; attachmentID: string }) {
+  const token = await getToken()
+  if (!token) return null
+
+  try {
+    const response = await fetch(`https://localhost:8080/v1/source/${sourceID}/connect?attachmentID=${attachmentID}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+
+    return response.json()
+  } catch (error) {
+    console.log(error)
+    return null
+  }
+}
