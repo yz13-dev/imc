@@ -25,6 +25,7 @@ export default function CardGrid({ attachments, scope }: CardGridProps) {
               mimeType={item.mime_type}
               title={title}
               scope={scope}
+              blurhash={item.blurhash}
               style={{
                 aspectRatio: `${item.width}/${item.height}`
               }}

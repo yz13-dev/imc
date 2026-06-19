@@ -22,6 +22,7 @@ import (
 	"github.com/yz13-dev/imc/api/internal/models"
 	"github.com/yz13-dev/imc/api/internal/services"
 	"github.com/yz13-dev/imc/api/internal/storage"
+	"github.com/yz13-dev/imc/api/internal/utils"
 )
 
 func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
@@ -85,11 +86,12 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var Width, Height int
+	var ImageWidth, ImageHeight int
 
 	fileSize := header.Size
 
 	contentType := header.Header.Get("Content-Type")
+	log.Println("[ EXT ]", contentType)
 	ext := map[string]string{
 		"image/jpeg": ".jpg",
 		"image/png":  ".png",
@@ -99,20 +101,26 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 
 	isImage := strings.HasPrefix(contentType, "image/")
 
-	if isImage {
-		cfg, _, err := image.DecodeConfig(file)
+	var Blurhash string = ""
 
-		file.Seek(0, io.SeekStart)
+	if isImage {
+		img, _, err := image.Decode(file)
+		Width, Height, Hash, err := utils.GetImageMetadata(img)
+
+		_, err = file.Seek(0, io.SeekStart)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		if cfg.Width > 0 {
-			Width = cfg.Width
+		if Hash != "" {
+			Blurhash = Hash
 		}
-		if cfg.Height > 0 {
-			Height = cfg.Height
+		if Width > 0 {
+			ImageWidth = Width
+		}
+		if Height > 0 {
+			ImageHeight = Height
 		}
 	}
 	defer file.Close()
@@ -141,24 +149,27 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 
 	Type, _, _ := strings.Cut(contentType, "/")
 	MimeType := contentType
-	services.PostNewAttachment(userID, db, models.NewAttachment{
+	createdAttachement, err := services.PostNewAttachment(userID, db, models.NewAttachment{
 		Type:     Type,
 		MimeType: MimeType,
 		FileSize: fileSize,
 		Src:      key,
 		CardID:   nil,
-		Width:    Width,
-		Height:   Height,
+		Width:    ImageWidth,
+		Height:   ImageHeight,
 		UserID:   userID,
+		Blurhash: Blurhash,
 	})
 
 	type response struct {
 		Key string `json:"key"`
+		ID  string `json:"id"`
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response{
 		Key: key,
+		ID:  createdAttachement.ID,
 	})
 }
 

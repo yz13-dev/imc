@@ -15,7 +15,7 @@ export function getSourceData() {
 
 
 
-export async function createSource({ title, url, favicon }: { title: string; url: string, favicon?: string }) {
+export async function createSource({ title, url, favicon, attachment_id }: { title: string; url: string, favicon?: string, attachment_id?: string }) {
   const urlInstance = new URL(url)
   const domain = urlInstance.hostname;
   const slug = urlInstance.pathname;
@@ -26,7 +26,7 @@ export async function createSource({ title, url, favicon }: { title: string; url
 
     const response = await fetch("https://localhost:8080/v1/source/new", {
       method: "POST",
-      body: JSON.stringify({ name: title, domain, slug, favicon_url: favicon }),
+      body: JSON.stringify({ name: title, domain, slug, favicon_url: favicon, attachment_id }),
       credentials: "include",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -42,7 +42,7 @@ export async function createSource({ title, url, favicon }: { title: string; url
   }
 }
 
-export async function checkSource({ url }: { url: string }) {
+export async function checkSource({ url }: { url: string }): Promise<{ id: string, exist: boolean } | null> {
 
   const urlInstance = new URL(url)
   const domain = urlInstance.hostname;
@@ -52,7 +52,7 @@ export async function checkSource({ url }: { url: string }) {
   if (!token) return null
 
   try {
-    const response = await fetch(`https://localhost:8080/v1/source/check?source=${domain}&slug=${slug}`, {
+    const response = await fetch(`https://localhost:8080/v1/source/check?domain=${domain}&slug=${slug}`, {
       method: "GET",
       credentials: "include",
       headers: {

@@ -24,6 +24,8 @@ type Attachment struct {
 type AttachmentWithTags struct {
 	Attachment
 	AttachmentTags []AttachmentTag `gorm:"foreignKey:AttachmentID" json:"tags"`
+	// reference to sources table
+	AttachmentSource *AttachmentSource `gorm:"foreignKey:AttachmentID;references:ID" json:"source"`
 }
 
 type NewAttachment struct {

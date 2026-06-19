@@ -1,5 +1,5 @@
-import { fetchAttachments, uploadAttachment } from "@/utils/attachments";
 import { getUser } from "@/utils/auth";
+import { parseImageUrl } from "@/utils/images";
 
 export default defineBackground(() => {
   browser.runtime.onInstalled.addListener(async () => {
@@ -13,7 +13,7 @@ export default defineBackground(() => {
   });
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
-    console.log(message)
+    console.log("[ MESSAGE ]", message)
     // Проверяем тип сообщения, которое прислал наш контент-скрипт
     if (message && message.type === "AUTH_SUCCESS" && message.token) {
 
@@ -40,7 +40,7 @@ export default defineBackground(() => {
 
       const url = new URL(tab!.url!);
       const { status, data: user } = await getUser();
-      console.log("user", user)
+      console.log("[ USER ]", user.username)
       if (status !== 200 || !user) {
         browser.tabs.create({
           url: `http://localhost:5173/auth/signin?next=${url.toString()}`,
@@ -53,12 +53,12 @@ export default defineBackground(() => {
       const sourceUrl = url.toString()
 
       let sourceFavicon = tab?.favIconUrl?.startsWith("data:") ? null : tab?.favIconUrl;
-      console.log("sourceFavicon", sourceFavicon, tab.id)
+      console.log("[ FAVICON ]", sourceFavicon)
       if (!sourceFavicon && tab.id) {
         const response = await browser.tabs.sendMessage(tab.id!, {
           type: "GET_SOURCE_DATA",
         });
-        console.log("response", response);
+        console.log("[ SOURCE-DATA ]", response);
         sourceFavicon = response?.favicon;
       }
 
@@ -68,9 +68,8 @@ export default defineBackground(() => {
         favicon: sourceFavicon,
       }
 
-      await createSource({ title: sourceTitle || url.hostname, url: sourceUrl, favicon: sourceFavicon || undefined })
 
-      const filenameArray = (info?.srcUrl || "")?.split("/")
+      const filenameArray = (new URL(info?.srcUrl || "").pathname)?.split("/")
       const filename = filenameArray?.[filenameArray.length - 1];
 
       const attachment = {
@@ -80,14 +79,31 @@ export default defineBackground(() => {
       }
 
       if (info.srcUrl) {
-        const blob = await fetchAttachments(info.srcUrl)
-        const attachment = await uploadAttachment(blob)
-        console.log("attachment", attachment)
+
+        const checkedSource = await checkSource({ url: sourceUrl })
+        console.log("[ SOURCE ]", sourceUrl)
+        console.log("[ EXIST ]", checkedSource?.exist)
+        // console.log("checkedSource", checkedSource, sourceUrl)
+
+        const attachmentUrl = parseImageUrl(info.srcUrl)
+        console.log("[ CLEARED-ATTACHMENT-URL ]", attachmentUrl)
+        attachment.src = attachmentUrl
+
+        // const blob = await fetchAttachments(info.srcUrl)
+        // const attachment = await uploadAttachment(blob)
+        // console.log("attachment", attachment)
+
+        // const id = attachment.id
+
+        // if (id) {
+        // await createSource({ title: sourceTitle || url.hostname, url: sourceUrl, favicon: sourceFavicon || undefined, attachment_id: id })
+        // }
       }
 
-      console.log("favicon", sourceFavicon)
-      console.log("source", source)
-      console.log(attachment);
+
+      // console.log("favicon", sourceFavicon)
+      // console.log("source", source)
+      // console.log(attachment);
     },
   );
 });

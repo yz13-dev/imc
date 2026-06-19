@@ -49,6 +49,7 @@ const globals = {
   "getToken": true,
   "getUser": true,
   "injectScript": true,
+  "parseImageUrl": true,
   "storage": true,
   "uploadAttachment": true,
   "useAppConfig": true,

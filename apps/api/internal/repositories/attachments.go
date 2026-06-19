@@ -57,6 +57,7 @@ func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attac
 	if err := db.
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND id = ?", UserID, attachmentID).
 		First(&attachment).Error; err != nil {
 		return models.AttachmentWithTags{}, err

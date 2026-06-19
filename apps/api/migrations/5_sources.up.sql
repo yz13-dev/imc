@@ -11,5 +11,8 @@ CREATE TABLE IF NOT EXISTS sources (
   favicon_url text,
 
   created_at timestamptz not null
-    default now()
+    default now(),
 );
+
+CREATE INDEX IF NOT EXISTS idx_sources_slug ON sources(slug);
+CREATE INDEX IF NOT EXISTS idx_sources_domain ON sources(domain);

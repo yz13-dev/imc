@@ -18,6 +18,12 @@ export default async function Page() {
         <TagStats tags={tagStats} />
       </Header>
       <div className="w-full px-6 pt-6">
+        {
+          (attachments || []).length === 0 &&
+          <div className="w-full aspect-2/1 flex items-center justify-center">
+            <span className="text-muted-foreground">Нет входящих</span>
+          </div>
+        }
         <CardGrid
           attachments={attachments || []}
           scope="ref"

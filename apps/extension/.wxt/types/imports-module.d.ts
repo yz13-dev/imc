@@ -20,5 +20,6 @@ declare module '#imports' {
   export { fakeBrowser } from 'wxt/testing';
   export { fetchAttachments, uploadAttachment } from '../src/utils/attachments';
   export { getToken, getUser } from '../src/utils/auth';
+  export { parseImageUrl } from '../src/utils/images';
   export { getSourceData, createSource, checkSource } from '../src/utils/source';
 }

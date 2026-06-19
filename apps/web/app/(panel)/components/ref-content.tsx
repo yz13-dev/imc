@@ -1,4 +1,5 @@
 "use client"
+import { toBlurDataURL } from "@/lib/blurhash"
 import { getRefSrc } from "@/lib/ref-src"
 import { getApiUrl } from "@/lib/url"
 import { cn } from "@workspace/ui/lib/utils"
@@ -7,13 +8,14 @@ import Image from "next/image"
 
 type RefContentType = {
   src: string
+  blurhash?: string
   className?: string
   children?: React.ReactNode
   mimeType: string
   alt?: string
   style?: React.CSSProperties
 }
-export default function RefContent({ src, className = "", children, mimeType, alt = "", style = {} }: RefContentType) {
+export default function RefContent({ blurhash, src, className = "", children, mimeType, alt = "", style = {} }: RefContentType) {
 
   const isVideo = mimeType.startsWith("video/")
   const isGif = mimeType.startsWith("image/gif")
@@ -21,6 +23,8 @@ export default function RefContent({ src, className = "", children, mimeType, al
 
   const resolvedId = getRefSrc(src) || src;
   const refSrc = getApiUrl(`/v1/my/attachments/${resolvedId || src}/file`)
+  const hasBlurhash = blurhash !== undefined || blurhash !== ""
+
   return (
     <figure
       key={src}
@@ -33,15 +37,39 @@ export default function RefContent({ src, className = "", children, mimeType, al
       {children}
       {
         isVideo &&
-        <video src={refSrc} className="block static!" muted autoPlay aria-label={alt} />
+        <video
+          src={refSrc}
+          className="size-full"
+          muted
+          autoPlay
+          aria-label={alt}
+        />
       }
       {
         isGif &&
-        <Image src={refSrc} className="block static!" unoptimized fill alt={alt} />
+        <Image
+          src={refSrc}
+          className="size-full object-cover"
+          unoptimized
+          fill
+          loading="lazy"
+          placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
+          blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
+          alt={alt}
+        />
       }
       {
         !isVideo && !isGif &&
-        <Image src={refSrc} className="block static!" unoptimized fill alt={alt} />
+        <Image
+          src={refSrc}
+          className="size-full object-cover"
+          unoptimized
+          fill
+          loading="lazy"
+          placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
+          blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
+          alt={alt}
+        />
       }
     </figure>
   )

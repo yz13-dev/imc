@@ -33,7 +33,17 @@ export type AttachmentTag = {
   updated_at: string
 }
 
+type AttachmentSource = {
+  id: string
+  attachment_id: string
+  name: string
+  created_at: Date
+  domain: string
+  favicon_url: string | null
+  slug: string
+}
 
 export type AttachmentWithTags = Attachment & {
   tags: (AttachmentTag & { tag: Tag })[]
+  source: AttachmentSource | null
 }
