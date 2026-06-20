@@ -22,6 +22,7 @@ declare global {
   const getSourceData: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/source').getSourceData
   const getToken: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/auth').getToken
   const getUser: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/auth').getUser
+  const inboxAttachment: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/attachments').inboxAttachment
   const injectScript: typeof import('wxt/utils/inject-script').injectScript
   const parseImageUrl: typeof import('/home/yz13/CODE/PERSONAL/imc/apps/extension/src/utils/images').parseImageUrl
   const storage: typeof import('wxt/utils/storage').storage

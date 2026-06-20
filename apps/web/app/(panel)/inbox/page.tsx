@@ -1,15 +1,16 @@
-import { getAttachments } from "@/lib/api/attachments"
+import { getInboxAttachments } from "@/lib/api/attachments"
 import { getTagsStats } from "@/lib/tags"
-import CardGrid from "../components/card-grid"
 import Header from "../components/header"
 import TagStats from "../components/tags-stats"
+import InboxGrid from "./components/inbox-grid"
 
 
 
 export default async function Page() {
-  const attachments = await getAttachments()
+  const inbox = await getInboxAttachments()
 
-  const tags = (attachments || [])?.flatMap(attachment => attachment.tags)
+  const attachments = (inbox || []).map(item => item.attachment)
+  const tags = (attachments || [])?.flatMap(inbox => inbox.tags)
   const tagStats = getTagsStats(tags)
 
   return (
@@ -24,10 +25,7 @@ export default async function Page() {
             <span className="text-muted-foreground">Нет входящих</span>
           </div>
         }
-        <CardGrid
-          attachments={attachments || []}
-          scope="ref"
-        />
+        <InboxGrid defaultInbox={inbox || []} />
       </div>
     </>
   )

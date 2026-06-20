@@ -5,6 +5,7 @@ import { UserProvider } from "@/lib/user";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { redirect } from "next/navigation";
 import AppSidebar from "./components/sidebar";
+import ServerSideEvents from "./components/sse-provider";
 
 
 type LayoutProps = {
@@ -27,6 +28,7 @@ export default async function Layout({ children }: LayoutProps) {
   return (
     <UserProvider user={user}>
       <GlobalStoreProvider collections={collections || []}>
+        <ServerSideEvents />
         <SidebarProvider>
           <AppSidebar username={username || undefined} email={email || undefined} collections={collections || []} />
           <div className="w-full">

@@ -18,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/google/uuid"
+	"github.com/yz13-dev/imc/api/internal/events"
 	"github.com/yz13-dev/imc/api/internal/middleware"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"github.com/yz13-dev/imc/api/internal/services"
@@ -161,8 +162,8 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 	})
 
 	type response struct {
-		Key string `json:"key"`
-		ID  string `json:"id"`
+		Key string    `json:"key"`
+		ID  uuid.UUID `json:"id"`
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -262,4 +263,45 @@ func GetAttachment(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 		)
 	}
+}
+
+func PostInInbox(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachmentID, err := uuid.Parse(r.URL.Query().Get("attachmentID"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = services.PostInInbox(userID, db, attachmentID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hub := middleware.GetEventsHub(r.Context())
+	if hub == nil {
+		log.Println("events hub not found")
+		return
+	}
+
+	hub.Publish(userID, events.Event{
+		Type: "inbox:new",
+		Data: attachmentID,
+	})
+
+	w.WriteHeader(http.StatusCreated)
 }

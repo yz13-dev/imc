@@ -1,12 +1,13 @@
 package services
 
 import (
+	"github.com/google/uuid"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"github.com/yz13-dev/imc/api/internal/repositories"
 	"gorm.io/gorm"
 )
 
-func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.InboxItem, error) {
 	attachments, err := repositories.GetInboxAttachments(UserID, db)
 	if err != nil {
 		return nil, err
@@ -28,4 +29,12 @@ func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attac
 		return models.AttachmentWithTags{}, err
 	}
 	return attachment, nil
+}
+
+func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
+	err := repositories.PostInInbox(UserID, db, attachmentID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

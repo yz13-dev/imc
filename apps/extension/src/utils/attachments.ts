@@ -29,3 +29,19 @@ export async function uploadAttachment(file: Blob) {
     return null
   }
 }
+
+export async function inboxAttachment(id: string) {
+  const token = await getToken()
+
+  if (!token) throw new Error("No token found");
+
+  const response = await fetch(`https://localhost:8080/v1/my/attachments/inbox?attachmentID=${id}`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+  const status = response.status;
+  return { status };
+}

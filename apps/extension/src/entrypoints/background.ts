@@ -96,6 +96,8 @@ export default defineBackground(() => {
         const id = attachment.id
 
         if (id) {
+          const { status: attachmentStatus } = await inboxAttachment(id)
+          console.log("[ INBOXED ]", attachmentStatus === 201)
           if (checkedSource?.exist === true) {
             console.log("[ CONNECT ]", checkedSource.id, id)
             await connectSource({ sourceID: checkedSource.id, attachmentID: id })

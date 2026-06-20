@@ -49,6 +49,7 @@ const globals = {
   "getSourceData": true,
   "getToken": true,
   "getUser": true,
+  "inboxAttachment": true,
   "injectScript": true,
   "parseImageUrl": true,
   "storage": true,

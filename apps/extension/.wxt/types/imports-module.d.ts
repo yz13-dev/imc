@@ -18,7 +18,7 @@ declare module '#imports' {
   export { InvalidMatchPattern, MatchPattern } from 'wxt/utils/match-patterns';
   export { useState, useCallback, useMemo, useEffect, useRef, useContext, useReducer } from 'react';
   export { fakeBrowser } from 'wxt/testing';
-  export { fetchAttachments, uploadAttachment } from '../src/utils/attachments';
+  export { fetchAttachments, uploadAttachment, inboxAttachment } from '../src/utils/attachments';
   export { getToken, getUser } from '../src/utils/auth';
   export { parseImageUrl } from '../src/utils/images';
   export { getSourceData, createSource, checkSource, connectSource } from '../src/utils/source';

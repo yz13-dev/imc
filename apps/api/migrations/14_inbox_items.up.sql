@@ -3,7 +3,10 @@ CREATE TABLE IF NOT EXISTS inbox_items (
     attachment_id uuid NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now(),
 
-    PRIMARY KEY (user_id, attachment_id)
+    PRIMARY KEY (user_id, attachment_id),
+
+    FOREIGN KEY (attachment_id) REFERENCES attachments(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
 );
 
 CREATE INDEX IF NOT EXISTS inbox_items_user_id_idx ON inbox_items (user_id);

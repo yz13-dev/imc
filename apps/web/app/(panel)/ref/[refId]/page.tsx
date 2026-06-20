@@ -51,10 +51,10 @@ export default async function Page({ params }: PageProps) {
             </AnimatePresence>
           </div>
           <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 bg-background/70 backdrop-blur-xs">
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-4 max-w-xl mx-auto">
               <div className="flex flex-col gap-2">
                 <div className="inline-flex gap-2">
-                  <h1 className="md:text-4xl text-xl font-medium">
+                  <h1 className="md:text-4xl text-xl font-medium line-clamp-1">
                     {title}
                   </h1>
                 </div>

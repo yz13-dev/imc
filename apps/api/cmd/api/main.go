@@ -16,6 +16,7 @@ import (
 	"github.com/thecodearcher/limen"
 	gormadapter "github.com/thecodearcher/limen/adapters/gorm"
 	config "github.com/yz13-dev/imc/api"
+	"github.com/yz13-dev/imc/api/internal/events"
 	"github.com/yz13-dev/imc/api/internal/handlers"
 	internalMiddleware "github.com/yz13-dev/imc/api/internal/middleware"
 	"gorm.io/driver/postgres"
@@ -94,8 +95,10 @@ func main() {
 	r.Handle("/auth/*", handler)
 
 	r.Group(func(r chi.Router) {
+		hub := events.NewHub()
 		r.Use(internalMiddleware.DBInstance(gormdb))
 		r.Use(internalMiddleware.UserInstance(auth))
+		r.Use(internalMiddleware.EventsHubMiddleware(hub))
 
 		r.Route("/v1", func(r chi.Router) {
 			r.Get("/source/check", handlers.GetCheckSource)
@@ -103,7 +106,9 @@ func main() {
 			r.Post("/source/new", handlers.PostNewSource)
 			// my routes
 			r.Route("/my", func(r chi.Router) {
-				r.Get("/attachments", handlers.GetInboxAttachments)
+				r.Get("/events", handlers.EventsHandler(hub))
+				r.Get("/attachments/inbox", handlers.GetInboxAttachments)
+				r.Post("/attachments/inbox", handlers.PostInInbox)
 				r.Post("/attachments/new", handlers.PostNewAttachment)
 				r.Get("/attachments/{attachmentID}", handlers.GetAttachment)
 				r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
