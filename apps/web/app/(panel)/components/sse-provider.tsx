@@ -4,8 +4,10 @@ import { getApiUrl } from "@/lib/url";
 import { useEffect } from "react";
 
 
+type ServerSideEventsProps = {
+}
 
-export default function ServerSideEvents() {
+export default function ServerSideEvents({ }: ServerSideEventsProps) {
 
   const refreshInbox = useGlobalStore(state => state.refreshInbox);
 
@@ -20,7 +22,6 @@ export default function ServerSideEvents() {
     const es = new EventSource(getApiUrl("/v1/my/events"), {
       withCredentials: true
     })
-
     es.addEventListener("inbox:new", onNewInbox)
     return () => {
       es.removeEventListener("inbox:new", onNewInbox)

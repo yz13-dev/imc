@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path"
 	"strconv"
 	"strings"
@@ -98,11 +99,14 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 		"image/png":  ".png",
 		"image/webp": ".webp",
 		"video/mp4":  ".mp4",
+		"video/webm": ".webm",
 	}[contentType]
 
 	isImage := strings.HasPrefix(contentType, "image/")
+	isVideo := strings.HasPrefix(contentType, "video/")
 
 	var Blurhash string = ""
+	var DurationMs int64 = 0
 
 	if isImage {
 		img, _, err := image.Decode(file)
@@ -123,6 +127,31 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 		if Height > 0 {
 			ImageHeight = Height
 		}
+	}
+	if isVideo {
+		path, err := utils.SaveToTempFile(file)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer os.Remove(path)
+
+		meta, err := utils.ProbeVideo(path)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if meta.DurationMs > 0 {
+			DurationMs = meta.DurationMs
+		}
+		if meta.Width > 0 {
+			ImageWidth = meta.Width
+		}
+		if meta.Height > 0 {
+			ImageHeight = meta.Height
+		}
+
 	}
 	defer file.Close()
 
@@ -151,14 +180,15 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 	Type, _, _ := strings.Cut(contentType, "/")
 	MimeType := contentType
 	createdAttachement, err := services.PostNewAttachment(userID, db, models.NewAttachment{
-		Type:     Type,
-		MimeType: MimeType,
-		FileSize: fileSize,
-		Src:      key,
-		Width:    ImageWidth,
-		Height:   ImageHeight,
-		UserID:   userID,
-		Blurhash: Blurhash,
+		Type:       Type,
+		MimeType:   MimeType,
+		FileSize:   fileSize,
+		Src:        key,
+		Width:      ImageWidth,
+		Height:     ImageHeight,
+		UserID:     userID,
+		Blurhash:   Blurhash,
+		DurationMS: int(DurationMs),
 	})
 
 	type response struct {
@@ -298,8 +328,9 @@ func PostInInbox(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	const EventKey = "inbox:new"
 	hub.Publish(userID, events.Event{
-		Type: "inbox:new",
+		Type: EventKey,
 		Data: attachmentID,
 	})
 
