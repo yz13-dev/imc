@@ -6,7 +6,6 @@ import (
 
 type Attachment struct {
 	ID         string    `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
-	CardID     *string   `json:"card_id"`
 	Type       string    `json:"type"`
 	MimeType   string    `json:"mime_type"`
 	Src        string    `json:"src"`
@@ -28,7 +27,6 @@ type AttachmentWithTags struct {
 }
 
 type NewAttachment struct {
-	CardID     *string
 	Type       string
 	MimeType   string
 	Src        string

@@ -4,12 +4,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/av
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { ButtonGroup, ButtonGroupSeparator } from "@workspace/ui/components/button-group"
-import { ExternalLinkIcon, Link2Icon, PlusIcon } from "lucide-react"
+import { Select, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
+import { Edit3Icon, ExternalLinkIcon, Link2Icon, PlusIcon, Trash2Icon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import Header from "../../components/header"
 import RefContent from "../../components/ref-content"
+import RefHeader from "./components/ref-header"
 
 
 type PageProps = {
@@ -32,7 +33,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <Header />
+      <RefHeader />
       <div className="w-full min-h-svh">
         <div className="size-full flex lg:flex-row flex-col">
           <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
@@ -49,12 +50,15 @@ export default async function Page({ params }: PageProps) {
               />
             </AnimatePresence>
           </div>
-          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 bg-linear-to-b from-transparent to-background">
+          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 bg-background/70 backdrop-blur-xs">
             <div className="w-full space-y-4">
               <div className="flex flex-col gap-2">
-                <h1 className="text-4xl font-medium">
-                  {title}
-                </h1>
+                <div className="inline-flex gap-2">
+                  <h1 className="md:text-4xl text-xl font-medium">
+                    {title}
+                  </h1>
+                </div>
+
                 <div className="hidden text-base items-center gap-2">
                   <span className="text-muted-foreground">
                     Автор
@@ -63,6 +67,17 @@ export default async function Page({ params }: PageProps) {
                     yz13
                   </span>
                 </div>
+              </div>
+              <div className="flex gap-2 items-center">
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Коллекция" />
+                  </SelectTrigger>
+                </Select>
+                <Button variant="outline">
+                  <Edit3Icon />
+                  <span>Изменить</span>
+                </Button>
               </div>
               <div className="w-full bg-card border rounded-2xl py-3 space-y-3">
                 <div className="px-3 flex flex-col gap-1.5">
@@ -119,6 +134,12 @@ export default async function Page({ params }: PageProps) {
                     </ButtonGroup>
                   }
                 </div>
+              </div>
+              <div className="flex items-center justify-end gap-2">
+                <Button variant="destructive" className="sm:w-fit w-full">
+                  <Trash2Icon />
+                  <span>Удалить</span>
+                </Button>
               </div>
             </div>
           </div>

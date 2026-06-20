@@ -27,7 +27,7 @@ export default function CollectionCard({ mimeType, id, src, title, scope = "", c
           className={cn(
             "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm",
             "outline-4 outline-transparent group/-hover:outline-foreground/10 bg-foreground/10",
-            "group-hover:scale-102 will-change-transform transition-all p-1",
+            "group-hover:scale-101 will-change-transform transition-all group-hover:p-1 p-0",
             className
           )}
           blurhash={blurhash}
@@ -36,7 +36,7 @@ export default function CollectionCard({ mimeType, id, src, title, scope = "", c
           <Link href={href} className="absolute inset-0 z-10" />
         </RefContent>
       </AnimatePresence>
-      <div className="pt-2 px-2">
+      <div className="p-2 hidden">
         <span className="text-sm text-muted-foreground">{title}</span>
       </div>
     </div>

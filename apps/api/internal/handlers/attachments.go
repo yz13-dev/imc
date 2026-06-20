@@ -154,7 +154,6 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 		MimeType: MimeType,
 		FileSize: fileSize,
 		Src:      key,
-		CardID:   nil,
 		Width:    ImageWidth,
 		Height:   ImageHeight,
 		UserID:   userID,

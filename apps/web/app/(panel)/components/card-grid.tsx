@@ -11,7 +11,7 @@ type CardGridProps = {
 export default function CardGrid({ attachments, scope }: CardGridProps) {
   return (
     <div
-      className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 space-y-4"
+      className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 space-y-2 gap-x-2"
     >
       {
         attachments.map((item) => {

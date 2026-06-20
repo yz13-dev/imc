@@ -7,10 +7,6 @@ CREATE TABLE IF NOT EXISTS attachments (
   -- ID вложения
   id uuid primary key
     default gen_random_uuid(),
-  -- Карточка, которой принадлежит вложение
-  card_id uuid
-    references cards(id)
-    on delete cascade,
 
   user_id BIGSERIAL not null
     references users(id)

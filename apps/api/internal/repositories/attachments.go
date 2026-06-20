@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"log"
-
 	"github.com/yz13-dev/imc/api/internal/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -21,7 +19,7 @@ func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags
 	if err := db.
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
-		Where("user_id = ? AND card_id IS NULL", UserID).
+		Where("user_id = ?", UserID).
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -30,9 +28,7 @@ func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags
 }
 
 func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (models.Attachment, error) {
-	log.Println("card", data.CardID)
 	attachment := models.Attachment{
-		CardID:     data.CardID,
 		Type:       data.Type,
 		MimeType:   data.MimeType,
 		Src:        data.Src,
