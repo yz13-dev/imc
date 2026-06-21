@@ -1,6 +1,5 @@
 "use client"
-
-import { AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import { useQueryState } from "nuqs"
 import { useEffect } from "react"
 
@@ -20,22 +19,25 @@ const unlockScroll = () => {
 }
 
 export default function Cover({ children, coverKey = "id" }: CoverProps) {
-  const [id, setId] = useQueryState(coverKey, { shallow: false })
+  const [id, setId] = useQueryState(coverKey)
   useEffect(() => {
+    if (!id) {
+      unlockScroll()
+      return
+    }
     lockScroll()
     return () => unlockScroll()
-  }, [])
+  }, [id])
+  if (!id) return null
   return (
-    <div
+    <motion.div
       className="absolute inset-0 w-full h-svh z-50 py-6 backdrop-blur-sm flex items-end justify-center bg-black/10"
       onClick={e => {
         e.stopPropagation()
         setId(null)
       }}
     >
-      <AnimatePresence mode="popLayout">
-        {id && children}
-      </AnimatePresence>
-    </div>
+      {children}
+    </motion.div>
   )
 }

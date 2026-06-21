@@ -1,4 +1,5 @@
-import { getAttachment } from "@/lib/api/attachments";
+"use client"
+import { useGlobalStore } from "@/lib/global-store";
 import { getRefSrc } from "@/lib/ref-src";
 import RefContent from "../ref-content";
 
@@ -8,9 +9,12 @@ export function AttachmentSkeleton() {
   );
 }
 
-export default async function Attachment({ attachmentId }: { attachmentId: string }) {
+export default function Attachment({ attachmentId }: { attachmentId: string }) {
 
-  const attachment = await getAttachment(attachmentId)
+  const inbox = useGlobalStore((state) => state.inbox)
+  const attachments = inbox.map((attachment) => attachment.attachment)
+  const attachment = attachments.find((item) => item.id === attachmentId)
+
   if (!attachment) return null;
 
   const refSrc = getRefSrc(attachment.src)
@@ -20,16 +24,20 @@ export default async function Attachment({ attachmentId }: { attachmentId: strin
 
   return (
     <div className="max-w-4xl w-full h-full overflow-y-auto">
-      <RefContent
-        src={refSrc}
-        mimeType={attachment.mime_type}
-        blurhash={attachment.blurhash}
-        alt={title}
-        className="rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm"
-        style={{
-          aspectRatio: `${attachment.width}/${attachment.height}`
-        }}
-      />
+      {
+        attachment &&
+        <RefContent
+          id={attachment.id}
+          src={refSrc}
+          mimeType={attachment.mime_type}
+          blurhash={attachment.blurhash}
+          alt={title}
+          className="rounded-sm z-50 [&_img]:rounded-sm [&_video]:rounded-sm"
+          style={{
+            aspectRatio: `${attachment.width}/${attachment.height}`
+          }}
+        />
+      }
     </div>
   )
 }

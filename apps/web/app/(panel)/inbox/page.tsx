@@ -1,5 +1,6 @@
 import { getInboxAttachments } from "@/lib/api/attachments"
 import { getTagsStats } from "@/lib/tags"
+import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
 import Header from "../components/header"
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
@@ -28,14 +29,16 @@ export default async function Page({ searchParams }: PageProps) {
       <Header>
         <TagStats tags={tagStats} />
       </Header>
-      {
-        attachment &&
-        <Cover coverKey="attachment">
-          <Suspense fallback={<AttachmentSkeleton />}>
-            <Attachment attachmentId={attachment} />
-          </Suspense>
-        </Cover>
-      }
+      <AnimatePresence mode="popLayout">
+        {
+          attachment &&
+          <Cover coverKey="attachment">
+            <Suspense fallback={<AttachmentSkeleton />}>
+              <Attachment attachmentId={attachment} />
+            </Suspense>
+          </Cover>
+        }
+      </AnimatePresence>
       <div className="w-full space-y-6 px-6 pt-6">
         <Collections />
         {

@@ -38,6 +38,7 @@ export default async function Page({ params }: PageProps) {
           <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
             <AnimatePresence>
               <RefContent
+                id={attachment.id}
                 src={refSrc}
                 mimeType={attachment.mime_type}
                 blurhash={attachment.blurhash}

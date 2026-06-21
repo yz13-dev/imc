@@ -26,6 +26,7 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
     <div className="group w-full break-inside-avoid">
       <AnimatePresence>
         <RefContent
+          id={id}
           mimeType={mime_type}
           src={src}
           className={cn(

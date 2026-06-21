@@ -25,7 +25,6 @@ const createGlobalStoreStore = (initProps?: Partial<GlobalStoreProps>) => {
     ...DEFAULT_PROPS,
     ...initProps,
     refreshInbox: async () => {
-
       const inbox = await getInboxAttachments()
       if (inbox) set({ inbox })
     },
