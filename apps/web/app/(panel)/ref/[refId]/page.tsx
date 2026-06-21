@@ -22,7 +22,6 @@ export default async function Page({ params }: PageProps) {
   const { refId } = await params
 
   const attachment = await getAttachment(refId)
-  console.log("attachment", attachment)
   if (!attachment) return notFound()
 
   const refSrc = getRefSrc(attachment.src)

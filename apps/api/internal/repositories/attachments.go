@@ -20,6 +20,7 @@ func GetAttachmentsWithTags(ids []uuid.UUID, UserID int64, db *gorm.DB) ([]model
 	if err := db.
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND id IN ?", UserID, ids).
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
 		Find(&attachments).Error; err != nil {

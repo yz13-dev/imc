@@ -3,6 +3,7 @@ import { toBlurDataURL } from "@/lib/blurhash"
 import { getRefSrc } from "@/lib/ref-src"
 import { getApiUrl } from "@/lib/url"
 import { cn } from "@workspace/ui/lib/utils"
+import { motion } from "motion/react"
 import Image from "next/image"
 
 
@@ -20,13 +21,15 @@ export default function RefContent({ blurhash, src, className = "", children, mi
   const isVideo = mimeType.startsWith("video/")
   const isGif = mimeType.startsWith("image/gif")
 
-
   const resolvedId = getRefSrc(src) || src;
   const refSrc = getApiUrl(`/v1/my/attachments/${resolvedId || src}/file`)
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
 
   return (
-    <figure
+    <motion.figure
+      layoutId={src}
+      id={src}
+      layout
       key={src}
       className={cn(
         "w-full relative",
@@ -76,6 +79,6 @@ export default function RefContent({ blurhash, src, className = "", children, mi
           />
         }
       </div>
-    </figure>
+    </motion.figure>
   )
 }

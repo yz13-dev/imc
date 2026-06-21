@@ -5,6 +5,7 @@ import "@workspace/ui/globals.css";
 import { cn } from "@workspace/ui/lib/utils";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 
 const sans = localFont({
@@ -88,7 +89,9 @@ export default function RootLayout({
         <ThemeProvider>
           <Toaster />
           <TooltipProvider>
-            {children}
+            <NuqsAdapter>
+              {children}
+            </NuqsAdapter>
           </TooltipProvider>
         </ThemeProvider>
       </body>

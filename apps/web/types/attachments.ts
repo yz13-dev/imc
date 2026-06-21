@@ -32,7 +32,7 @@ export type AttachmentTag = {
   created_at: string
   updated_at: string
 }
-type AttachmentSource = {
+export type AttachmentSource = {
   id: string
   attachment_id: string
   created_at: Date
@@ -49,7 +49,11 @@ type Source = {
   created_at: Date
 }
 
-export type AttachmentWithTags = Attachment & {
+type TagsAndSource = {
   tags: (AttachmentTag & { tag: Tag })[]
   source: AttachmentSource | null
 }
+
+export type AttachmentWithTags = Attachment & TagsAndSource
+
+export type AttachmentWithMaybeTagsAndSource = AttachmentWithTags & Partial<TagsAndSource>

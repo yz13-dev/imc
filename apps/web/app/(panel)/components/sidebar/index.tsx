@@ -1,9 +1,11 @@
+"use client"
+import { useGlobalStore } from "@/lib/global-store";
 import type { Collection } from "@/types/collections";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
 import { InboxIcon, LayoutDashboardIcon, PlusIcon, SquareLibraryIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
-import NewCollectionModal from "./modals/new-collection";
+import NewCollectionModal from "../modals/new-collection";
 
 type AppSidebarProps = {
   username?: string
@@ -12,6 +14,7 @@ type AppSidebarProps = {
 }
 
 export default function AppSidebar({ username = "", email = "", collections = [] }: AppSidebarProps) {
+  const inbox = useGlobalStore(state => state.inbox)
   return (
     <Sidebar>
       <SidebarContent>
@@ -29,6 +32,7 @@ export default function AppSidebar({ username = "", email = "", collections = []
                   <InboxIcon />
                   <span>Входящие</span>
                 </SidebarMenuButton>
+                <SidebarMenuBadge>{inbox.length}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>

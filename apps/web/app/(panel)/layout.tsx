@@ -1,3 +1,4 @@
+import { getInboxAttachments } from "@/lib/api/attachments";
 import { getCollections } from "@/lib/api/collections";
 import { GlobalStoreProvider } from "@/lib/global-store";
 import { getMe } from "@/lib/me";
@@ -16,8 +17,9 @@ export default async function Layout({ children }: LayoutProps) {
 
   const userPromise = getMe()
   const collectionsPromise = getCollections()
+  const inboxPromise = getInboxAttachments()
 
-  const [user, collections] = await Promise.all([userPromise, collectionsPromise])
+  const [user, collections, inbox] = await Promise.all([userPromise, collectionsPromise, inboxPromise])
   if (!user) return redirect("/")
 
   // const userId = user.id
@@ -28,7 +30,7 @@ export default async function Layout({ children }: LayoutProps) {
 
   return (
     <UserProvider user={user}>
-      <GlobalStoreProvider collections={collections || []}>
+      <GlobalStoreProvider collections={collections || []} inbox={inbox || []}>
         <ServerSideEvents />
         <SidebarProvider>
           <AppSidebar username={username || undefined} email={email || undefined} collections={collections || []} />

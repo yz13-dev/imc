@@ -136,6 +136,12 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 		}
 		defer os.Remove(path)
 
+		_, err = file.Seek(0, io.SeekStart)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		meta, err := utils.ProbeVideo(path)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
