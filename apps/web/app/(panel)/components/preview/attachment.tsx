@@ -1,6 +1,6 @@
 "use client"
-import { useGlobalStore } from "@/lib/global-store";
 import { getRefSrc } from "@/lib/ref-src";
+import { useGlobalStore } from "@/lib/stores/global-store";
 import RefContent from "../ref-content";
 
 export function AttachmentSkeleton() {

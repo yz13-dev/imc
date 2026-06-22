@@ -1,5 +1,6 @@
 import { getRefSrc } from "@/lib/ref-src";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
+import CardContextMenu from "../[user]/[collection]/components/card-context-menu";
 import CollectionCard from "../[user]/[collection]/components/collection-card";
 
 
@@ -19,15 +20,16 @@ export default function CardGrid({ attachments, scope }: CardGridProps) {
             const alt = getRefSrc(item.src)
             const label = item.label || alt || "-"
             return (
-              <CollectionCard
-                key={item.id}
-                {...item}
-                label={label}
-                scope={scope}
-                style={{
-                  aspectRatio: `${item.width}/${item.height}`
-                }}
-              />
+              <CardContextMenu key={item.id} attachmentId={item.id}>
+                <CollectionCard
+                  {...item}
+                  label={label}
+                  scope={scope}
+                  style={{
+                    aspectRatio: `${item.width}/${item.height}`
+                  }}
+                />
+              </CardContextMenu>
             )
           })
         }

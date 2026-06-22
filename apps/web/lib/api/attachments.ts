@@ -15,7 +15,7 @@ export async function getInboxAttachments(): Promise<InboxItem[] | null> {
       throw error;
     }
 
-    console.log("[INBOX]", data)
+    // console.log("[INBOX]", data)
     return data;
 
   } catch (error) {
@@ -39,5 +39,42 @@ export async function getAttachment(attachmentID: string): Promise<AttachmentWit
   } catch (error) {
     console.error(error)
     return null
+  }
+}
+
+export async function moveAttachmentToCollection(attachmentID: string, collectionID: string): Promise<any> {
+  try {
+    const { data, error } = await axios({
+      url: getApiUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
+      method: "POST",
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
+  }
+}
+
+export async function getCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
+  try {
+    const { data, error } = await axios<AttachmentWithTags[]>({
+      url: getApiUrl(`/v1/my/collections/${collectionID}/attachments`),
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
   }
 }

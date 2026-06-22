@@ -1,6 +1,6 @@
 "use client"
-import { useGlobalStore } from "@/lib/global-store";
-import { useUser } from "@/lib/user";
+import { useGlobalStore } from "@/lib/stores/global-store";
+import { useUser } from "@/lib/stores/user";
 import { Button } from "@workspace/ui/components/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";

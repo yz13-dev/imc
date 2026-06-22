@@ -49,11 +49,11 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
                     <GlobeIcon />
                   </AvatarFallback>
                 </Avatar>
-                <Badge variant="outline" className="bg-foreground/50 border-foreground/50 text-background">
+                <Badge variant="outline" className="bg-foreground/50 border-foreground/50 backdrop-blur-md text-background">
                   {source.domain.domain}
                 </Badge>
               </div>
-              <Button size="icon-xs" className="bg-foreground/50 border-foreground/50 text-background" nativeButton={false} render={<Link href={href} />}>
+              <Button size="icon-xs" className="bg-foreground/50 border-foreground/50 text-background backdrop-blur-md" nativeButton={false} render={<Link href={href} />}>
                 <ArrowUpRightIcon />
               </Button>
             </div>

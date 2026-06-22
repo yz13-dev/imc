@@ -29,6 +29,24 @@ func GetAttachmentsWithTags(ids []uuid.UUID, UserID int64, db *gorm.DB) ([]model
 	return attachments, nil
 }
 
+func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID int64, db *gorm.DB) (models.AttachmentWithInbox, error) {
+	var inbox models.Inbox
+	var attachment models.Attachment
+
+	if err := db.Table("inbox_items").Where("attachment_id = ? AND user_id = ?", attachmentID, UserID).First(&inbox).Error; err != nil {
+		return models.AttachmentWithInbox{}, nil
+	}
+
+	if err := db.Table("attachments").Where("id = ? AND user_id = ?", attachmentID, UserID).First(&attachment).Error; err != nil {
+		return models.AttachmentWithInbox{}, err
+	}
+
+	return models.AttachmentWithInbox{
+		Attachment: attachment,
+		Inbox:      &inbox,
+	}, nil
+}
+
 func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.InboxItem, error) {
 	var inboxes []models.Inbox
 	if err := db.Table("inbox_items").Where("user_id = ?", UserID).Find(&inboxes).Error; err != nil {
@@ -70,6 +88,33 @@ func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.InboxItem, error) 
 	}
 
 	return items, nil
+}
+
+func GetCollectionAttachments(collectionID uuid.UUID, UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	var collectionAttachments []models.CollectionAttachment
+	if err := db.
+		Table("collections_attachments").
+		Where("collection_id = ?", collectionID).
+		Find(&collectionAttachments).Error; err != nil {
+		return nil, err
+	}
+
+	if len(collectionAttachments) == 0 {
+		return []models.AttachmentWithTags{}, nil
+	}
+
+	ids := make([]uuid.UUID, len(collectionAttachments))
+	for i, attachment := range collectionAttachments {
+		ids[i] = attachment.AttachmentID
+	}
+
+	attachments, err := GetAttachmentsWithTags(ids, UserID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	return attachments, nil
+
 }
 
 func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (models.Attachment, error) {

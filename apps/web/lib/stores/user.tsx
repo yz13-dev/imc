@@ -1,8 +1,8 @@
 "use client"
+import { getMe } from '@/lib/me'
 import type { User } from '@/types/user'
 import { createContext, useContext, useState } from 'react'
 import { createStore, useStore } from 'zustand'
-import { getMe } from './me'
 
 interface UserProps {
   user: User | null

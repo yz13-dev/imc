@@ -38,3 +38,11 @@ func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
 	}
 	return nil
 }
+
+func GetCollectionAttachments(collectionID uuid.UUID, UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetCollectionAttachments(collectionID, UserID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachments, nil
+}

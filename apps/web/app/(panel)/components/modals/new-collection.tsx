@@ -1,6 +1,6 @@
 "use client"
 import { createCollection } from "@/lib/api/collections"
-import { useUser } from "@/lib/user"
+import { useUser } from "@/lib/stores/user"
 import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group"

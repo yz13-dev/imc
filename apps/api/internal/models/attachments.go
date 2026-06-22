@@ -42,3 +42,8 @@ type NewAttachment struct {
 	UserID     int64
 	Label      string
 }
+
+type AttachmentWithInbox struct {
+	Attachment `json:"attachment"`
+	Inbox      *Inbox `gorm:"foreignKey:AttachmentID;references:ID" json:"inbox"`
+}

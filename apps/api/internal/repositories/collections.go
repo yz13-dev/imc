@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/google/uuid"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"gorm.io/gorm"
 )
@@ -25,4 +26,23 @@ func NewCollection(data *models.NewCollection, db *gorm.DB) (*models.Collection,
 		return nil, created.Error
 	}
 	return collection, nil
+}
+
+func GetCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
+	var collection models.Collection
+	if err := db.Where("id = ? AND user_id = ?", collectionID, userID).First(&collection).Error; err != nil {
+		return nil, err
+	}
+	return &collection, nil
+}
+
+func NewCollectionAttachment(collectionID string, attachmentID uuid.UUID, db *gorm.DB) (*models.CollectionAttachment, error) {
+	var attachment models.CollectionAttachment = models.CollectionAttachment{
+		CollectionID: collectionID,
+		AttachmentID: attachmentID,
+	}
+	if err := db.Table("collections_attachments").Create(&attachment).Error; err != nil {
+		return nil, err
+	}
+	return &attachment, nil
 }

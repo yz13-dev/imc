@@ -116,6 +116,11 @@ func main() {
 				r.Get("/collections", handlers.GetMyCollectionsHandler)
 				r.Post("/collections/new", handlers.PostMyNewCollectionHandler)
 				r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
+				r.Get("/collections/{collectionID}/attachments", handlers.GetCollectionAttachments)
+				// move attachment to collection ?
+				r.Post("/collections/{collectionID}/attachments", handlers.PostCollectionAttachments)
+				// move card to collection ?
+				r.Post("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
 			})
 			//
 		})

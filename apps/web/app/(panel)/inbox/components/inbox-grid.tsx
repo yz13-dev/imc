@@ -1,5 +1,5 @@
 "use client"
-import { useGlobalStore } from "@/lib/global-store"
+import { useGlobalStore } from "@/lib/stores/global-store"
 import type { InboxItem } from "@/types/inbox"
 import { useMemo } from "react"
 import CardGrid from "../../components/card-grid"

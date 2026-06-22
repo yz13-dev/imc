@@ -1,8 +1,9 @@
+import CollectionsCollector from "@/components/collections-collector";
 import { getInboxAttachments } from "@/lib/api/attachments";
 import { getCollections } from "@/lib/api/collections";
-import { GlobalStoreProvider } from "@/lib/global-store";
 import { getMe } from "@/lib/me";
-import { UserProvider } from "@/lib/user";
+import { GlobalStoreProvider } from "@/lib/stores/global-store";
+import { UserProvider } from "@/lib/stores/user";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { redirect } from "next/navigation";
 import AppSidebar from "./components/sidebar";
@@ -30,7 +31,11 @@ export default async function Layout({ children }: LayoutProps) {
 
   return (
     <UserProvider user={user}>
-      <GlobalStoreProvider collections={collections || []} inbox={inbox || []}>
+      <GlobalStoreProvider
+        collections={collections || []}
+        inbox={inbox || []}
+      >
+        <CollectionsCollector collections={collections || []} />
         <ServerSideEvents />
         <SidebarProvider>
           <AppSidebar username={username || undefined} email={email || undefined} collections={collections || []} />

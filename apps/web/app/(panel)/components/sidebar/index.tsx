@@ -1,5 +1,5 @@
 "use client"
-import { useGlobalStore } from "@/lib/global-store";
+import { useGlobalStore } from "@/lib/stores/global-store";
 import type { Collection } from "@/types/collections";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
@@ -15,6 +15,7 @@ type AppSidebarProps = {
 
 export default function AppSidebar({ username = "", email = "", collections = [] }: AppSidebarProps) {
   const inbox = useGlobalStore(state => state.inbox)
+  const collectionsItems = useGlobalStore(state => state.collectionsItems)
   return (
     <Sidebar>
       <SidebarContent>
@@ -55,12 +56,14 @@ export default function AppSidebar({ username = "", email = "", collections = []
               {
                 collections
                   .map(collection => {
+                    const count = collectionsItems[collection.id]?.length ?? 0
                     return (
                       <SidebarMenuItem key={collection.id}>
                         <SidebarMenuButton render={<Link href={`/${username}/${collection.id}`} />}>
                           <SquareLibraryIcon />
                           <span>{collection.name}</span>
                         </SidebarMenuButton>
+                        <SidebarMenuBadge>{count}</SidebarMenuBadge>
                       </SidebarMenuItem>
                     )
                   })

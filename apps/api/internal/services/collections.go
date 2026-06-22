@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/google/uuid"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"github.com/yz13-dev/imc/api/internal/repositories"
 	"gorm.io/gorm"
@@ -20,4 +21,20 @@ func CreateCollection(data *models.NewCollection, db *gorm.DB) (*models.Collecti
 		return nil, err
 	}
 	return collection, nil
+}
+
+func GetCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
+	collection, err := repositories.GetCollection(collectionID, userID, db)
+	if err != nil {
+		return nil, err
+	}
+	return collection, nil
+}
+
+func CreateCollectionAttachment(collectionID string, attachmentID uuid.UUID, db *gorm.DB) (*models.CollectionAttachment, error) {
+	attachment, err := repositories.NewCollectionAttachment(collectionID, attachmentID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachment, nil
 }
