@@ -107,6 +107,7 @@ func main() {
 			// my routes
 			r.Route("/my", func(r chi.Router) {
 				r.Get("/events", handlers.EventsHandler(hub))
+				r.Get("/attachments", handlers.GetAllAttachments)
 				r.Get("/attachments/inbox", handlers.GetInboxAttachments)
 				r.Post("/attachments/inbox", handlers.PostInInbox)
 				r.Post("/attachments/new", handlers.PostNewAttachment)

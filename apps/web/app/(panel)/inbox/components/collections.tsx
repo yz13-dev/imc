@@ -34,8 +34,11 @@ export default function Collections() {
                   }
                 </div>
               </div>
-              <div className="p-4 w-full">
+              <div className="p-4 w-full flex flex-col gap-y-1">
                 <span className="text-sm">{collection.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {attachments.length} файл{attachments.length !== 1 ? 'а' : ''}
+                </span>
               </div>
             </div>
           )

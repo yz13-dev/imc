@@ -78,3 +78,21 @@ export async function getCollectionAttachments(collectionID: string): Promise<At
     return null;
   }
 }
+
+export async function getAllAttachments(): Promise<AttachmentWithTags[] | null> {
+  try {
+    const { data, error } = await axios<AttachmentWithTags[]>({
+      url: getApiUrl(`/v1/my/attachments`),
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
+  }
+}

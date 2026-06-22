@@ -379,3 +379,32 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }
+
+func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachments, err := services.GetAllAttachments(userID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}

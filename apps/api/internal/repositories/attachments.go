@@ -161,3 +161,16 @@ func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
 	}
 	return nil
 }
+
+func GetAllAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	var attachments []models.AttachmentWithTags
+	if err := db.
+		Table("attachments").
+		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
+		Where("user_id = ?", UserID).
+		Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+	return attachments, nil
+}

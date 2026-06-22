@@ -46,3 +46,11 @@ func GetCollectionAttachments(collectionID uuid.UUID, UserID int64, db *gorm.DB)
 	}
 	return attachments, nil
 }
+
+func GetAllAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetAllAttachments(UserID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachments, nil
+}

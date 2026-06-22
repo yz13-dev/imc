@@ -50,7 +50,7 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
                     <GlobeIcon />
                   </AvatarFallback>
                 </Avatar>
-                <Badge variant="outline" className="bg-foreground/50 border-foreground/50 backdrop-blur-md text-background">
+                <Badge variant="outline" className="hidden bg-foreground/50 border-foreground/50 backdrop-blur-md text-background">
                   {source.domain.domain}
                 </Badge>
               </div>

@@ -2,9 +2,10 @@
 import { useGlobalStore } from "@/lib/stores/global-store";
 import { useUser } from "@/lib/stores/user";
 import { Button } from "@workspace/ui/components/button";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
+import { Kbd } from "@workspace/ui/components/kbd";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
-import { ListFilterIcon, PlusIcon, SearchIcon } from "lucide-react";
+import { Separator } from "@workspace/ui/components/separator";
+import { ListFilterIcon, PlusIcon, SearchIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import SidebarTrigger from "./sidebar-trigger";
 
@@ -48,14 +49,15 @@ export default function Header({ children, defaultCollection }: HeaderProps) {
         <Button variant="outline" size="icon"><ListFilterIcon /></Button>
       </div>
       {children}
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon"><PlusIcon /></Button>
-        <InputGroup>
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-          <InputGroupInput placeholder="Поиск..." />
-        </InputGroup>
+      <div className="flex items-center h-9 gap-2">
+        <Button variant="outline">
+          <SearchIcon />
+          <span className="text-muted-foreground">Поиск</span>
+          <Kbd>Ctrl+K</Kbd>
+        </Button>
+        <Separator orientation="vertical" />
+        <Button variant="ghost" size="icon"><PlusIcon /></Button>
+        <Button variant="ghost" size="icon"><SettingsIcon /></Button>
       </div>
     </header>
   )
