@@ -29,9 +29,8 @@ type HealthResponse struct {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
+	if os.Getenv("APP_ENV") != "production" {
+		_ = godotenv.Load()
 	}
 
 	// Initialise auth
