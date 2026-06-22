@@ -151,5 +151,10 @@ func main() {
 		port = "8080"
 	}
 	log.Println("listening on port", port)
-	http.ListenAndServeTLS(":"+port, "cert.pem", "key.pem", r)
+
+	if os.Getenv("APP_ENV") != "production" {
+		http.ListenAndServeTLS(":"+port, "cert.pem", "key.pem", r)
+	} else {
+		http.ListenAndServe(":"+port, r)
+	}
 }
