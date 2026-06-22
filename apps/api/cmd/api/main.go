@@ -86,6 +86,7 @@ func main() {
 			// 3. Проверяем ваши стандартные локальные и продакшн домены
 			allowed := []string{
 				"https://imc.yz13.dev",
+				"https://yz13.dev",
 				"http://localhost:3000",
 				"http://localhost:5173",
 			}
