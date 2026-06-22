@@ -40,31 +40,36 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
           style={style}
         >
           <Link href={preview ? `?attachment=${id}` : href} className="absolute inset-0 z-10" />
-          {
-            source &&
-            <div className="absolute bottom-2 left-0 px-2 z-10 w-full flex items-center justify-between gap-1">
-              <div className="flex items-center gap-1">
-                <Avatar className="size-5 rounded-full overflow-clip *:rounded-full after:rounded-full">
-                  <AvatarImage src={source.domain.favicon_url || undefined} />
-                  <AvatarFallback>
-                    <GlobeIcon />
-                  </AvatarFallback>
-                </Avatar>
-                <Badge variant="outline" className="hidden bg-foreground/50 border-foreground/50 backdrop-blur-md text-background">
-                  {source.domain.domain}
+
+          <div className="absolute bottom-2 left-0 px-2 z-10 w-full flex items-center justify-between gap-1">
+            <div className="flex items-center gap-1">
+              {
+                source &&
+                <div className="flex items-center gap-1">
+                  <Avatar className="size-5 rounded-full overflow-clip *:rounded-full after:rounded-full">
+                    <AvatarImage src={source.domain.favicon_url || undefined} />
+                    <AvatarFallback>
+                      <GlobeIcon />
+                    </AvatarFallback>
+                  </Avatar>
+                  <Badge variant="outline" className="hidden bg-foreground/50 border-foreground/50 backdrop-blur-md text-background">
+                    {source.domain.domain}
+                  </Badge>
+                </div>
+              }
+            </div>
+            <div className="flex items-center gap-1">
+              {
+                duration &&
+                <Badge className="h-6 bg-foreground/50 border-foreground/50 text-background backdrop-blur-3xl">
+                  {duration}
                 </Badge>
-              </div>
+              }
               <Button size="icon-xs" className="bg-foreground/50 border-foreground/50 text-background backdrop-blur-md" nativeButton={false} render={<Link href={href} />}>
                 <ArrowUpRightIcon />
               </Button>
             </div>
-          }
-          {
-            duration &&
-            <Badge className="absolute bottom-2 right-2 z-10">
-              {duration}
-            </Badge>
-          }
+          </div>
         </RefContent>
       </AnimatePresence>
       <div className="p-2 hidden">

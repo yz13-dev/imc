@@ -42,7 +42,7 @@ export default async function Page({ params }: PageProps) {
             style={{
               backgroundImage: `url(${toBlurDataURL(attachment.blurhash)})`
             }}
-            className="absolute inset-0 size-full bg-cover bg-top-left dark:opacity-100 opacity-25 blur-3xl"
+            className="absolute bg-no-repeat inset-0 size-full bg-cover bg-top-left dark:opacity-100 opacity-25 blur-3xl"
           />
           <div className="absolute inset-0 size-full bg-linear-to-tr from-transparent to-background" />
           <div className="absolute inset-0 size-full bg-linear-to-bl from-transparent to-background" />

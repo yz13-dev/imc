@@ -1,6 +1,7 @@
 "use client"
 import { getRefSrc } from "@/lib/ref-src";
 import { useGlobalStore } from "@/lib/stores/global-store";
+import { useMemo } from "react";
 import RefContent from "../ref-content";
 
 export function AttachmentSkeleton() {
@@ -11,8 +12,14 @@ export function AttachmentSkeleton() {
 
 export default function Attachment({ attachmentId }: { attachmentId: string }) {
 
+  const items = useGlobalStore(state => state.collectionsItems)
   const inbox = useGlobalStore((state) => state.inbox)
-  const attachments = inbox.map((attachment) => attachment.attachment)
+
+  const attachments = useMemo(() => {
+    const inboxAttachments = inbox.map((attachment) => attachment.attachment)
+    return [...Object.values(items).flat(), ...inboxAttachments]
+  }, [items])
+
   const attachment = attachments.find((item) => item.id === attachmentId)
 
   if (!attachment) return null;
