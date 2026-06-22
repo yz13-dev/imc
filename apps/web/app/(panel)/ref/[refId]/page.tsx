@@ -1,4 +1,5 @@
 import { getAttachment } from "@/lib/api/attachments"
+import { toBlurDataURL } from "@/lib/blurhash"
 import { getRefSrc } from "@/lib/ref-src"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
@@ -31,7 +32,22 @@ export default async function Page({ params }: PageProps) {
   const tags = attachment.tags || [];
 
   return (
-    <>
+    <div className="relative">
+      {
+        attachment.blurhash &&
+        <div
+          className="absolute inset-0 -z-20 size-full overflow-clip -left-(--sidebar-width) w-[calc(100%+var(--sidebar-width))]"
+        >
+          <div
+            style={{
+              backgroundImage: `url(${toBlurDataURL(attachment.blurhash)})`
+            }}
+            className="absolute inset-0 size-full bg-cover bg-top-left blur-3xl"
+          />
+          <div className="absolute inset-0 size-full bg-linear-to-tr from-transparent to-background" />
+          <div className="absolute inset-0 size-full bg-linear-to-bl from-transparent to-background" />
+        </div>
+      }
       <RefHeader />
       <div className="w-full min-h-svh">
         <div className="size-full flex lg:flex-row flex-col">
@@ -50,7 +66,7 @@ export default async function Page({ params }: PageProps) {
               />
             </AnimatePresence>
           </div>
-          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 bg-background/70 backdrop-blur-xs">
+          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 lg:bg-transparent bg-background/70 backdrop-blur-xs">
             <div className="w-full space-y-4 max-w-xl mx-auto">
               <div className="flex flex-col gap-2">
                 <div className="inline-flex gap-2">
@@ -145,6 +161,6 @@ export default async function Page({ params }: PageProps) {
           </div>
         </div>
       </div>
-    </>
+    </div >
   )
 }

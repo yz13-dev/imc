@@ -34,6 +34,7 @@ export default function InboxGrid({ defaultInbox = [] }: InboxGridProps) {
     <CardGrid
       attachments={attachments || []}
       scope="ref"
+      withPreview
     />
   )
 }

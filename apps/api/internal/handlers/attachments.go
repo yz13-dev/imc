@@ -337,7 +337,9 @@ func PostInInbox(w http.ResponseWriter, r *http.Request) {
 	const EventKey = "inbox:new"
 	hub.Publish(userID, events.Event{
 		Type: EventKey,
-		Data: attachmentID,
+		Data: models.EventData{
+			ID: attachmentID.String(),
+		},
 	})
 
 	w.WriteHeader(http.StatusCreated)

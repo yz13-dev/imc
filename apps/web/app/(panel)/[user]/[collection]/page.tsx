@@ -1,7 +1,7 @@
 
 import { getCollectionAttachments } from "@/lib/api/attachments"
-import CardGrid from "../../components/card-grid"
 import Header from "../../components/header"
+import CollectionGrid from "./components/collection-grid"
 
 
 type PageProps = {
@@ -30,9 +30,9 @@ export default async function Page({ params, searchParams }: PageProps) {
         <div className="absolute inset-0 w-full min-h-svh bg-background z-50"></div>
       }
       <div className="w-full px-6 pt-6">
-        <CardGrid
-          attachments={attachments || []}
-          scope="ref"
+        <CollectionGrid
+          collection={collection}
+          defaultAttachments={attachments || []}
         />
       </div>
       <footer className="p-6">

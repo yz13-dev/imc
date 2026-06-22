@@ -138,12 +138,16 @@ func PostCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		const InboxEventKey = "inbox:remove"
 		hub.Publish(userID, events.Event{
 			Type: InboxEventKey,
-			Data: attachmentId,
+			Data: models.EventData{
+				ID: attachmentId.String(),
+			},
 		})
 		const CollectionEventKey = "collection:update"
 		hub.Publish(userID, events.Event{
 			Type: CollectionEventKey,
-			Data: collection.ID,
+			Data: models.EventData{
+				ID: collection.ID,
+			},
 		})
 	}
 

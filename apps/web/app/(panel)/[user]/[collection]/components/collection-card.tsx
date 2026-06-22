@@ -14,9 +14,10 @@ type CollectionCardProps = {
   scope?: string
   className?: string
   style?: React.CSSProperties
+  preview?: boolean
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source }: CollectionCardProps) {
+export default function CollectionCard({ mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false }: CollectionCardProps) {
 
   const href = scope ? `/${scope}/${id}` : `/${id}`
 
@@ -38,7 +39,7 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
           blurhash={blurhash}
           style={style}
         >
-          <Link href={`?attachment=${id}`} className="absolute inset-0 z-10" />
+          <Link href={preview ? `?attachment=${id}` : href} className="absolute inset-0 z-10" />
           {
             source &&
             <div className="absolute bottom-2 left-0 px-2 z-10 w-full flex items-center justify-between gap-1">

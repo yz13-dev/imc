@@ -1,10 +1,15 @@
 "use client"
 import { useGlobalStore } from "@/lib/stores/global-store";
 import { getApiUrl } from "@/lib/url";
+import type { EventData } from "@/types/sse";
 import { useEffect } from "react";
 
 
 type ServerSideEventsProps = {
+}
+
+function getEventData<T extends EventData>(e: MessageEvent): T {
+  return JSON.parse(e.data)
 }
 
 export default function ServerSideEvents({ }: ServerSideEventsProps) {
@@ -24,13 +29,16 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
   const onCollectionChange = (e: MessageEvent) => {
     console.log("[ NEW COLLECTION EVENT ]", e, e.type)
     if (e.type === "collection:new") {
-      refreshCollection(e.data)
+      const data = getEventData(e)
+      refreshCollection(data.id)
     }
     if (e.type === "collection:update") {
-      refreshCollection(e.data)
+      const data = getEventData(e)
+      refreshCollection(data.id)
     }
     if (e.type === "collection:remove") {
-      refreshCollection(e.data)
+      const data = getEventData(e)
+      refreshCollection(data.id)
     }
   }
 

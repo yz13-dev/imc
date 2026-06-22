@@ -7,9 +7,10 @@ import CollectionCard from "../[user]/[collection]/components/collection-card";
 type CardGridProps = {
   scope?: string
   attachments: AttachmentWithMaybeTagsAndSource[]
+  withPreview?: boolean
 }
 
-export default function CardGrid({ attachments, scope }: CardGridProps) {
+export default function CardGrid({ attachments, scope, withPreview = false }: CardGridProps) {
   return (
     <div className="@container">
       <div
@@ -25,6 +26,7 @@ export default function CardGrid({ attachments, scope }: CardGridProps) {
                   {...item}
                   label={label}
                   scope={scope}
+                  preview={withPreview}
                   style={{
                     aspectRatio: `${item.width}/${item.height}`
                   }}
