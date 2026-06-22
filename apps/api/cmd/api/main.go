@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -28,14 +29,24 @@ type HealthResponse struct {
 	Timestamp string `json:"timestamp"`
 }
 
+// POSTGRES_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+func GetDSN() string {
+	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
+		os.Getenv("POSTGRES_DB"),
+	)
+}
+
 func main() {
 	if os.Getenv("APP_ENV") != "production" {
 		_ = godotenv.Load()
 	}
 
 	// Initialise auth
-	dsn := os.Getenv("DATABASE_URL")
-	gormdb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	gormdb, err := gorm.Open(postgres.Open(GetDSN()), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}
