@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/av
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
 import { InboxIcon, LayoutDashboardIcon, PlusIcon, SquareLibraryIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
+import { useMemo } from "react";
 import NewCollectionModal from "../modals/new-collection";
 
 type AppSidebarProps = {
@@ -13,9 +14,18 @@ type AppSidebarProps = {
   collections?: Collection[]
 }
 
-export default function AppSidebar({ username = "", email = "", collections = [] }: AppSidebarProps) {
+export default function AppSidebar({ username = "", email = "", collections: defaultCollections = [] }: AppSidebarProps) {
   const inbox = useGlobalStore(state => state.inbox)
   const collectionsItems = useGlobalStore(state => state.collectionsItems)
+  const allCollections = useGlobalStore(state => state.collections)
+
+  const collections = useMemo(() => {
+    const unique = [...defaultCollections, ...allCollections].filter((item, index, self) =>
+      index === self.findIndex((t) => t.id === item.id)
+    )
+    return unique
+  }, [allCollections, defaultCollections])
+
   return (
     <Sidebar>
       <SidebarContent>

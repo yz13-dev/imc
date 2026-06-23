@@ -16,6 +16,7 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
 
   const refreshInbox = useGlobalStore(state => state.refreshInbox);
   const refreshCollection = useGlobalStore(state => state.refreshCollection);
+  const refreshCollections = useGlobalStore(state => state.refreshCollections);
 
   const onInboxChange = (e: MessageEvent) => {
     console.log("[ NEW INBOX EVENT ]", e, e.type)
@@ -26,6 +27,19 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
       refreshInbox()
     }
   }
+  const onCollectionsChange = (e: MessageEvent) => {
+    console.log("[ NEW COLLECTIONS EVENT ]", e, e.type)
+    if (e.type === "collections:new") {
+      refreshCollections()
+    }
+    if (e.type === "collections:update") {
+      refreshCollections()
+    }
+    if (e.type === "collections:remove") {
+      refreshCollections()
+    }
+  }
+
   const onCollectionChange = (e: MessageEvent) => {
     console.log("[ NEW COLLECTION EVENT ]", e, e.type)
     if (e.type === "collection:new") {
@@ -51,12 +65,19 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     es.addEventListener("collection:new", onCollectionChange)
     es.addEventListener("collection:update", onCollectionChange)
     es.addEventListener("collection:remove", onCollectionChange)
+    es.addEventListener("collections:new", onCollectionsChange)
+    es.addEventListener("collections:update", onCollectionsChange)
+    es.addEventListener("collections:remove", onCollectionsChange)
+
     return () => {
       es.removeEventListener("inbox:new", onInboxChange)
       es.removeEventListener("inbox:remove", onInboxChange)
       es.removeEventListener("collection:new", onCollectionChange)
       es.removeEventListener("collection:update", onCollectionChange)
       es.removeEventListener("collection:remove", onCollectionChange)
+      es.removeEventListener("collections:new", onCollectionsChange)
+      es.removeEventListener("collections:update", onCollectionsChange)
+      es.removeEventListener("collections:remove", onCollectionsChange)
     }
   }, [])
   return null

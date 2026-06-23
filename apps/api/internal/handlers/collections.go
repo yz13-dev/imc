@@ -73,6 +73,20 @@ func PostMyNewCollectionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	hub := middleware.GetEventsHub(r.Context())
+	if hub == nil {
+		log.Println("events hub not found")
+		return
+	}
+
+	const EventKey = "collections:new"
+	hub.Publish(userID, events.Event{
+		Type: EventKey,
+		Data: models.EventData{
+			ID: collection.ID,
+		},
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 

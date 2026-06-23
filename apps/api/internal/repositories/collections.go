@@ -19,6 +19,7 @@ func NewCollection(data *models.NewCollection, db *gorm.DB) (*models.Collection,
 		Name:        data.Name,
 		Description: data.Description,
 		UserID:      data.UserID,
+		Public:      data.Public,
 	}
 
 	created := db.Create(&collection)

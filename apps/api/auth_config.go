@@ -6,6 +6,7 @@ import (
 
 	"github.com/thecodearcher/limen"
 	credentialpassword "github.com/thecodearcher/limen/plugins/credential-password"
+	"github.com/yz13-dev/imc/api/internal/utils"
 )
 
 func NewAuthConfig(adapter limen.DatabaseAdapter) *limen.Config {
@@ -22,16 +23,7 @@ func NewAuthConfig(adapter limen.DatabaseAdapter) *limen.Config {
 			limen.WithHTTPCookieHTTPOnly(true),
 			limen.WithHTTPOriginCheck(true),
 			limen.WithHTTPCookieCrossDomainEnabled(),
-			limen.WithHTTPTrustedOrigins([]string{
-				"moz-extension://*",
-				"chrome-extension://*",
-				"https://*.yz13.dev",
-				"https://yz13.dev",
-				"http://localhost:5173",
-				"http://localhost:3000",
-				"http://127.0.0.1:3000",
-				"http://[::1]:3000",
-			}),
+			limen.WithHTTPTrustedOrigins(utils.GetOrigins()),
 			limen.WithHTTPSessionTransformer(func(user map[string]any, sessionResult *limen.SessionResult) (map[string]any, error) {
 				out := map[string]any{"user": user}
 				if sessionResult != nil {

@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS collections (
 
   description text,
 
+  public boolean not null
+    default false,
+
   created_at timestamptz not null
     default now(),
 

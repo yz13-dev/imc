@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"slices"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -20,6 +19,7 @@ import (
 	"github.com/yz13-dev/imc/api/internal/events"
 	"github.com/yz13-dev/imc/api/internal/handlers"
 	internalMiddleware "github.com/yz13-dev/imc/api/internal/middleware"
+	"github.com/yz13-dev/imc/api/internal/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -75,21 +75,7 @@ func main() {
 				return true
 			}
 
-			// 2. Разрешаем расширение Chrome (для POST/PUT запросов из WXT dev server)
-			if strings.HasPrefix(origin, "chrome-extension://") {
-				return true
-			}
-			if strings.HasPrefix(origin, "moz-extension://") {
-				return true
-			}
-
-			// 3. Проверяем ваши стандартные локальные и продакшн домены
-			allowed := []string{
-				"https://imc.yz13.dev",
-				"https://yz13.dev",
-				"http://localhost:3000",
-				"http://localhost:5173",
-			}
+			allowed := utils.GetOrigins()
 			if slices.Contains(allowed, origin) {
 				return true
 			}

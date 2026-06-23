@@ -5,6 +5,7 @@ import type { InboxItem } from '@/types/inbox'
 import { createContext, useContext, useState } from 'react'
 import { createStore, useStore } from 'zustand'
 import { getCollectionAttachments, getInboxAttachments } from '../api/attachments'
+import { getCollections } from '../api/collections'
 
 interface GlobalStoreProps {
   collections: Collection[]
@@ -13,9 +14,11 @@ interface GlobalStoreProps {
 }
 
 interface GlobalStoreState extends GlobalStoreProps {
+  setInbox: (inbox: InboxItem[]) => void
   refreshInbox: () => Promise<void>
   setCollectionItems: (key: string, items: Attachment[]) => void
   refreshCollection: (key: string) => Promise<void>
+  refreshCollections: () => Promise<void>
 }
 
 type GlobalStoreStore = ReturnType<typeof createGlobalStoreStore>
@@ -29,6 +32,9 @@ const createGlobalStoreStore = (initProps?: Partial<GlobalStoreProps>) => {
   return createStore<GlobalStoreState>()((set) => ({
     ...DEFAULT_PROPS,
     ...initProps,
+    setInbox: (inbox: InboxItem[]) => {
+      set({ inbox })
+    },
     refreshInbox: async () => {
       const inbox = await getInboxAttachments()
       if (inbox) set({ inbox: inbox || [] })
@@ -39,6 +45,10 @@ const createGlobalStoreStore = (initProps?: Partial<GlobalStoreProps>) => {
     refreshCollection: async (key: string) => {
       const items = await getCollectionAttachments(key)
       if (items) set(state => ({ collectionsItems: { ...state.collectionsItems, [key]: items } }))
+    },
+    refreshCollections: async () => {
+      const collections = await getCollections()
+      if (collections) set({ collections: collections || [] })
     },
   }))
 }

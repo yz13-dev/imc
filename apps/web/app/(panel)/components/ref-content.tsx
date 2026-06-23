@@ -37,6 +37,10 @@ export default function RefContent({ id, blurhash, src, className = "", children
         className
       )}
       style={style}
+      transition={{
+        duration: .15,
+        ease: cubicBezier(.56, .17, .05, .85)
+      }}
     >
       {children}
       <motion.div
@@ -46,7 +50,6 @@ export default function RefContent({ id, blurhash, src, className = "", children
         transition={{
           duration: .15,
           ease: cubicBezier(.56, .17, .05, .85)
-
         }}
       >
         {

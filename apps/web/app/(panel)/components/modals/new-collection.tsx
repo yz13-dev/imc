@@ -15,7 +15,7 @@ export default function NewCollectionModal({ children }: { children: React.Compo
 
   const [open, setOpen] = useState<boolean>(false)
 
-  const disabled = !name || name.length < 3 || loading;
+  const disabled = !name || name.length < 1 || loading;
 
   const action = async () => {
     if (disabled) return;
