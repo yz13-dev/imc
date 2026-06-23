@@ -408,3 +408,95 @@ func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }
+
+type DeleteAttachmentResponse struct {
+	ID uuid.UUID `json:"id"`
+}
+
+func DeleteAttachment(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	attachmentID := r.PathValue("attachmentID")
+	if attachmentID == "" {
+		http.Error(w, "attachmentID is required", http.StatusBadRequest)
+		return
+	}
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachment, err := services.DeleteAttachment(userID, attachmentID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s3Client, err := storage.NewS3Client()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	key := attachment.Src
+
+	_, err = s3Client.DeleteObject(r.Context(), &s3.DeleteObjectInput{
+		Bucket: aws.String(storage.GetBucketName()),
+		Key:    aws.String(key),
+	})
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(DeleteAttachmentResponse{ID: attachment.ID}); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func TrashAttachment(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	attachmentID := r.PathValue("attachmentID")
+	if attachmentID == "" {
+		http.Error(w, "attachmentID is required", http.StatusBadRequest)
+		return
+	}
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachment, err := services.TrashAttachment(userID, attachmentID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(attachment); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}

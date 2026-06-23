@@ -174,3 +174,26 @@ func GetAllAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, 
 	}
 	return attachments, nil
 }
+
+func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+	var attachment models.Attachment
+	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).First(&attachment).Error; err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
+func UntrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
+	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).Update("is_deleted", false).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+	var attachment models.Attachment
+	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).Delete(&attachment).Error; err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}

@@ -20,6 +20,7 @@ type Attachment struct {
 	CreatedAt  time.Time `gorm:"default:now()" json:"created_at"`
 	UserID     int64     `json:"user_id"`
 	Label      string    `json:"label"`
+	IsDeleted  bool      `gorm:"default:false" json:"is_deleted"`
 }
 
 type AttachmentWithTags struct {

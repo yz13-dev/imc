@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@tanstack/react-form-nextjs": "^1.33.0",
+    "@tanstack/react-hotkeys": "^0.10.0",
     "@workspace/ui": "workspace:*",
     "axios": "^1.18.0",
     "blurhash": "^2.0.5",

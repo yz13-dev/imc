@@ -96,3 +96,41 @@ export async function getAllAttachments(): Promise<AttachmentWithTags[] | null> 
     return null;
   }
 }
+
+export async function permanentlyDeleteAttachment(attachmentID: string): Promise<{ id: string } | null> {
+  try {
+    const { data, error } = await axios<{ id: string } | null>({
+      url: getApiUrl(`/v1/my/attachments/${attachmentID}`),
+      method: "DELETE",
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
+  }
+}
+
+export async function moveToTrashAttachment(attachmentID: string): Promise<{ id: string } | null> {
+  try {
+    const { data, error } = await axios<{ id: string } | null>({
+      url: getApiUrl(`/v1/my/attachments/${attachmentID}/trash`),
+      method: "POST",
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
+  }
+}

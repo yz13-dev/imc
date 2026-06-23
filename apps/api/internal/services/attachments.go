@@ -54,3 +54,27 @@ func GetAllAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, 
 	}
 	return attachments, nil
 }
+
+func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+	attachment, err := repositories.TrashAttachment(UserID, attachmentID, db)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
+func UntrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
+	err := repositories.UntrashAttachment(UserID, attachmentID, db)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+	attachment, err := repositories.DeleteAttachment(UserID, attachmentID, db)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}

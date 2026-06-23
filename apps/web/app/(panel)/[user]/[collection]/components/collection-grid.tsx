@@ -1,6 +1,6 @@
 "use client"
 import CardGrid from "@/app/(panel)/components/card-grid"
-import { useCollectionAttachments } from "@/hooks/useCollectionAttachments"
+import { useCollectionAttachments } from "@/hooks/use-collection-attachments"
 import type { Attachment } from "@/types/attachments"
 
 

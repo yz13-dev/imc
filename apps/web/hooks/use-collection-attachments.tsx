@@ -2,7 +2,7 @@
 
 import { useGlobalStore } from "@/lib/stores/global-store"
 import type { Attachment, AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 
 
 
@@ -16,13 +16,13 @@ export const useCollectionAttachments = ({ collection, attachments: defaultAttac
   const collectionItems = useGlobalStore((state) => state.collectionsItems)
   const setCollectionItems = useGlobalStore((state) => state.setCollectionItems)
 
-  const attachments = (collectionItems[collection] ?? defaultAttachments)
+  const attachments = useMemo(() => (collectionItems[collection] ?? defaultAttachments)
     // @ts-expect-error
     .toSorted((a, b) => {
       const aDate = new Date(a.created_at)
       const bDate = new Date(b.created_at)
       return bDate.getTime() - aDate.getTime()
-    })
+    }), [collectionItems, collection, defaultAttachments])
 
   useEffect(() => {
     setCollectionItems(collection, attachments)

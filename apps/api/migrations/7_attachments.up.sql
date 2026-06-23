@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS attachments (
     references sources(id)
     on delete cascade,
 
+  is_deleted boolean not null default false,
+
   type attachment_kind not null,
   label text,
   -- MIME type

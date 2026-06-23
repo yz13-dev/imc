@@ -109,6 +109,8 @@ func main() {
 				r.Post("/attachments/inbox", handlers.PostInInbox)
 				r.Post("/attachments/new", handlers.PostNewAttachment)
 				r.Get("/attachments/{attachmentID}", handlers.GetAttachment)
+				r.Delete("/attachments/{attachmentID}", handlers.DeleteAttachment)
+				r.Post("/attachments/{attachmentID}/trash", handlers.TrashAttachment)
 				r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
 				r.Get("/cards", handlers.GetMyCardsHandler)
 				r.Get("/collections", handlers.GetMyCollectionsHandler)

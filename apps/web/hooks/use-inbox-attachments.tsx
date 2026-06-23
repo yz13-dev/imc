@@ -3,7 +3,7 @@
 import { useGlobalStore } from "@/lib/stores/global-store"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import type { InboxItem } from "@/types/inbox"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 
 
 
@@ -16,14 +16,14 @@ export const useInboxAttachments = ({ inbox: defaultInbox = [] }: UseInboxAttach
   const inbox = useGlobalStore((state) => state.inbox)
   const setInbox = useGlobalStore((state) => state.setInbox)
 
-  const attachments = inbox
+  const attachments = useMemo(() => inbox
     .map((item) => item.attachment)
     // @ts-expect-error
     .toSorted((a, b) => {
       const aDate = new Date(a.created_at)
       const bDate = new Date(b.created_at)
       return bDate.getTime() - aDate.getTime()
-    })
+    }), [inbox])
 
   useEffect(() => {
     if (defaultInbox.length === 0) return

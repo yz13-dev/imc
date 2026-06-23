@@ -7,6 +7,6 @@ import { SidebarIcon } from "lucide-react";
 export default function SidebarTrigger() {
   const { toggleSidebar } = useSidebar()
   return (
-    <Button variant="outline" size="icon" onClick={toggleSidebar}><SidebarIcon /></Button>
+    <Button variant="outline" size="icon" className="backdrop-blur-xl" onClick={toggleSidebar}><SidebarIcon /></Button>
   );
 }

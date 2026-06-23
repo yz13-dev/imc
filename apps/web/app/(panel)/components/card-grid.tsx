@@ -1,6 +1,5 @@
 import { getRefSrc } from "@/lib/ref-src";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
-import CardContextMenu from "../[user]/[collection]/components/card-context-menu";
 import CollectionCard from "../[user]/[collection]/components/collection-card";
 
 
@@ -17,12 +16,13 @@ export default function CardGrid({ attachments, scope, withPreview = false }: Ca
         className="@7xl:columns-6 @6xl:columns-5 @5xl:columns-5 @4xl:columns-4 @xl:columns-3 @lg:columns-2 @sm:columns-1 space-y-2 gap-x-2"
       >
         {
-          attachments.map((item) => {
-            const alt = getRefSrc(item.src)
-            const label = item.label || alt || "-"
-            return (
-              <CardContextMenu key={item.id} attachmentId={item.id}>
+          attachments
+            .map((item) => {
+              const alt = getRefSrc(item.src)
+              const label = item.label || alt || "-"
+              return (
                 <CollectionCard
+                  key={item.id}
                   {...item}
                   label={label}
                   scope={scope}
@@ -31,9 +31,8 @@ export default function CardGrid({ attachments, scope, withPreview = false }: Ca
                     aspectRatio: `${item.width}/${item.height}`
                   }}
                 />
-              </CardContextMenu>
-            )
-          })
+              )
+            })
         }
       </div>
     </div>

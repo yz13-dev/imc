@@ -53,7 +53,8 @@ export default function RefContent({ id, blurhash, src, className = "", children
         }}
       >
         {
-          isVideo &&
+          false &&
+          // isVideo &&
           <video
             src={refSrc}
             draggable={false}
@@ -64,11 +65,12 @@ export default function RefContent({ id, blurhash, src, className = "", children
           />
         }
         {
-          isGif &&
+          false &&
+          // isGif &&
           <Image
             src={refSrc}
             draggable={false}
-            className="size-full object-cover"
+            className="size-full object-cover object-top-left"
             unoptimized
             fill
             loading="lazy"
@@ -78,11 +80,12 @@ export default function RefContent({ id, blurhash, src, className = "", children
           />
         }
         {
-          !isVideo && !isGif &&
+          false &&
+          // !isVideo && !isGif &&
           <Image
             src={refSrc}
             draggable={false}
-            className="size-full object-cover"
+            className="size-full object-cover object-top-left"
             unoptimized
             fill
             loading="lazy"
