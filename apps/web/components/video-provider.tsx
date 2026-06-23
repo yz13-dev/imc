@@ -6,6 +6,5 @@ type VideoProviderProps = {
   isVideo?: boolean
 } & VideoStoreProviderProps
 export function OptionalVideoProvider({ children, isVideo }: VideoProviderProps) {
-  if (!isVideo) return children;
   return <VideoStoreProvider>{children}</VideoStoreProvider>
 }

@@ -1,4 +1,5 @@
 "use client"
+import { OptionalVideoProvider } from "@/components/video-provider";
 import { getRefSrc } from "@/lib/ref-src";
 import { useGlobalStore } from "@/lib/stores/global-store";
 import { useMemo } from "react";
@@ -30,21 +31,23 @@ export default function Attachment({ attachmentId }: { attachmentId: string }) {
 
 
   return (
-    <div className="max-w-4xl w-full h-full overflow-y-auto">
-      {
-        attachment &&
-        <RefContent
-          id={attachment.id}
-          src={refSrc}
-          mimeType={attachment.mime_type}
-          blurhash={attachment.blurhash}
-          alt={title}
-          className="rounded-sm z-50 [&_img]:rounded-sm [&_video]:rounded-sm"
-          style={{
-            aspectRatio: `${attachment.width}/${attachment.height}`
-          }}
-        />
-      }
-    </div>
+    <OptionalVideoProvider duration={attachment.duration_ms}>
+      <div className="max-w-4xl w-full h-full overflow-y-auto">
+        {
+          attachment &&
+          <RefContent
+            id={attachment.id}
+            src={refSrc}
+            mimeType={attachment.mime_type}
+            blurhash={attachment.blurhash}
+            alt={title}
+            className="rounded-sm z-50 [&_img]:rounded-sm [&_video]:rounded-sm"
+            style={{
+              aspectRatio: `${attachment.width}/${attachment.height}`
+            }}
+          />
+        }
+      </div>
+    </OptionalVideoProvider>
   )
 }

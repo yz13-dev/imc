@@ -1,5 +1,6 @@
 "use client"
 
+import { OptionalVideoProvider } from "@/components/video-provider";
 import { useGlobalStore } from "@/lib/stores/global-store";
 import { useUser } from "@/lib/stores/user";
 import { Badge } from "@workspace/ui/components/badge";
@@ -34,16 +35,19 @@ export default function Collections() {
                   {
                     attachments.map((item, index) => {
                       const isLast = index === attachments.length - 1
-                      return <RefContent
-                        key={item.id}
-                        mimeType={item.mime_type}
-                        className={cn(
-                          "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm border",
-                          "nth-[1]:hover:rotate-12 nth-[2]:hover:-rotate-12 nth-[3]:hover:rotate-6 will-change-transform transition-transform",
-                          isLast && "col-span-full"
-                        )}
-                        {...item}
-                      />
+                      return (
+                        <OptionalVideoProvider key={item.id} duration={item.duration_ms}>
+                          <RefContent
+                            mimeType={item.mime_type}
+                            className={cn(
+                              "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm border",
+                              "nth-[1]:hover:rotate-6 nth-[2]:hover:-rotate-6 nth-[3]:hover:rotate-3 will-change-transform transition-transform",
+                              isLast && "col-span-full"
+                            )}
+                            {...item}
+                          />
+                        </OptionalVideoProvider>
+                      )
                     })
                   }
                 </div>

@@ -5,6 +5,6 @@ import { redirect } from "next/navigation"
 
 export default async function Page() {
   const user = await getMe()
-  if (user) return redirect("/dashboard")
+  if (user) return redirect("/inbox")
   return <Component />
 }

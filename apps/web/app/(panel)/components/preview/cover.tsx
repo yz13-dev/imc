@@ -31,7 +31,7 @@ export default function Cover({ children, coverKey = "id" }: CoverProps) {
   if (!id) return null
   return (
     <motion.div
-      className="absolute inset-0 w-full h-svh z-50 py-6 backdrop-blur-sm flex items-end justify-center bg-black/10"
+      className="fixed inset-0 w-full h-svh z-50 py-6 backdrop-blur-sm flex items-end justify-center bg-black/10"
       onClick={e => {
         e.stopPropagation()
         setId(null)

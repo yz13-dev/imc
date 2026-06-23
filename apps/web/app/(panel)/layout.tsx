@@ -43,6 +43,7 @@ export default async function Layout({ children }: LayoutProps) {
             {children}
           </div>
         </SidebarProvider>
+        {/*<Footer />*/}
       </GlobalStoreProvider>
     </UserProvider>
   )

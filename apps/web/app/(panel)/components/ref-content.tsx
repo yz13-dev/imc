@@ -1,4 +1,5 @@
 "use client"
+import Video from "@/components/video"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { getRefSrc } from "@/lib/ref-src"
 import { getApiUrl } from "@/lib/url"
@@ -7,6 +8,7 @@ import { cubicBezier, motion } from "motion/react"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
 
+const HIDE_CONTENT = true;
 
 type RefContentType = {
   id: string
@@ -31,6 +33,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
   return (
     <motion.figure
       layout
+      layoutRoot
       layoutCrossfade={false}
       className={cn(
         "w-full relative",
@@ -45,7 +48,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
       {children}
       <motion.div
         layoutId={id}
-        className="size-full will-change-auto relative bg-muted"
+        className="size-full will-change-auto relative bg-muted overflow-clip"
         onClick={() => setId(id)}
         transition={{
           duration: .15,
@@ -53,20 +56,30 @@ export default function RefContent({ id, blurhash, src, className = "", children
         }}
       >
         {
-          false &&
-          // isVideo &&
-          <video
+          blurhash &&
+          <div
+            style={{
+              backgroundImage: `url(${toBlurDataURL(blurhash)})`
+            }}
+            className="bg-no-repeat size-full bg-cover bg-top-left blur-3xl"
+          />
+        }
+        {
+          HIDE_CONTENT &&
+          isVideo &&
+          <Video
             src={refSrc}
             draggable={false}
             className="size-full"
+            loop
             muted
             autoPlay
             aria-label={alt}
           />
         }
         {
-          false &&
-          // isGif &&
+          HIDE_CONTENT &&
+          isGif &&
           <Image
             src={refSrc}
             draggable={false}
@@ -80,8 +93,8 @@ export default function RefContent({ id, blurhash, src, className = "", children
           />
         }
         {
-          false &&
-          // !isVideo && !isGif &&
+          HIDE_CONTENT &&
+          !isVideo && !isGif &&
           <Image
             src={refSrc}
             draggable={false}

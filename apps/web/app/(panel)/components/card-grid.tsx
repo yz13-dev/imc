@@ -1,3 +1,4 @@
+import { OptionalVideoProvider } from "@/components/video-provider";
 import { getRefSrc } from "@/lib/ref-src";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import CollectionCard from "../[user]/[collection]/components/collection-card";
@@ -20,17 +21,19 @@ export default function CardGrid({ attachments, scope, withPreview = false }: Ca
             .map((item) => {
               const alt = getRefSrc(item.src)
               const label = item.label || alt || "-"
+              const isVideo = item.mime_type?.startsWith("video/")
               return (
-                <CollectionCard
-                  key={item.id}
-                  {...item}
-                  label={label}
-                  scope={scope}
-                  preview={withPreview}
-                  style={{
-                    aspectRatio: `${item.width}/${item.height}`
-                  }}
-                />
+                <OptionalVideoProvider key={item.id} isVideo={isVideo} duration={item.duration_ms}>
+                  <CollectionCard
+                    {...item}
+                    label={label}
+                    scope={scope}
+                    preview={withPreview}
+                    style={{
+                      aspectRatio: `${item.width}/${item.height}`
+                    }}
+                  />
+                </OptionalVideoProvider>
               )
             })
         }
