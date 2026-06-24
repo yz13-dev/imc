@@ -22,6 +22,7 @@ import (
 	"github.com/yz13-dev/imc/api/internal/events"
 	"github.com/yz13-dev/imc/api/internal/middleware"
 	"github.com/yz13-dev/imc/api/internal/models"
+	"github.com/yz13-dev/imc/api/internal/repositories"
 	"github.com/yz13-dev/imc/api/internal/services"
 	"github.com/yz13-dev/imc/api/internal/storage"
 	"github.com/yz13-dev/imc/api/internal/utils"
@@ -381,6 +382,19 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
+
+	offset := r.URL.Query().Get("offset")
+	limit := r.URL.Query().Get("limit")
+
+	Offset, err := strconv.Atoi(offset)
+	if err != nil {
+		Offset = 0
+	}
+	Limit, err := strconv.Atoi(limit)
+	if err != nil {
+		Limit = 25
+	}
+
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {
 		http.Error(w, "user not found", http.StatusUnauthorized)
@@ -395,7 +409,7 @@ func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetAllAttachments(userID, db)
+	attachments, err := services.GetAllAttachments(userID, repositories.ListQuery{Offset: Offset, Limit: Limit}, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -466,6 +480,10 @@ func DeleteAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+type TrashAttachmentResponse struct {
+	ID string `json:"id"`
+}
+
 func TrashAttachment(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {
@@ -487,7 +505,99 @@ func TrashAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachment, err := services.TrashAttachment(userID, attachmentID, db)
+	err := services.TrashAttachment(userID, attachmentID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hub := middleware.GetEventsHub(r.Context())
+	if hub == nil {
+		log.Println("events hub not found")
+		return
+	}
+
+	const EventKey = "trash:new"
+	hub.Publish(userID, events.Event{
+		Type: EventKey,
+		Data: models.EventData{
+			ID: attachmentID,
+		},
+	})
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(TrashAttachmentResponse{ID: attachmentID}); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func UnTrashAttachment(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	attachmentID := r.PathValue("attachmentID")
+	if attachmentID == "" {
+		http.Error(w, "attachmentID is required", http.StatusBadRequest)
+		return
+	}
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	err := services.UntrashAttachment(userID, attachmentID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hub := middleware.GetEventsHub(r.Context())
+	if hub == nil {
+		log.Println("events hub not found")
+		return
+	}
+
+	const EventKey = "trash:remove"
+	hub.Publish(userID, events.Event{
+		Type: EventKey,
+		Data: models.EventData{
+			ID: attachmentID,
+		},
+	})
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(TrashAttachmentResponse{ID: attachmentID}); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func GetTrashAttachments(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachments, err := services.GetTrashAttachments(userID, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -496,7 +606,7 @@ func TrashAttachment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(attachment); err != nil {
+	if err := json.NewEncoder(w).Encode(attachments); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }

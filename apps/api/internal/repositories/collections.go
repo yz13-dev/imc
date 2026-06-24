@@ -47,3 +47,23 @@ func NewCollectionAttachment(collectionID string, attachmentID uuid.UUID, db *go
 	}
 	return &attachment, nil
 }
+
+func DeleteCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
+	var collection models.Collection
+
+	if err := db.
+		Table("collections").
+		Where("id = ? AND user_id = ?", collectionID, userID).
+		First(&collection).
+		Error; err != nil {
+		return nil, err
+	}
+
+	if err := db.
+		Table("collections").
+		Where("id = ? AND user_id = ?", collectionID, userID).
+		Delete(&collection).Error; err != nil {
+		return nil, err
+	}
+	return &collection, nil
+}

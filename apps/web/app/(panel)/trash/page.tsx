@@ -1,14 +1,10 @@
-import { getInboxAttachments } from "@/lib/api/attachments"
-import { getTagsStats } from "@/lib/tags"
+import { getTrashAttachments } from "@/lib/api/attachments"
 import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
-import Header, { HeaderContent } from "../components/header"
-import SidebarTrigger from "../components/header/sidebar-trigger"
+import CardGrid from "../components/card-grid"
+import Header from "../components/header"
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
 import Cover from "../components/preview/cover"
-import TagStats from "../components/tags-stats"
-import Collections from "./components/collections"
-import InboxGrid from "./components/inbox-grid"
 
 
 type PageProps = {
@@ -18,22 +14,13 @@ type PageProps = {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const inbox = await getInboxAttachments()
   const { attachment } = await searchParams
 
-  const attachments = (inbox || []).map(item => item.attachment)
-  const tags = (attachments || [])?.flatMap(inbox => inbox.tags)
-  const tagStats = getTagsStats(tags)
+  const attachments = await getTrashAttachments()
 
   return (
     <>
       <Header>
-        <HeaderContent>
-          <SidebarTrigger />
-        </HeaderContent>
-        <TagStats tags={tagStats} />
-        <HeaderContent>
-        </HeaderContent>
       </Header>
       <AnimatePresence mode="popLayout">
         {
@@ -46,14 +33,13 @@ export default async function Page({ searchParams }: PageProps) {
         }
       </AnimatePresence>
       <div className="w-full space-y-6 px-6 pt-6">
-        <Collections />
         {
           (attachments || []).length === 0 &&
           <div className="w-full aspect-2/1 flex items-center justify-center">
             <span className="text-muted-foreground">Нет входящих</span>
           </div>
         }
-        <InboxGrid defaultInbox={inbox || []} />
+        <CardGrid attachments={attachments || []} withPreview scope="ref" />
       </div>
     </>
   )

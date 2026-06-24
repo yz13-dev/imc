@@ -1,8 +1,12 @@
 
 import { getCollectionAttachments } from "@/lib/api/attachments"
-import Header from "../../components/header"
+import { getTagsStats } from "@/lib/tags"
+import Header, { HeaderContent } from "../../components/header"
+import CollectionMenu from "../../components/header/collection-menu"
+import CollectionSelect from "../../components/header/collection-select"
+import SidebarTrigger from "../../components/header/sidebar-trigger"
+import TagStats from "../../components/tags-stats"
 import CollectionGrid from "./components/collection-grid"
-
 
 type PageProps = {
   params: Promise<{
@@ -18,13 +22,23 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { id } = await searchParams
 
   const attachments = await getCollectionAttachments(collection)
-  // const collectionCards = await getCollectionCards(collection)
-  // console.log("collectionCards", collectionCards)
+
+  const tags = (attachments || [])?.flatMap(inbox => inbox.tags)
+  const tagStats = getTagsStats(tags)
 
   const scope = `${user}/${collection}`
   return (
     <>
-      <Header defaultCollection={collection} />
+      <Header>
+        <HeaderContent>
+          <SidebarTrigger />
+          <CollectionSelect defaultCollection={collection} />
+        </HeaderContent>
+        <TagStats tags={tagStats} />
+        <HeaderContent>
+          <CollectionMenu collectionId={collection} />
+        </HeaderContent>
+      </Header>
       {
         id &&
         <div className="absolute inset-0 w-full min-h-svh bg-background z-50"></div>

@@ -40,3 +40,22 @@ export async function createCollection({ name, description, user_id }: { name: s
     return null
   }
 }
+
+export async function deleteCollection(collectionID: string) {
+  try {
+    const { data, error } = await axios<Collection | null>({
+      method: "DELETE",
+      url: getApiUrl(`/v1/my/collections/${collectionID}`)
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}

@@ -47,20 +47,20 @@ func GetCollectionAttachments(collectionID uuid.UUID, UserID int64, db *gorm.DB)
 	return attachments, nil
 }
 
-func GetAllAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
-	attachments, err := repositories.GetAllAttachments(UserID, db)
+func GetAllAttachments(UserID int64, query repositories.ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetAllAttachments(UserID, query, db)
 	if err != nil {
 		return nil, err
 	}
 	return attachments, nil
 }
 
-func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
-	attachment, err := repositories.TrashAttachment(UserID, attachmentID, db)
+func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
+	err := repositories.TrashAttachment(UserID, attachmentID, db)
 	if err != nil {
-		return models.Attachment{}, err
+		return err
 	}
-	return attachment, nil
+	return nil
 }
 
 func UntrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
@@ -77,4 +77,12 @@ func DeleteAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.At
 		return models.Attachment{}, err
 	}
 	return attachment, nil
+}
+
+func GetTrashAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetTrashAttachments(UserID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachments, nil
 }

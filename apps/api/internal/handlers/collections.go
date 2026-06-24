@@ -182,3 +182,57 @@ func PostCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 }
+
+func DeleteCollectionHandler(w http.ResponseWriter, r *http.Request) {
+	collectionID := r.PathValue("collectionID")
+
+	if collectionID == "" {
+		http.Error(w, "collectionID is required", http.StatusBadRequest)
+		return
+	}
+
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	collection, err := services.DeleteCollection(collectionID, userID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hub := middleware.GetEventsHub(r.Context())
+	if hub == nil {
+		log.Println("events hub not found")
+		return
+	}
+
+	const EventKey = "collections:delete"
+	hub.Publish(userID, events.Event{
+		Type: EventKey,
+		Data: models.EventData{
+			ID: collectionID,
+		},
+	})
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(collection); err != nil {
+		http.Error(
+			w,
+			"failed to encode response",
+			http.StatusInternalServerError,
+		)
+	}
+}

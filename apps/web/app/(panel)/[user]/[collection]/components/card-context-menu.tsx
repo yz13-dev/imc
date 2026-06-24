@@ -18,10 +18,12 @@ type CardDropdownMenuProps = {
 
 
 const removeAttachment = async (id: string) => {
-  await permanentlyDeleteAttachment(id)
+  const result = await permanentlyDeleteAttachment(id)
+  console.log("REMOVED", result)
 }
 const trashAttachment = async (id: string) => {
-  await moveToTrashAttachment(id)
+  const result = await moveToTrashAttachment(id)
+  console.log("TRASHED", result)
 }
 
 export default function CardDropdownMenu({ className = "", children, attachmentId, label = "Без названия" }: CardDropdownMenuProps) {
@@ -37,9 +39,9 @@ export default function CardDropdownMenu({ className = "", children, attachmentI
 
   const deleteAttachment = async (id: string) => {
     if (isMetaHeld) {
-      await trashAttachment(id)
-    } else {
       await removeAttachment(id)
+    } else {
+      await trashAttachment(id)
     }
     setOpen(false)
   }

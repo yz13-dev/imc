@@ -9,7 +9,7 @@ import (
 
 func GetAttachments(UserID int64, db *gorm.DB) ([]models.Attachment, error) {
 	var attachments []models.Attachment
-	if err := db.Where("user_id = ?", UserID).Find(&attachments).Error; err != nil {
+	if err := db.Where("user_id = ? AND is_deleted = false", UserID).Find(&attachments).Error; err != nil {
 		return nil, err
 	}
 	return attachments, nil
@@ -21,7 +21,7 @@ func GetAttachmentsWithTags(ids []uuid.UUID, UserID int64, db *gorm.DB) ([]model
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("user_id = ? AND id IN ?", UserID, ids).
+		Where("user_id = ? AND id IN ? AND is_deleted = false", UserID, ids).
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID int64, db *gorm.
 		return models.AttachmentWithInbox{}, nil
 	}
 
-	if err := db.Table("attachments").Where("id = ? AND user_id = ?", attachmentID, UserID).First(&attachment).Error; err != nil {
+	if err := db.Table("attachments").Where("id = ? AND user_id = ? AND is_deleted = false", attachmentID, UserID).First(&attachment).Error; err != nil {
 		return models.AttachmentWithInbox{}, err
 	}
 
@@ -144,7 +144,7 @@ func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attac
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("user_id = ? AND id = ?", UserID, attachmentID).
+		Where("user_id = ? AND id = ? AND is_deleted = false", UserID, attachmentID).
 		First(&attachment).Error; err != nil {
 		return models.AttachmentWithTags{}, err
 	}
@@ -162,25 +162,32 @@ func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
 	return nil
 }
 
-func GetAllAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+type ListQuery struct {
+	Offset int
+	Limit  int
+}
+
+func GetAllAttachments(UserID int64, query ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	if err := db.
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("user_id = ?", UserID).
+		Where("user_id = ? AND is_deleted = false", UserID).
+		Order("created_at DESC").
+		Offset(query.Offset).
+		Limit(query.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
 	return attachments, nil
 }
 
-func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
-	var attachment models.Attachment
-	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).First(&attachment).Error; err != nil {
-		return models.Attachment{}, err
+func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
+	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).Update("is_deleted", true).Error; err != nil {
+		return err
 	}
-	return attachment, nil
+	return nil
 }
 
 func UntrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
@@ -190,10 +197,31 @@ func UntrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
 	return nil
 }
 
-func DeleteAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+func DeleteAttachment(userID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
 	var attachment models.Attachment
-	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).Delete(&attachment).Error; err != nil {
+
+	if err := db.
+		Where("user_id = ? AND id = ?", userID, attachmentID).
+		First(&attachment).Error; err != nil {
 		return models.Attachment{}, err
 	}
+
+	if err := db.Delete(&attachment).Error; err != nil {
+		return models.Attachment{}, err
+	}
+
 	return attachment, nil
+}
+
+func GetTrashAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	var attachments []models.AttachmentWithTags
+	if err := db.
+		Table("attachments").
+		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
+		Where("user_id = ? AND is_deleted = true", UserID).
+		Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+	return attachments, nil
 }

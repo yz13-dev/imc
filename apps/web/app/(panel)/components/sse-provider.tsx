@@ -14,9 +14,20 @@ function getEventData<T extends EventData>(e: MessageEvent): T {
 
 export default function ServerSideEvents({ }: ServerSideEventsProps) {
 
+  const collections = useGlobalStore(state => state.collections);
   const refreshInbox = useGlobalStore(state => state.refreshInbox);
   const refreshCollection = useGlobalStore(state => state.refreshCollection);
   const refreshCollections = useGlobalStore(state => state.refreshCollections);
+  const refreshTrash = useGlobalStore(state => state.refreshTrash);
+
+  const fullRefresh = async () => {
+    await refreshInbox()
+    await refreshCollections()
+    await refreshTrash()
+    for (const collection of collections) {
+      await refreshCollection(collection.id)
+    }
+  }
 
   const onInboxChange = (e: MessageEvent) => {
     console.log("[ NEW INBOX EVENT ]", e, e.type)
@@ -37,6 +48,15 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     }
     if (e.type === "collections:remove") {
       refreshCollections()
+    }
+  }
+  const onTrashChange = (e: MessageEvent) => {
+    console.log("[ NEW TRASH EVENT ]", e, e.type)
+    if (e.type === "trash:new") {
+      fullRefresh()
+    }
+    if (e.type === "trash:remove") {
+      refreshTrash()
     }
   }
 
@@ -60,24 +80,36 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     const es = new EventSource(getApiUrl("/v1/my/events"), {
       withCredentials: true
     })
+    // inbox
     es.addEventListener("inbox:new", onInboxChange)
     es.addEventListener("inbox:remove", onInboxChange)
+    //collection
     es.addEventListener("collection:new", onCollectionChange)
     es.addEventListener("collection:update", onCollectionChange)
     es.addEventListener("collection:remove", onCollectionChange)
+    //collections
     es.addEventListener("collections:new", onCollectionsChange)
     es.addEventListener("collections:update", onCollectionsChange)
     es.addEventListener("collections:remove", onCollectionsChange)
+    // trash
+    es.addEventListener("trash:new", onTrashChange)
+    es.addEventListener("trash:remove", onTrashChange)
 
     return () => {
+      // inbox
       es.removeEventListener("inbox:new", onInboxChange)
       es.removeEventListener("inbox:remove", onInboxChange)
+      //collection
       es.removeEventListener("collection:new", onCollectionChange)
       es.removeEventListener("collection:update", onCollectionChange)
       es.removeEventListener("collection:remove", onCollectionChange)
+      //collections
       es.removeEventListener("collections:new", onCollectionsChange)
       es.removeEventListener("collections:update", onCollectionsChange)
       es.removeEventListener("collections:remove", onCollectionsChange)
+      // trash
+      es.removeEventListener("trash:new", onTrashChange)
+      es.removeEventListener("trash:remove", onTrashChange)
     }
   }, [])
   return null

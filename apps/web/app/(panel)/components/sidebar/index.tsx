@@ -2,7 +2,7 @@
 import { useGlobalStore } from "@/lib/stores/global-store";
 import type { Collection } from "@/types/collections";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "@workspace/ui/components/sidebar";
 import { InboxIcon, LayoutDashboardIcon, PlusIcon, SquareLibraryIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -18,6 +18,7 @@ export default function AppSidebar({ username = "", email = "", collections: def
   const inbox = useGlobalStore(state => state.inbox)
   const collectionsItems = useGlobalStore(state => state.collectionsItems)
   const allCollections = useGlobalStore(state => state.collections)
+  const trash = useGlobalStore(state => state.trash)
 
   const collections = useMemo(() => {
     const unique = [...defaultCollections, ...allCollections].filter((item, index, self) =>
@@ -46,9 +47,23 @@ export default function AppSidebar({ username = "", email = "", collections: def
                 <SidebarMenuBadge>{inbox.length}</SidebarMenuBadge>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton render={<Link href="/trash" />}>
                   <Trash2Icon />
                   <span>Корзина</span>
+                </SidebarMenuButton>
+                <SidebarMenuBadge>{trash.length}</SidebarMenuBadge>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/new/card" />}>
+                  <PlusIcon />
+                  <span>Новая карточка</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

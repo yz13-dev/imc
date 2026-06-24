@@ -1,5 +1,5 @@
 
-import type { AttachmentWithTags } from "@/types/attachments";
+import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
 import { axios } from "../axios";
 import { getApiUrl } from "../url";
@@ -79,10 +79,19 @@ export async function getCollectionAttachments(collectionID: string): Promise<At
   }
 }
 
-export async function getAllAttachments(): Promise<AttachmentWithTags[] | null> {
+type ListQuery = {
+  offset?: number;
+  limit?: number;
+}
+export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWithTags[] | null> {
   try {
+    const url = new URL("/v1/my/attachments", getApiUrl())
+    if (query) {
+      if (query.offset !== undefined) url.searchParams.set("offset", query.offset.toString())
+      if (query.limit !== undefined) url.searchParams.set("limit", query.limit.toString())
+    }
     const { data, error } = await axios<AttachmentWithTags[]>({
-      url: getApiUrl(`/v1/my/attachments`),
+      url: url.toString(),
     })
 
     if (error) {
@@ -132,5 +141,24 @@ export async function moveToTrashAttachment(attachmentID: string): Promise<{ id:
   } catch (error) {
     console.error(error)
     return null;
+  }
+}
+
+export async function getTrashAttachments(): Promise<AttachmentWithMaybeTagsAndSource[] | null> {
+  try {
+    const { data, error } = await axios<AttachmentWithMaybeTagsAndSource[]>({
+      url: getApiUrl("/v1/my/attachments/trash")
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    // console.log("[INBOX]", data)
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null
   }
 }
