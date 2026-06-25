@@ -11,6 +11,7 @@ import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import RefContent from "../../components/ref-content"
+import NewTags from "../../components/tags/new-tags"
 import RefHeader from "./components/ref-header"
 
 
@@ -101,7 +102,9 @@ export default async function Page({ params }: PageProps) {
                     <span className="capitalize text-base text-muted-foreground">
                       Тэги
                     </span>
-                    <Button variant="secondary" size="xs"><span>Добавить</span><PlusIcon /></Button>
+                    <NewTags>
+                      <Button variant="secondary" size="xs"><span>Добавить</span><PlusIcon /></Button>
+                    </NewTags>
                   </div>
                   <div className="flex items-start gap-1 flex-wrap">
                     {tags.length === 0 && <span className="text-muted-foreground h-8">—</span>}

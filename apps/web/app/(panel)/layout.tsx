@@ -1,5 +1,5 @@
 import CollectionsCollector from "@/components/collections-collector";
-import { getInboxAttachments, getTrashAttachments } from "@/lib/api/attachments";
+import { getAllAttachments, getInboxAttachments, getTrashAttachments } from "@/lib/api/attachments";
 import { getCollections } from "@/lib/api/collections";
 import { getMe } from "@/lib/me";
 import { GlobalStoreProvider } from "@/lib/stores/global-store";
@@ -19,10 +19,11 @@ export default async function Layout({ children }: LayoutProps) {
   const userPromise = getMe()
   const collectionsPromise = getCollections()
   const inboxPromise = getInboxAttachments()
+  const allAttachmentsPromise = getAllAttachments()
   const trashPromise = getTrashAttachments()
 
 
-  const [user, collections, inbox, trash] = await Promise.all([userPromise, collectionsPromise, inboxPromise, trashPromise])
+  const [user, collections, inbox, trash, allAttachments] = await Promise.all([userPromise, collectionsPromise, inboxPromise, trashPromise, allAttachmentsPromise])
   if (!user) return redirect("/")
 
   // const userId = user.id
@@ -37,6 +38,7 @@ export default async function Layout({ children }: LayoutProps) {
         collections={collections || []}
         inbox={inbox || []}
         trash={trash || []}
+        all={allAttachments || []}
       >
         <CollectionsCollector collections={collections || []} />
         <ServerSideEvents />

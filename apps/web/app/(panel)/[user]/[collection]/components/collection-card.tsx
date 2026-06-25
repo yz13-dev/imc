@@ -12,14 +12,16 @@ import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import CardContextMenu from "./card-context-menu"
 
-type CollectionCardProps = {
+export type CollectionCardProps = {
   scope?: string
   className?: string
   style?: React.CSSProperties
   preview?: boolean
+  noLink?: boolean
+  containerClassName?: string
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false }: CollectionCardProps) {
+export default function CollectionCard({ mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "" }: CollectionCardProps) {
 
   const href = scope ? `/${scope}/${id}` : `/${id}`
 
@@ -34,14 +36,14 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
       className="group w-full break-inside-avoid"
     >
       <div>
-        <div className="w-full p-2 bg-muted rounded-sm">
+        <div className={cn("w-full p-2 bg-muted rounded-sm", containerClassName)}>
           <AnimatePresence>
             <RefContent
               id={id}
               mimeType={mime_type}
               src={src}
               className={cn(
-                "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm border",
+                "rounded-sm *:[&_img]:rounded-sm *:[&_video]:rounded-sm border",
                 "outline-4 outline-transparent group/-hover:outline-foreground/10 bg-foreground/10",
                 "group-hover:scale/-101 will-change-transform transition-all",
                 className
@@ -49,7 +51,10 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
               blurhash={blurhash}
               style={style}
             >
-              <Link href={preview ? `?attachment=${id}` : href} className="absolute inset-0 z-10" />
+              {
+                !noLink &&
+                <Link href={preview ? `?attachment=${id}` : href} className="absolute inset-0 z-10" />
+              }
 
               <div className="absolute bottom-2 left-0 px-2 z-10 w-full flex items-center justify-between gap-1">
                 <div className="flex items-center gap-1">

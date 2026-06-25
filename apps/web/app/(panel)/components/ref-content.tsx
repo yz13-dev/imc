@@ -48,22 +48,16 @@ export default function RefContent({ id, blurhash, src, className = "", children
       {children}
       <motion.div
         layoutId={id}
-        className="size-full will-change-auto relative bg-muted overflow-clip"
+        className="size-full will-change-auto relative bg-muted overflow-clip bg-no-repeat bg-cover bg-top-left"
         onClick={() => setId(id)}
         transition={{
           duration: .15,
           ease: cubicBezier(.56, .17, .05, .85)
         }}
+        style={{
+          backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
+        }}
       >
-        {
-          blurhash &&
-          <div
-            style={{
-              backgroundImage: `url(${toBlurDataURL(blurhash)})`
-            }}
-            className="bg-no-repeat size-full bg-cover bg-top-left blur-3xl"
-          />
-        }
         {
           HIDE_CONTENT &&
           isVideo &&
@@ -107,6 +101,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
             alt={alt}
           />
         }
+        <div className="absolute inset-0" data-id={id} />
       </motion.div>
     </motion.figure>
   )

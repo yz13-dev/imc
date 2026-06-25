@@ -19,16 +19,6 @@ CREATE TABLE IF NOT EXISTS cards (
     references sources(id)
     on delete set null,
 
-  -- Оригинальная ссылка
-  source_url text,
-
-  -- fallback label
-  source_label text,
-
-  -- Статусы
-  is_favorite boolean not null default false,
-  is_archived boolean not null default false,
-
   -- Timestamps
   created_at timestamptz not null
     default now(),

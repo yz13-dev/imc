@@ -1,43 +1,35 @@
 "use client"
-import { motion } from "motion/react"
-import { useQueryState } from "nuqs"
-import { useEffect } from "react"
+import type { OverlayProps } from "@/components/overlay";
+import Overlay from "@/components/overlay";
+import useCover from "@/hooks/use-cover";
+import { useQueryState } from "nuqs";
+import { useEffect } from "react";
 
 
 type CoverProps = {
-  children?: React.ReactNode
   coverKey?: string
-}
-
-
-const lockScroll = () => {
-  document.body.style.overflow = "hidden"
-}
-
-const unlockScroll = () => {
-  document.body.style.overflow = "auto"
-}
+} & OverlayProps
 
 export default function Cover({ children, coverKey = "id" }: CoverProps) {
+  const { lock, unlock } = useCover()
   const [id, setId] = useQueryState(coverKey)
   useEffect(() => {
     if (!id) {
-      unlockScroll()
+      unlock()
       return
     }
-    lockScroll()
-    return () => unlockScroll()
+    lock()
+    return () => unlock()
   }, [id])
   if (!id) return null
   return (
-    <motion.div
-      className="fixed inset-0 w-full h-svh z-50 py-6 backdrop-blur-sm flex items-end justify-center bg-black/10"
+    <Overlay
       onClick={e => {
         e.stopPropagation()
         setId(null)
       }}
     >
       {children}
-    </motion.div>
+    </Overlay>
   )
 }

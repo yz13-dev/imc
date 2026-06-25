@@ -33,22 +33,28 @@ export default function Collections() {
               <div className="w-full">
                 <div className="w-full aspect-square relative gap-2 grid grid-cols-2 grid-rows-2 *:h-full">
                   {
-                    attachments.map((item, index) => {
-                      const isLast = index === attachments.length - 1
-                      return (
-                        <OptionalVideoProvider key={item.id} duration={item.duration_ms}>
-                          <RefContent
-                            mimeType={item.mime_type}
-                            className={cn(
-                              "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm border",
-                              "nth-[1]:hover:rotate-6 nth-[2]:hover:-rotate-6 nth-[3]:hover:rotate-3 will-change-transform transition-transform",
-                              isLast && "col-span-full"
-                            )}
-                            {...item}
-                          />
-                        </OptionalVideoProvider>
-                      )
-                    })
+                    attachments
+                      .toSorted((a, b) => {
+                        if (a.mime_type.startsWith("video/") && b.mime_type.startsWith("image/")) return 1
+                        if (a.mime_type.startsWith("image/") && b.mime_type.startsWith("video/")) return -1
+                        return 0
+                      })
+                      .map((item, index) => {
+                        const isLast = index === attachments.length - 1
+                        return (
+                          <OptionalVideoProvider key={item.id} duration={item.duration_ms}>
+                            <RefContent
+                              mimeType={item.mime_type}
+                              className={cn(
+                                "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm border",
+                                "nth-[1]:hover:rotate-6 nth-[2]:hover:-rotate-6 nth-[3]:hover:rotate-3 will-change-transform transition-transform",
+                                isLast && "col-span-full"
+                              )}
+                              {...item}
+                            />
+                          </OptionalVideoProvider>
+                        )
+                      })
                   }
                 </div>
               </div>
