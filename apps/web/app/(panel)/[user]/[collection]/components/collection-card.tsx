@@ -6,11 +6,36 @@ import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { ArrowUpRightIcon, GlobeIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import CardContextMenu from "./card-context-menu"
+
+
+export type CollectionCardSkeletonProps = {
+  className?: string
+  containerClassName?: string
+  style?: React.CSSProperties
+}
+export function CollectionCardSkeleton({ className = "", containerClassName = "", style = {} }: CollectionCardSkeletonProps) {
+
+  return (
+    <div
+      className="group w-full break-inside-avoid"
+    >
+      <div>
+        <div className={cn("w-full p-2 bg-muted rounded-sm", containerClassName)}>
+          <Skeleton
+            className={className}
+            style={style}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export type CollectionCardProps = {
   scope?: string

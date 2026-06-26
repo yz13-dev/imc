@@ -1,12 +1,11 @@
 import { getAllAttachments } from "@/lib/api/attachments";
-import { getTagsStats } from "@/lib/tags";
+import { getQueryClient } from "@/lib/query-client";
 import { AnimatePresence } from "motion/react";
 import { Suspense } from "react";
 import Header, { HeaderContent } from "../components/header";
 import SidebarTrigger from "../components/header/sidebar-trigger";
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment";
 import Cover from "../components/preview/cover";
-import TagStats from "../components/tags-stats";
 import AutoLoader from "./components/auto-loader";
 
 
@@ -19,10 +18,21 @@ type PageProps = {
 export default async function Page({ searchParams }: PageProps) {
   const { attachment } = await searchParams
 
-  const attachments = await getAllAttachments()
+  const queryClient = getQueryClient()
 
-  const tags = (attachments || [])?.flatMap(inbox => inbox.tags)
-  const tagStats = getTagsStats(tags)
+  // look ma, no await
+  await queryClient.prefetchInfiniteQuery({
+    initialPageParam: 0,
+    queryKey: ["attachments"],
+    queryFn: async ({ pageParam }) => {
+      const data = await getAllAttachments({ offset: pageParam })
+      return data || []
+    }
+  })
+  // const attachments = await getAllAttachments()
+
+  // const tags = [] // (attachments || [])?.flatMap(inbox => inbox.tags)
+  // const tagStats = getTagsStats(tags)
 
   return (
     <>
@@ -30,7 +40,7 @@ export default async function Page({ searchParams }: PageProps) {
         <HeaderContent>
           <SidebarTrigger />
         </HeaderContent>
-        <TagStats tags={tagStats} />
+        {/*<TagStats queryKey="attachments" />*/}
         <HeaderContent>
         </HeaderContent>
       </Header>
@@ -52,7 +62,7 @@ export default async function Page({ searchParams }: PageProps) {
           withPreview
         />
         }*/}
-        <AutoLoader attachments={attachments || []} />
+        <AutoLoader attachments={[]} />
       </div>
     </>
   )

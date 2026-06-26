@@ -19,3 +19,8 @@ type AttachmentTag struct {
 func (AttachmentTag) TableName() string {
 	return "attachments_tags"
 }
+
+type NewAttachmentTag struct {
+	AttachmentID uuid.UUID
+	TagID        uuid.UUID
+}

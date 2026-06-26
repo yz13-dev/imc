@@ -104,6 +104,8 @@ func main() {
 			// my routes
 			r.Route("/my", func(r chi.Router) {
 				r.Get("/events", handlers.EventsHandler(hub))
+				r.Get("/tags/search", handlers.GetTagsSearch)
+				r.Post("/tags/new", handlers.PostNewTag)
 				r.Get("/attachments", handlers.GetAllAttachments)
 				r.Get("/attachments/inbox", handlers.GetInboxAttachments)
 				r.Post("/attachments/inbox", handlers.PostInInbox)
@@ -113,6 +115,7 @@ func main() {
 				r.Delete("/attachments/{attachmentID}", handlers.DeleteAttachment)
 				r.Post("/attachments/{attachmentID}/trash", handlers.TrashAttachment)
 				r.Post("/attachments/{attachmentID}/untrash", handlers.UnTrashAttachment)
+				r.Post("/attachments/{attachmentID}/tags", handlers.PostConnectAttachmentTag)
 				r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
 				r.Get("/cards", handlers.GetMyCardsHandler)
 				r.Get("/collections", handlers.GetMyCollectionsHandler)

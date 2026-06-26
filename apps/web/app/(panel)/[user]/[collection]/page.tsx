@@ -1,6 +1,6 @@
 
 import { getCollectionAttachments } from "@/lib/api/attachments"
-import { getTagsStats } from "@/lib/tags"
+import { getQueryClient } from "@/lib/query-client"
 import Header, { HeaderContent } from "../../components/header"
 import CollectionMenu from "../../components/header/collection-menu"
 import CollectionSelect from "../../components/header/collection-select"
@@ -21,10 +21,21 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { user, collection } = await params
   const { id } = await searchParams
 
-  const attachments = await getCollectionAttachments(collection)
+  const queryClient = getQueryClient()
 
-  const tags = (attachments || [])?.flatMap(inbox => inbox.tags)
-  const tagStats = getTagsStats(tags)
+  queryClient
+    .prefetchQuery({
+      queryKey: ["collections", collection],
+      queryFn: () => {
+        const data = getCollectionAttachments(collection)
+        return data
+      }
+    })
+
+  // const attachments = await getCollectionAttachments(collection)
+
+  // const tags = [] // (attachments || [])?.flatMap(inbox => inbox.tags)
+  // const tagStats = getTagsStats(tags)
 
   const scope = `${user}/${collection}`
   return (
@@ -34,7 +45,7 @@ export default async function Page({ params, searchParams }: PageProps) {
           <SidebarTrigger />
           <CollectionSelect defaultCollection={collection} />
         </HeaderContent>
-        <TagStats tags={tagStats} />
+        <TagStats queryKey={collection} />
         <HeaderContent>
           <CollectionMenu collectionId={collection} />
         </HeaderContent>
@@ -46,7 +57,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       <div className="w-full px-6 pt-6">
         <CollectionGrid
           collection={collection}
-          defaultAttachments={attachments || []}
+          defaultAttachments={[]}
         />
       </div>
       <footer className="p-6">

@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "@/providers/query";
 import { Toaster } from "@workspace/ui/components/sonner";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import "@workspace/ui/globals.css";
@@ -90,7 +91,9 @@ export default function RootLayout({
           <Toaster />
           <TooltipProvider>
             <NuqsAdapter>
-              {children}
+              <QueryProvider>
+                {children}
+              </QueryProvider>
             </NuqsAdapter>
           </TooltipProvider>
         </ThemeProvider>

@@ -1,5 +1,5 @@
 import { getInboxAttachments } from "@/lib/api/attachments"
-import { getTagsStats } from "@/lib/tags"
+import { getQueryClient } from "@/lib/query-client"
 import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
 import Header, { HeaderContent } from "../components/header"
@@ -18,12 +18,14 @@ type PageProps = {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const inbox = await getInboxAttachments()
   const { attachment } = await searchParams
 
-  const attachments = (inbox || []).map(item => item.attachment)
-  const tags = (attachments || [])?.flatMap(inbox => inbox.tags)
-  const tagStats = getTagsStats(tags)
+  const queryClient = getQueryClient()
+
+  queryClient.prefetchQuery({
+    queryKey: ["attachments", "inbox"],
+    queryFn: () => getInboxAttachments().then(data => data), // <-- serialize the data on the server
+  })
 
   return (
     <>
@@ -31,7 +33,7 @@ export default async function Page({ searchParams }: PageProps) {
         <HeaderContent>
           <SidebarTrigger />
         </HeaderContent>
-        <TagStats tags={tagStats} />
+        <TagStats queryKey="inbox" />
         <HeaderContent>
         </HeaderContent>
       </Header>
@@ -47,13 +49,7 @@ export default async function Page({ searchParams }: PageProps) {
       </AnimatePresence>
       <div className="w-full space-y-6 px-6 pt-6">
         <Collections />
-        {
-          (attachments || []).length === 0 &&
-          <div className="w-full aspect-2/1 flex items-center justify-center">
-            <span className="text-muted-foreground">Нет входящих</span>
-          </div>
-        }
-        <InboxGrid defaultInbox={inbox || []} />
+        <InboxGrid defaultInbox={[]} />
       </div>
     </>
   )

@@ -1,12 +1,19 @@
 "use client"
 import CardGrid from "@/app/(panel)/components/card-grid";
 import Overlay from "@/components/overlay";
-import { useGlobalStore } from "@/lib/stores/global-store";
+import { getAllAttachments } from "@/lib/api/attachments";
+import { useQuery } from "@tanstack/react-query";
 import { useNewCardStore } from "./new-card-store";
 
 export default function AttachmentsPickOverlay() {
 
-  const all = useGlobalStore(state => state.all)
+  const { data } = useQuery({
+    queryKey: ["attachments"], queryFn: async () => {
+      return await getAllAttachments()
+    }
+  })
+  const all = data || []
+  // const all = useGlobalStore(state => state.all)
 
   const selected = useNewCardStore(state => state.attachments)
   const setSelected = useNewCardStore(state => state.setAttachments)
