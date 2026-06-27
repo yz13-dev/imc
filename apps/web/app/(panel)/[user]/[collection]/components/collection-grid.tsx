@@ -17,7 +17,7 @@ export default function CollectionGrid({ defaultAttachments = [], collection }: 
   // const attachments = useCollectionAttachments({ collection, attachments: defaultAttachments })
 
   const { data, isLoading } = useSuspenseQuery({
-    queryKey: ["collections", collection],
+    queryKey: ["attachments", "collections", collection],
     queryFn: () => {
       const data = getCollectionAttachments(collection)
       return data

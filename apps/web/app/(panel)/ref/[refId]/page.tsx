@@ -1,3 +1,4 @@
+import { OptionalVideoProvider } from "@/components/video-provider"
 import { getAttachment } from "@/lib/api/attachments"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { getRefSrc } from "@/lib/ref-src"
@@ -53,21 +54,23 @@ export default async function Page({ params }: PageProps) {
       <RefHeader />
       <div className="w-full min-h-svh">
         <div className="size-full flex lg:flex-row flex-col">
-          <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
-            <AnimatePresence>
-              <RefContent
-                id={attachment.id}
-                src={refSrc}
-                mimeType={attachment.mime_type}
-                blurhash={attachment.blurhash}
-                alt={title}
-                className="rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm"
-                style={{
-                  aspectRatio: `${attachment.width}/${attachment.height}`
-                }}
-              />
-            </AnimatePresence>
-          </div>
+          <OptionalVideoProvider duration={attachment.duration_ms}>
+            <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
+              <AnimatePresence>
+                <RefContent
+                  id={attachment.id}
+                  src={refSrc}
+                  mimeType={attachment.mime_type}
+                  blurhash={attachment.blurhash}
+                  alt={title}
+                  className="rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm"
+                  style={{
+                    aspectRatio: `${attachment.width}/${attachment.height}`
+                  }}
+                />
+              </AnimatePresence>
+            </div>
+          </OptionalVideoProvider>
           <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 lg:bg-transparent bg-background/70 backdrop-blur-xs">
             <div className="w-full space-y-4 max-w-xl mx-auto">
               <div className="flex flex-col gap-2">

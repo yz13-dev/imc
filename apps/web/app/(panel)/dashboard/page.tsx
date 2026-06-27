@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: PageProps) {
   const queryClient = getQueryClient()
 
   // look ma, no await
-  await queryClient.prefetchInfiniteQuery({
+  queryClient.prefetchInfiniteQuery({
     initialPageParam: 0,
     queryKey: ["attachments"],
     queryFn: async ({ pageParam }) => {

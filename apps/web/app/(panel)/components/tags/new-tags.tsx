@@ -1,6 +1,7 @@
 "use client"
 import { useDebounce } from "@/hooks/use-debounce";
 import { connectTag, createTag, disconnectTag, getSearchTags } from "@/lib/api/tags";
+import { getQueryClient } from "@/lib/query-client";
 import type { Tag } from "@/types/attachments";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonGroup } from "@workspace/ui/components/button-group";
@@ -25,6 +26,9 @@ type NewTagsProps = {
 }
 
 export default function NewTags({ children, attachmentId, initialTags: initialTagsProp = [] }: NewTagsProps) {
+
+  const queryClient = getQueryClient()
+
   const [open, setOpen] = useState<boolean>(false)
 
   const router = useRouter()
@@ -56,6 +60,7 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
     for (const tag of disconnect) {
       await disconnectTag(attachmentId, tag.id)
     }
+    await queryClient.invalidateQueries({ queryKey: ["attachments"] })
 
     setLoading(false)
     //

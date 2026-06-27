@@ -2,6 +2,7 @@ import CollectionsCollector from "@/components/collections-collector";
 import { getAllAttachments, getInboxAttachments, getTrashAttachments } from "@/lib/api/attachments";
 import { getCollections } from "@/lib/api/collections";
 import { getMe } from "@/lib/me";
+import { getQueryClient } from "@/lib/query-client";
 import { GlobalStoreProvider } from "@/lib/stores/global-store";
 import { UserProvider } from "@/lib/stores/user";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
@@ -18,12 +19,31 @@ export default async function Layout({ children }: LayoutProps) {
 
   const userPromise = getMe()
   const collectionsPromise = getCollections()
-  const inboxPromise = getInboxAttachments()
-  const allAttachmentsPromise = getAllAttachments()
-  const trashPromise = getTrashAttachments()
+  // const inboxPromise = getInboxAttachments()
+  // const allAttachmentsPromise = getAllAttachments()
+  // const trashPromise = getTrashAttachments()
 
+  const queryClient = getQueryClient()
 
-  const [user, collections, inbox, trash, allAttachments] = await Promise.all([userPromise, collectionsPromise, inboxPromise, trashPromise, allAttachmentsPromise])
+  if (false) {
+    queryClient
+      .prefetchQuery({
+        queryKey: ["attachments", "inbox"],
+        queryFn: () => getInboxAttachments().then(data => data), // <-- serialize the data on the server
+      })
+    queryClient
+      .prefetchQuery({
+        queryKey: ["attachments"],
+        queryFn: () => getAllAttachments().then(data => data), // <-- serialize the data on the server
+      })
+    queryClient
+      .prefetchQuery({
+        queryKey: ["attachments", "trash"],
+        queryFn: () => getTrashAttachments().then(data => data), // <-- serialize the data on the server
+      })
+  }
+
+  const [user, collections] = await Promise.all([userPromise, collectionsPromise])
   if (!user) return redirect("/")
 
   // const userId = user.id
@@ -36,9 +56,9 @@ export default async function Layout({ children }: LayoutProps) {
     <UserProvider user={user}>
       <GlobalStoreProvider
         collections={collections || []}
-        inbox={inbox || []}
-        trash={trash || []}
-        all={allAttachments || []}
+        inbox={[]}
+        trash={[]}
+        all={[]}
       >
         <CollectionsCollector collections={collections || []} />
         <ServerSideEvents />

@@ -25,7 +25,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   queryClient
     .prefetchQuery({
-      queryKey: ["collections", collection],
+      queryKey: ["attachments", "collections", collection],
       queryFn: () => {
         const data = getCollectionAttachments(collection)
         return data

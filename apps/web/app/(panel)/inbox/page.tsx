@@ -6,7 +6,7 @@ import Header, { HeaderContent } from "../components/header"
 import SidebarTrigger from "../components/header/sidebar-trigger"
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
 import Cover from "../components/preview/cover"
-import TagStats from "../components/tags-stats"
+import { InboxTagStats } from "../components/tags-stats"
 import Collections from "./components/collections"
 import InboxGrid from "./components/inbox-grid"
 
@@ -33,7 +33,7 @@ export default async function Page({ searchParams }: PageProps) {
         <HeaderContent>
           <SidebarTrigger />
         </HeaderContent>
-        <TagStats queryKey="inbox" />
+        <InboxTagStats />
         <HeaderContent>
         </HeaderContent>
       </Header>

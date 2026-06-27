@@ -1,4 +1,5 @@
 "use client"
+import { getQueryClient } from "@/lib/query-client";
 import { useGlobalStore } from "@/lib/stores/global-store";
 import { getApiUrl } from "@/lib/url";
 import type { EventData } from "@/types/sse";
@@ -14,6 +15,7 @@ function getEventData<T extends EventData>(e: MessageEvent): T {
 
 export default function ServerSideEvents({ }: ServerSideEventsProps) {
 
+  const queryClient = getQueryClient()
   const collections = useGlobalStore(state => state.collections);
   const refreshInbox = useGlobalStore(state => state.refreshInbox);
   const refreshCollection = useGlobalStore(state => state.refreshCollection);
@@ -33,46 +35,56 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     console.log("[ NEW INBOX EVENT ]", e, e.type)
     if (e.type === "inbox:new") {
       refreshInbox()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "inbox"] })
     }
     if (e.type === "inbox:remove") {
       refreshInbox()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "inbox"] })
     }
   }
   const onCollectionsChange = (e: MessageEvent) => {
     console.log("[ NEW COLLECTIONS EVENT ]", e, e.type)
     if (e.type === "collections:new") {
       refreshCollections()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
     }
     if (e.type === "collections:update") {
       refreshCollections()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
     }
     if (e.type === "collections:remove") {
       refreshCollections()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
     }
   }
   const onTrashChange = (e: MessageEvent) => {
     console.log("[ NEW TRASH EVENT ]", e, e.type)
     if (e.type === "trash:new") {
       fullRefresh()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "trash"] })
     }
     if (e.type === "trash:remove") {
       refreshTrash()
+      queryClient.invalidateQueries({ queryKey: ["attachments", "trash"] })
     }
   }
 
   const onCollectionChange = (e: MessageEvent) => {
     console.log("[ NEW COLLECTION EVENT ]", e, e.type)
     if (e.type === "collection:new") {
+      refreshCollections()
       const data = getEventData(e)
-      refreshCollection(data.id)
+      queryClient.invalidateQueries({ queryKey: ["attachments", "collection", data.id] })
     }
     if (e.type === "collection:update") {
+      refreshCollections()
       const data = getEventData(e)
-      refreshCollection(data.id)
+      queryClient.invalidateQueries({ queryKey: ["attachments", "collection", data.id] })
     }
     if (e.type === "collection:remove") {
+      refreshCollections()
       const data = getEventData(e)
-      refreshCollection(data.id)
+      queryClient.invalidateQueries({ queryKey: ["attachments", "collection", data.id] })
     }
   }
 
