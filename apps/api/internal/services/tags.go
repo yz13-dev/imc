@@ -14,8 +14,8 @@ func ConnectTagToAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB
 	return nil
 }
 
-func CreateTag(name string, db *gorm.DB) (*models.Tag, error) {
-	tag, err := repositories.CreateNewTag(models.NewTag{Name: name}, db)
+func CreateTag(name string, userId int64, db *gorm.DB) (*models.Tag, error) {
+	tag, err := repositories.CreateNewTag(models.NewTag{Name: name, UserID: userId}, db)
 	if err != nil {
 		return nil, err
 	}

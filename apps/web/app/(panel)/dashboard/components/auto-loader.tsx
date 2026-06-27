@@ -5,6 +5,7 @@ import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import type { InfiniteData } from "@tanstack/react-query";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "motion/react";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import CardGrid from "../../components/card-grid";
 
@@ -14,6 +15,9 @@ export function AutoLoaderGrid() {
 }
 
 export default function AutoLoader({ attachments = [] }: { attachments?: AttachmentWithMaybeTagsAndSource[] }) {
+
+  const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
+
   const [reachedEnd, setReachedEnd] = useState(false)
 
   const { data, fetchNextPage } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, string[], number>({
@@ -32,7 +36,10 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   })
 
   const all = data // useGlobalStore(state => state.all)
-  const allAttachments = all.pages.flat()
+  const allAttachments = all.pages.flat().filter(attachment => {
+    if (!tagQuery) return true
+    return tagQuery.every(tag => attachment.tags.some(t => t.tag.name.includes(tag)))
+  })
 
   const ref = useRef(null)
   const inView = useInView(ref)

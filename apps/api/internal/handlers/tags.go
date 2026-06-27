@@ -77,7 +77,7 @@ func PostNewTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdTag, err := services.CreateTag(tag.Name, db)
+	createdTag, err := services.CreateTag(tag.Name, userID, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

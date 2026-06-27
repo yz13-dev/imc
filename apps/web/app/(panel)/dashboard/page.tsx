@@ -6,6 +6,7 @@ import Header, { HeaderContent } from "../components/header";
 import SidebarTrigger from "../components/header/sidebar-trigger";
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment";
 import Cover from "../components/preview/cover";
+import TagStats from "../components/tags-stats";
 import AutoLoader from "./components/auto-loader";
 
 
@@ -40,7 +41,7 @@ export default async function Page({ searchParams }: PageProps) {
         <HeaderContent>
           <SidebarTrigger />
         </HeaderContent>
-        {/*<TagStats queryKey="attachments" />*/}
+        <TagStats queryKey="attachments" />
         <HeaderContent>
         </HeaderContent>
       </Header>

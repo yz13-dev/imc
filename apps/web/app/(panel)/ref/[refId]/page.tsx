@@ -30,7 +30,8 @@ export default async function Page({ params }: PageProps) {
   if (!refSrc) return notFound()
 
   const title = attachment.label || refSrc || "-"
-  const tags = attachment.tags || [];
+  const attachmentTags = attachment.tags || [];
+  const tags = attachmentTags.map(tag => tag.tag)
 
   return (
     <div className="relative">
@@ -102,7 +103,7 @@ export default async function Page({ params }: PageProps) {
                     <span className="capitalize text-base text-muted-foreground">
                       Тэги
                     </span>
-                    <NewTags>
+                    <NewTags attachmentId={refId} initialTags={tags}>
                       <Button variant="secondary" size="xs"><span>Добавить</span><PlusIcon /></Button>
                     </NewTags>
                   </div>
@@ -111,7 +112,7 @@ export default async function Page({ params }: PageProps) {
                     {
                       tags.map(tag => {
 
-                        return <Badge key={tag.tag_id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.tag.name}</Badge>
+                        return <Badge key={tag.id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.name}</Badge>
                       })
                     }
                   </div>
