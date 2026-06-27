@@ -35,3 +35,10 @@ func ConnectTagToAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB
 	}
 	return nil
 }
+
+func DisconnectTagFromAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) error {
+	if err := db.Table("attachments_tags").Where("tag_id = ? AND attachment_id = ?", tagID, attachmentID).Delete(&models.NewAttachmentTag{}).Error; err != nil {
+		return err
+	}
+	return nil
+}

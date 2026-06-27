@@ -29,8 +29,6 @@ export default function TagStats({ queryKey }: TagStatsProps) {
     }
   })
 
-  console.log("data", getTagsFromData(data))
-
   const tags = getTagsFromData(data)?.flatMap(item => item.tags)
   const tagStats = getTagsStats(tags)
 

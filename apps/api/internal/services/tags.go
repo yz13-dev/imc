@@ -14,6 +14,13 @@ func ConnectTagToAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB
 	return nil
 }
 
+func DisconnectTagFromAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) error {
+	if err := repositories.DisconnectTagFromAttachment(tagID, attachmentID, db); err != nil {
+		return err
+	}
+	return nil
+}
+
 func CreateTag(name string, userId int64, db *gorm.DB) (*models.Tag, error) {
 	tag, err := repositories.CreateNewTag(models.NewTag{Name: name, UserID: userId}, db)
 	if err != nil {

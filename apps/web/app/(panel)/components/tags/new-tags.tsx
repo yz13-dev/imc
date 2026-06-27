@@ -1,6 +1,6 @@
 "use client"
 import { useDebounce } from "@/hooks/use-debounce";
-import { connectTag, createTag, getSearchTags } from "@/lib/api/tags";
+import { connectTag, createTag, disconnectTag, getSearchTags } from "@/lib/api/tags";
 import type { Tag } from "@/types/attachments";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonGroup } from "@workspace/ui/components/button-group";
@@ -8,8 +8,14 @@ import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@workspace/ui/components/dialog";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { LoaderIcon, TagIcon, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+const decideAboutTags = (initial: Tag[], selected: Tag[]) => {
+  const tagsToConnect = selected.filter(tag => !initial.includes(tag))
+  const tagsToDisconnect = initial.filter(tag => !selected.includes(tag))
+  return { connect: tagsToConnect, disconnect: tagsToDisconnect }
+}
 
 
 type NewTagsProps = {
@@ -21,6 +27,7 @@ type NewTagsProps = {
 export default function NewTags({ children, attachmentId, initialTags: initialTagsProp = [] }: NewTagsProps) {
   const [open, setOpen] = useState<boolean>(false)
 
+  const router = useRouter()
   const [tag, setTag] = useState("")
 
   const [suggestedTags, setSuggestedTags] = useState<Tag[]>([])
@@ -37,20 +44,35 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
 
   const connectTags = async (tags: Tag[]) => {
     setLoading(true)
-    for (const tag of tags) {
+
+    const { connect, disconnect } = decideAboutTags(initialTags, tags)
+
+    console.log("connect", connect, "disconnect", disconnect)
+
+    for (const tag of connect) {
       await connectTag(attachmentId, tag.id)
     }
+
+    for (const tag of disconnect) {
+      await disconnectTag(attachmentId, tag.id)
+    }
+
     setLoading(false)
     //
     setInitialTags(tags)
     setSelectedTags(tags)
     setOpen(false)
+    router.refresh()
   }
 
-  const selectTag = (tagName: string) => {
+  const toggleTag = (tagName: string) => {
 
     const isSelected = selectedTags.some(t => t.name === tagName)
-    if (isSelected) return
+    if (isSelected) {
+      const index = selectedTags.findIndex(t => t.name === tagName)
+      setSelectedTags([...selectedTags.slice(0, index), ...selectedTags.slice(index + 1)])
+      return
+    }
 
     const tag = suggestedTags.find(t => t.name === tagName)
     if (tag) setSelectedTags([...selectedTags, tag])
@@ -94,7 +116,7 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
               <Button size="xs">
                 {tag.name}
               </Button>
-              <Button size="icon-xs">
+              <Button size="icon-xs" onClick={() => toggleTag(tag.name)}>
                 <XIcon />
               </Button>
             </ButtonGroup>
@@ -128,7 +150,7 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
             {
               suggestedTags.map(tag => {
                 return (
-                  <CommandItem key={tag.id} value={tag.name} onSelect={value => selectTag(value)}>
+                  <CommandItem key={tag.id} value={tag.name} onSelect={value => toggleTag(value)}>
                     <TagIcon />
                     <span>{tag.name}</span>
                   </CommandItem>

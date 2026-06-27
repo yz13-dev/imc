@@ -153,3 +153,52 @@ func PostConnectAttachmentTag(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func DeleteDisconnectAttachmentTag(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var tag struct {
+		TagID string `json:"tagID"`
+	}
+	if err := decoder.Decode(&tag); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if tag.TagID == "" {
+		http.Error(w, "tagID is required", http.StatusBadRequest)
+		return
+	}
+
+	_, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	// userID := user.ID.(int64) // as uint64
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachmentID, err := uuid.Parse(r.PathValue("attachmentID"))
+	if err != nil {
+		http.Error(w, "attachmentID is required", http.StatusBadRequest)
+		return
+	}
+	tagID, err := uuid.Parse(tag.TagID)
+	if err != nil {
+		http.Error(w, "tagID is required", http.StatusBadRequest)
+		return
+	}
+
+	err = services.DisconnectTagFromAttachment(tagID, attachmentID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

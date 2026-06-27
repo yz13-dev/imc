@@ -8,7 +8,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
-import { ArrowUpRightIcon, GlobeIcon } from "lucide-react"
+import { ArrowUpRightIcon, GlobeIcon, TagsIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import CardContextMenu from "./card-context-menu"
@@ -46,13 +46,16 @@ export type CollectionCardProps = {
   containerClassName?: string
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "" }: CollectionCardProps) {
+export default function CollectionCard({ tags = [], mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "" }: CollectionCardProps) {
 
   const href = scope ? `/${scope}/${id}` : `/${id}`
 
   const position = useVideoStore(state => state.position)
 
   const duration = duration_ms ? formatDuration(duration_ms - Math.floor(position * 1000)) : null
+
+  const cardTags = tags ?? []
+  const firstTag = cardTags[0]?.tag?.name ?? ""
 
   return (
     <CardContextMenu
@@ -103,6 +106,13 @@ export default function CollectionCard({ mime_type, id, src, scope = "", classNa
                     duration &&
                     <Badge className="h-6 bg-foreground/50 tabular-nums border-foreground/50 text-background backdrop-blur-3xl">
                       {duration}
+                    </Badge>
+                  }
+                  {
+                    cardTags.length > 0 &&
+                    <Badge className="h-6 bg-foreground/50 tabular-nums border-foreground/50 text-background backdrop-blur-3xl">
+                      <TagsIcon />
+                      <span>{firstTag}{cardTags.length > 1 && ` +${cardTags.length - 1}`}</span>
                     </Badge>
                   }
                   <Button size="icon-xs" className="bg-foreground/50 border-foreground/50 text-background backdrop-blur-md" nativeButton={false} render={<Link href={href} />}>

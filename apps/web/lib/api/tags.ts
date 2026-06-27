@@ -59,3 +59,23 @@ export async function connectTag(attachmentId: string, tagId: string): Promise<T
     return null
   }
 }
+
+export async function disconnectTag(attachmentId: string, tagId: string): Promise<Tag | null> {
+  try {
+    const { data, error } = await axios<Tag | null>({
+      url: getApiUrl(`/v1/my/attachments/${attachmentId}/tags`),
+      method: "DELETE",
+      data: { tagId }
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
