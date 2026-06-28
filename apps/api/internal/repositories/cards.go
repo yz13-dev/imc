@@ -16,7 +16,6 @@ func CreateCard(UserID int64, card *models.NewCard, db *gorm.DB) (models.Card, e
 		UserID:      UserID,
 		Title:       card.Title,
 		Description: card.Description,
-		SourceID:    card.SourceID,
 	}
 	if err := db.Table("cards").Create(&card).Error; err != nil {
 		return models.Card{}, err

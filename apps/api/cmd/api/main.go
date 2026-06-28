@@ -104,8 +104,10 @@ func main() {
 			// my routes
 			r.Route("/my", func(r chi.Router) {
 				r.Get("/events", handlers.EventsHandler(hub))
+				// tags
 				r.Get("/tags/search", handlers.GetTagsSearch)
 				r.Post("/tags/new", handlers.PostNewTag)
+				// attachments
 				r.Get("/attachments", handlers.GetAllAttachments)
 				r.Get("/attachments/inbox", handlers.GetInboxAttachments)
 				r.Post("/attachments/inbox", handlers.PostInInbox)
@@ -113,17 +115,20 @@ func main() {
 				r.Get("/attachments/trash", handlers.GetTrashAttachments)
 				r.Get("/attachments/{attachmentID}", handlers.GetAttachment)
 				r.Delete("/attachments/{attachmentID}", handlers.DeleteAttachment)
+				r.Post("/attachments/{attachmentID}/cards", handlers.CreateCardAttachment)
 				r.Post("/attachments/{attachmentID}/trash", handlers.TrashAttachment)
 				r.Post("/attachments/{attachmentID}/untrash", handlers.UnTrashAttachment)
 				r.Post("/attachments/{attachmentID}/tags", handlers.PostConnectAttachmentTag)
 				r.Delete("/attachments/{attachmentID}/tags", handlers.DeleteDisconnectAttachmentTag)
 				r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
+				// card
 				r.Get("/cards", handlers.GetMyCardsHandler)
-				r.Post("/cards", handlers.GetMyCardsHandler)
+				r.Post("/cards", handlers.PostNewCard)
+				// collections
 				r.Get("/collections", handlers.GetMyCollectionsHandler)
 				r.Post("/collections/new", handlers.PostMyNewCollectionHandler)
 				r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
-				r.Post("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
+				// r.Post("/collections/{collectionID}/cards", handlers.CreateCardAttachment)
 				r.Get("/collections/{collectionID}/attachments", handlers.GetCollectionAttachments)
 				r.Delete("/collections/{collectionID}", handlers.DeleteCollectionHandler)
 				// move attachment to collection ?

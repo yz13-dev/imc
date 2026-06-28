@@ -14,11 +14,6 @@ CREATE TABLE IF NOT EXISTS cards (
   -- Описание / заметки
   description text,
 
-  -- Источник
-  source_id uuid
-    references sources(id)
-    on delete set null,
-
   -- Timestamps
   created_at timestamptz not null
     default now(),

@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func AttachCardAttachment(data *models.NewCardAttachment, db *gorm.DB) (models.CardAttachment, error) {
+func CreateCardAttachment(data *models.NewCardAttachment, db *gorm.DB) (models.CardAttachment, error) {
 	cardAttachment, err := repositories.CreateCardAttachment(data, db)
 	if err != nil {
 		return models.CardAttachment{}, err
