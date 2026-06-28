@@ -119,9 +119,11 @@ func main() {
 				r.Delete("/attachments/{attachmentID}/tags", handlers.DeleteDisconnectAttachmentTag)
 				r.Get("/attachments/{attachmentID}/file", handlers.GetAttachmentFile)
 				r.Get("/cards", handlers.GetMyCardsHandler)
+				r.Post("/cards", handlers.GetMyCardsHandler)
 				r.Get("/collections", handlers.GetMyCollectionsHandler)
 				r.Post("/collections/new", handlers.PostMyNewCollectionHandler)
 				r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
+				r.Post("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
 				r.Get("/collections/{collectionID}/attachments", handlers.GetCollectionAttachments)
 				r.Delete("/collections/{collectionID}", handlers.DeleteCollectionHandler)
 				// move attachment to collection ?

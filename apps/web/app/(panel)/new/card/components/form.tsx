@@ -4,6 +4,7 @@ import Header, { HeaderContent } from "@/app/(panel)/components/header"
 import SidebarTrigger from "@/app/(panel)/components/header/sidebar-trigger"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { getRefSrc } from "@/lib/ref-src"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@workspace/ui/components/carousel"
 import { Input } from "@workspace/ui/components/input"
@@ -18,6 +19,10 @@ export default function Form() {
   const setOpen = useNewCardStore((state) => state.setOpenPicker)
 
   const selected = useNewCardStore(state => state.attachments)
+
+  const selectedTags = selected
+    .flatMap(item => item.tags)
+    .filter((tag, index, self) => self.indexOf(tag) === index)
 
   return (
     <>
@@ -88,6 +93,15 @@ export default function Form() {
           <div className="max-w-md lg:mx-0 mx-auto w-full space-y-3">
             <Input placeholder="Название" />
             <Textarea placeholder="Описание" />
+            <div className="flex items-start gap-1">
+              {
+                selectedTags.map(tag => (
+                  <Badge key={tag.id} className="h-6 bg-foreground/50 tabular-nums border-foreground/50 text-background backdrop-blur-3xl">
+                    {tag.tag.name}
+                  </Badge>
+                ))
+              }
+            </div>
           </div>
         </div>
       </div>
