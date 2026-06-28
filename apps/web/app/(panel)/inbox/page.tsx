@@ -47,9 +47,13 @@ export default async function Page({ searchParams }: PageProps) {
           </Cover>
         }
       </AnimatePresence>
-      <div className="w-full space-y-6 px-6 pt-6">
+      <div className="w-full p-6">
         <Collections />
-        <InboxGrid defaultInbox={[]} />
+      </div>
+      <div className="w-full space-y-6 px-6 pt-6">
+        <Suspense fallback={null}>
+          <InboxGrid defaultInbox={[]} />
+        </Suspense>
       </div>
     </>
   )

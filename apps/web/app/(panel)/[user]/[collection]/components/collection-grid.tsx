@@ -1,10 +1,10 @@
 "use client"
 import CardGrid from "@/app/(panel)/components/card-grid"
 import CardGridWrapper from "@/app/(panel)/components/card-grid-wrapper"
+import { CollectionCardSkeleton } from "@/components/collection-card"
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import type { Attachment } from "@/types/attachments"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { CollectionCardSkeleton } from "./collection-card"
 
 
 type CollectionGridProps = {

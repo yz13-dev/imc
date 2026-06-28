@@ -1,7 +1,7 @@
 "use client"
-import CollectionCard from "@/app/(panel)/[user]/[collection]/components/collection-card"
 import Header, { HeaderContent } from "@/app/(panel)/components/header"
 import SidebarTrigger from "@/app/(panel)/components/header/sidebar-trigger"
+import CollectionCard from "@/components/collection-card"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { createCard } from "@/lib/api/cards"
 import { createCardsAttachments } from "@/lib/api/cards-attachments"
