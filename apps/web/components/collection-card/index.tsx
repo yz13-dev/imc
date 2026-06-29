@@ -65,7 +65,7 @@ export default function CollectionCard({ tags = [], mime_type, id, src, scope = 
         containerClassName
       )}
     >
-      <div>
+      <div className="flex flex-col">
         <div
           className="absolute inset-0 size-full rounded-xl blur-xs bg-no-repeat bg-cover bg-center"
           style={{

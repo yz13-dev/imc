@@ -4,7 +4,7 @@ import { getTagsStats, type TagStats } from "@/lib/tags";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
 import type { InfiniteData } from "@tanstack/react-query";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 
@@ -47,8 +47,9 @@ type TagStatsProps = {
 }
 export default function TagStats({ queryKey }: TagStatsProps) {
 
-  const { data } = useQuery<AttachmentWithMaybeTagsAndSource[]>({
-    queryKey: queryKey ? [queryKey] : ["attachments"], queryFn: async () => {
+  const { data } = useSuspenseQuery<AttachmentWithMaybeTagsAndSource[]>({
+    queryKey: queryKey ? [queryKey] : ["attachments"],
+    queryFn: async () => {
       const data = await getAllAttachments()
       return (data || [])
     }
