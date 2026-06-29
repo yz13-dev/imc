@@ -9,6 +9,8 @@ func GetOrigins() []string {
 			"https://*.yz13.dev",
 			"https://imc.yz13.dev",
 			"https://yz13.dev",
+			"moz-extension://*",
+			"chrome-extension://*",
 		}
 	} else {
 		return []string{

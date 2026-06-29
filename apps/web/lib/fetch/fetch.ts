@@ -18,7 +18,8 @@ export async function makeFetch<T>({ url, headers, body, ...props }: MakeFetchPr
     const response = await fetch(url, {
       ...props,
       body: body ? JSON.stringify(body) : undefined,
-      headers: prepared
+      headers: prepared,
+      credentials: "include"
     })
 
     const json: T = await response.json()
