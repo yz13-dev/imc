@@ -7,6 +7,7 @@ func GetOrigins() []string {
 	if IsProd {
 		return []string{
 			"https://*.yz13.dev",
+			"https://imc.yz13.dev",
 			"https://yz13.dev",
 		}
 	} else {
