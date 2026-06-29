@@ -1,7 +1,7 @@
 "use client"
 
-import { getAllAttachments, getInboxAttachments, getTrashAttachments } from "@/lib/api/attachments"
-import { useQuery } from "@tanstack/react-query"
+import { getInboxAttachments, getTrashAttachments } from "@/lib/api/attachments"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem } from "@workspace/ui/components/sidebar"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { InboxIcon, LayoutDashboardIcon, Trash2Icon } from "lucide-react"
@@ -10,16 +10,13 @@ import Link from "next/link"
 
 export default function SidebarNav({ username }: { username?: string }) {
 
-  const { data: all, isLoading: isLoadingAll } = useQuery({
-    queryKey: ["attachments",],
-    queryFn: () => getAllAttachments().then(data => data), // <-- serialize the data on the server
-  })
-
-  const { data: inbox, isLoading: isLoadingInbox } = useQuery({
+  const { data: inbox, isLoading: isLoadingInbox } = useSuspenseQuery({
+    experimental_prefetchInRender: true,
     queryKey: ["attachments", "inbox"],
     queryFn: () => getInboxAttachments().then(data => data), // <-- serialize the data on the server
   })
-  const { data: trash, isLoading: isLoadingTrash } = useQuery({
+  const { data: trash, isLoading: isLoadingTrash } = useSuspenseQuery({
+    experimental_prefetchInRender: true,
     queryKey: ["attachments", "trash"],
     queryFn: () => getTrashAttachments().then(data => data), // <-- serialize the data on the server
   })

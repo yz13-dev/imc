@@ -11,14 +11,14 @@ func GetCards(UserID int64, db *gorm.DB) ([]models.Card, error) {
 	return cards, err
 }
 
-func CreateCard(UserID int64, card *models.NewCard, db *gorm.DB) (models.Card, error) {
-	var NewCard = models.Card{
+func CreateCard(UserID int64, data *models.NewCard, db *gorm.DB) (models.Card, error) {
+	var card = models.Card{
 		UserID:      UserID,
-		Title:       card.Title,
-		Description: card.Description,
+		Title:       data.Title,
+		Description: data.Description,
 	}
 	if err := db.Table("cards").Create(&card).Error; err != nil {
 		return models.Card{}, err
 	}
-	return NewCard, nil
+	return card, nil
 }

@@ -1,6 +1,7 @@
 
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import { getQueryClient } from "@/lib/query-client"
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import Header, { HeaderContent } from "../../components/header"
 import CollectionMenu from "../../components/header/collection-menu"
 import CollectionSelect from "../../components/header/collection-select"
@@ -23,7 +24,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const queryClient = getQueryClient()
 
-  queryClient
+  await queryClient
     .prefetchQuery({
       queryKey: ["attachments", "collections", collection],
       queryFn: () => {
@@ -39,7 +40,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const scope = `${user}/${collection}`
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <Header>
         <HeaderContent>
           <SidebarTrigger />
@@ -63,6 +64,6 @@ export default async function Page({ params, searchParams }: PageProps) {
       <footer className="p-6">
 
       </footer>
-    </>
+    </HydrationBoundary>
   )
 }

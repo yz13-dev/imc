@@ -1,9 +1,13 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Card struct {
-	ID          string    `gorm:"primaryKey"`
+	ID          uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	UserID      int64     `json:"user_id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`

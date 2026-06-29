@@ -1,5 +1,6 @@
 import { getAllAttachments } from "@/lib/api/attachments";
 import { getQueryClient } from "@/lib/query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 import { Suspense } from "react";
 import Header, { HeaderContent } from "../components/header";
@@ -22,7 +23,7 @@ export default async function Page({ searchParams }: PageProps) {
   const queryClient = getQueryClient()
 
   // look ma, no await
-  queryClient.prefetchInfiniteQuery({
+  await queryClient.prefetchInfiniteQuery({
     initialPageParam: 0,
     queryKey: ["attachments"],
     queryFn: async ({ pageParam }) => {
@@ -36,7 +37,7 @@ export default async function Page({ searchParams }: PageProps) {
   // const tagStats = getTagsStats(tags)
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <Header>
         <HeaderContent>
           <SidebarTrigger />
@@ -65,6 +66,6 @@ export default async function Page({ searchParams }: PageProps) {
         }*/}
         <AutoLoader attachments={[]} />
       </div>
-    </>
+    </HydrationBoundary>
   )
 }

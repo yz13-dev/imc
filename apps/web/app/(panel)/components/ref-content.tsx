@@ -2,7 +2,7 @@
 import Video from "@/components/video"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { getRefSrc } from "@/lib/ref-src"
-import { getApiUrl } from "@/lib/url"
+import { getAssetsUrl } from "@/lib/url"
 import { cn } from "@workspace/ui/lib/utils"
 import { cubicBezier, motion } from "motion/react"
 import Image from "next/image"
@@ -27,7 +27,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
   const isGif = mimeType.startsWith("image/gif")
 
   const resolvedId = getRefSrc(src) || src;
-  const refSrc = getApiUrl(`/v1/my/attachments/${resolvedId || src}/file`)
+  const refSrc = getAssetsUrl(`/v1/attachments/${resolvedId || src}/file`)
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
 
   return (

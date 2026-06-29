@@ -1,5 +1,6 @@
 import { getInboxAttachments } from "@/lib/api/attachments"
 import { getQueryClient } from "@/lib/query-client"
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
 import Header, { HeaderContent } from "../components/header"
@@ -8,7 +9,7 @@ import Attachment, { AttachmentSkeleton } from "../components/preview/attachment
 import Cover from "../components/preview/cover"
 import { InboxTagStats } from "../components/tags-stats"
 import Collections from "./components/collections"
-import InboxGrid from "./components/inbox-grid"
+import InboxGrid, { InboxGridSkeleton } from "./components/inbox-grid"
 
 
 type PageProps = {
@@ -22,13 +23,13 @@ export default async function Page({ searchParams }: PageProps) {
 
   const queryClient = getQueryClient()
 
-  queryClient.prefetchQuery({
+  await queryClient.prefetchQuery({
     queryKey: ["attachments", "inbox"],
     queryFn: () => getInboxAttachments().then(data => data), // <-- serialize the data on the server
   })
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <Header>
         <HeaderContent>
           <SidebarTrigger />
@@ -51,10 +52,10 @@ export default async function Page({ searchParams }: PageProps) {
         <Collections />
       </div>
       <div className="w-full space-y-6 px-6 pt-6">
-        <Suspense fallback={null}>
+        <Suspense fallback={<InboxGridSkeleton />}>
           <InboxGrid defaultInbox={[]} />
         </Suspense>
       </div>
-    </>
+    </HydrationBoundary>
   )
 }
