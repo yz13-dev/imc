@@ -1,10 +1,10 @@
 import type { Tag } from "@/types/attachments";
-import { axios } from "../axios";
+import { makeFetch } from "../fetch";
 import { getApiUrl } from "../url";
 
 export async function getSearchTags(query: string): Promise<Tag[] | null> {
   try {
-    const { data, error } = await axios<Tag[]>({
+    const { data, error } = await makeFetch<Tag[]>({
       url: getApiUrl(`/v1/my/tags/search?q=${query}`)
     })
 
@@ -22,10 +22,10 @@ export async function getSearchTags(query: string): Promise<Tag[] | null> {
 
 export async function createTag(tag: string): Promise<Tag | null> {
   try {
-    const { data, error } = await axios<Tag | null>({
+    const { data, error } = await makeFetch<Tag | null>({
       url: getApiUrl(`/v1/my/tags/new`),
       method: "POST",
-      data: { name: tag }
+      body: { name: tag }
     })
 
     if (error) {
@@ -42,10 +42,10 @@ export async function createTag(tag: string): Promise<Tag | null> {
 
 export async function connectTag(attachmentId: string, tagId: string): Promise<Tag | null> {
   try {
-    const { data, error } = await axios<Tag | null>({
+    const { data, error } = await makeFetch<Tag | null>({
       url: getApiUrl(`/v1/my/attachments/${attachmentId}/tags`),
       method: "POST",
-      data: { tagId }
+      body: { tagId }
     })
 
     if (error) {
@@ -62,10 +62,10 @@ export async function connectTag(attachmentId: string, tagId: string): Promise<T
 
 export async function disconnectTag(attachmentId: string, tagId: string): Promise<Tag | null> {
   try {
-    const { data, error } = await axios<Tag | null>({
+    const { data, error } = await makeFetch<Tag | null>({
       url: getApiUrl(`/v1/my/attachments/${attachmentId}/tags`),
       method: "DELETE",
-      data: { tagId }
+      body: { tagId }
     })
 
     if (error) {

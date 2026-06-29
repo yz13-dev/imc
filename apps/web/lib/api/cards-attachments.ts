@@ -1,14 +1,14 @@
 import type { CardsAttachment, NewCardsAttachment } from "@/types/cards-attachments";
-import { axios } from "../axios";
+import { makeFetch } from "../fetch";
 import { getApiUrl } from "../url";
 
 
 export async function createCardsAttachments(attachmentId: string, body: NewCardsAttachment) {
   try {
-    const { data, error } = await axios<CardsAttachment>({
+    const { data, error } = await makeFetch<CardsAttachment>({
       url: getApiUrl(`/v1/my/attachments/${attachmentId}/cards`),
       method: "POST",
-      data: body
+      body
     })
 
     if (error) {

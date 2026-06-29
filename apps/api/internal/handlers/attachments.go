@@ -302,6 +302,58 @@ func GetAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func PatchAttachment(w http.ResponseWriter, r *http.Request) {
+
+	var data models.UpdateAttachment
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "failed to decode request", http.StatusBadRequest)
+		return
+	}
+
+	attachmentID := r.PathValue("attachmentID")
+	if attachmentID == "" {
+		http.Error(w, "attachmentID is required", http.StatusBadRequest)
+		return
+	}
+
+	AttachmentID, err := uuid.Parse(attachmentID)
+	if err != nil {
+		http.Error(w, "error in attachmentID", http.StatusBadRequest)
+		return
+	}
+
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID.(int64) // as uint64
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachment, err := services.PatchAttachment(AttachmentID, userID, data, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(attachment); err != nil {
+		http.Error(
+			w,
+			"failed to encode response",
+			http.StatusInternalServerError,
+		)
+	}
+}
+
 func PostInInbox(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {

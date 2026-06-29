@@ -106,7 +106,6 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
     search(debouncedTag)
   }, [debouncedTag])
 
-  console.log(tag, debouncedTag, suggestedTags)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={children} />

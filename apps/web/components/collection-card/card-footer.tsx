@@ -14,8 +14,9 @@ type CardFooterProps = {
   duration_ms: AttachmentWithMaybeTagsAndSource["duration_ms"]
   source: AttachmentWithMaybeTagsAndSource["source"]
   tags: AttachmentWithMaybeTagsAndSource["tags"]
+  label: AttachmentWithMaybeTagsAndSource["label"]
 }
-export default function CardFooter({ source, duration_ms, tags = [], href }: CardFooterProps) {
+export default function CardFooter({ source, duration_ms, label, tags = [], href }: CardFooterProps) {
 
   const firstTag = tags[0]?.tag?.name ?? ""
   // const isVideo = mime_type.startsWith("video/")
@@ -25,24 +26,27 @@ export default function CardFooter({ source, duration_ms, tags = [], href }: Car
   const duration = duration_ms ? formatDuration(duration_ms - Math.floor(position * 1000)) : null
 
   return (
-    <div className="absolute bottom-2 left-0 px-2 z-10 w-full flex items-center justify-between gap-1">
+    <div className="absolute bottom-2 left-0 px-2 z-10 w-full flex items-center justify-between *:w-1/2 gap-1">
       <div className="flex items-center gap-1">
         {
           source &&
-          <div className="flex items-center gap-1">
+          <div className="flex items-center justify-start gap-1">
             <Avatar className="size-5 rounded-full overflow-clip *:rounded-full after:rounded-full">
               <AvatarImage src={source.domain.favicon_url || undefined} />
               <AvatarFallback>
                 <GlobeIcon />
               </AvatarFallback>
             </Avatar>
-            <Badge variant="outline" className="hidden bg-foreground/50 border-foreground/50 backdrop-blur-md text-background">
-              {source.domain.domain}
-            </Badge>
           </div>
         }
+        {
+          !!label.length &&
+          <Badge className="h-6 bg-foreground/50 tabular-nums border-foreground/50 text-background max-w-full line-clamp-1! backdrop-blur-3xl">
+            {label}
+          </Badge>
+        }
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center justify-end gap-1">
         {
           !!duration &&
           <Badge className="h-6 bg-foreground/50 tabular-nums border-foreground/50 text-background backdrop-blur-3xl">

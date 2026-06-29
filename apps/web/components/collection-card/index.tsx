@@ -1,6 +1,7 @@
 "use client"
 import RefContent from "@/app/(panel)/components/ref-content"
 import { OptionalVideoProvider } from "@/components/video-provider"
+import { toBlurDataURL } from "@/lib/blurhash"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
@@ -60,17 +61,19 @@ export default function CollectionCard({ tags = [], mime_type, id, src, scope = 
       attachmentId={id}
       label={label}
       className={cn(
-        "w-full p-2 bg-muted rounded-sm group break-inside-avoid",
+        "w-full p-1 bg-muted rounded-xl relative overflow-clip group break-inside-avoid",
         containerClassName
       )}
     >
       <div>
+        <div
+          className="absolute inset-0 size-full rounded-xl blur-xs bg-no-repeat bg-cover bg-center"
+          style={{
+            backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
+          }}
+        />
         <OptionalVideoProvider isVideo={isVideo} duration={duration_ms}>
-          <div className="w-full flex justify-center pb-2">
-            <span className="text-xs line-clamp-1 text-muted-foreground">
-              {label}
-            </span>
-          </div>
+          {/*<div className="w-full flex justify-center pb-2"></div>*/}
           <AnimatePresence>
             <RefContent
               id={id}
@@ -89,7 +92,7 @@ export default function CollectionCard({ tags = [], mime_type, id, src, scope = 
                 <Link href={preview ? `?attachment=${id}` : href} className="absolute inset-0 z-10" />
               }
 
-              <CardFooter duration_ms={duration_ms} href={href} source={source} tags={cardTags} />
+              <CardFooter duration_ms={duration_ms} href={href} source={source} tags={cardTags} label={label} />
             </RefContent>
           </AnimatePresence>
           <div className="p-2 hidden">

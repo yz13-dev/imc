@@ -114,6 +114,7 @@ func main() {
 				r.Post("/attachments/new", handlers.PostNewAttachment)
 				r.Get("/attachments/trash", handlers.GetTrashAttachments)
 				r.Get("/attachments/{attachmentID}", handlers.GetAttachment)
+				r.Patch("/attachments/{attachmentID}", handlers.PatchAttachment)
 				r.Delete("/attachments/{attachmentID}", handlers.DeleteAttachment)
 				r.Post("/attachments/{attachmentID}/cards", handlers.CreateCardAttachment)
 				r.Post("/attachments/{attachmentID}/trash", handlers.TrashAttachment)

@@ -50,7 +50,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
         layoutId={id}
         className={cn(
           "size-full will-change-auto relative bg-muted overflow-hidden bg-no-repeat bg-cover bg-top-left",
-          "rounded-lg [&_img]:rounded-sm [&_video]:rounded-sm border",
+          "rounded-lg [&_img]:rounded-sm [&_video]:rounded-sm",
         )}
         onClick={() => setId(id)}
         transition={{
@@ -67,7 +67,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
           <Video
             src={refSrc}
             draggable={false}
-            className="size-full"
+            className="size-full object-cover object-top-left"
             loop
             muted
             autoPlay

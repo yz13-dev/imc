@@ -1,11 +1,11 @@
 import type { Collection } from "@/types/collections";
-import { axios } from "../axios";
+import { makeFetch } from "../fetch";
 import { getApiUrl } from "../url";
 
 
 export async function getCollections(): Promise<Collection[] | null> {
   try {
-    const { data, error } = await axios<Collection[] | null>({
+    const { data, error } = await makeFetch<Collection[] | null>({
       url: getApiUrl("/v1/my/collections")
     })
 
@@ -23,10 +23,10 @@ export async function getCollections(): Promise<Collection[] | null> {
 
 export async function createCollection({ name, description, user_id }: { name: string, description?: string, user_id: number }) {
   try {
-    const { data, error } = await axios<any>({
+    const { data, error } = await makeFetch<any>({
       method: "POST",
       url: getApiUrl("/v1/my/collections/new"),
-      data: { name, description, user_id }
+      body: { name, description, user_id }
     })
 
     if (error) {
@@ -43,7 +43,7 @@ export async function createCollection({ name, description, user_id }: { name: s
 
 export async function deleteCollection(collectionID: string) {
   try {
-    const { data, error } = await axios<Collection | null>({
+    const { data, error } = await makeFetch<Collection | null>({
       method: "DELETE",
       url: getApiUrl(`/v1/my/collections/${collectionID}`)
     })

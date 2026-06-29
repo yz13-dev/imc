@@ -1,11 +1,11 @@
 
-import { axios } from "../axios";
+import { makeFetch } from "../fetch";
 import { getApiUrl } from "../url";
 
 
 export async function getCollectionCards(collection: string) {
   try {
-    const { data, error } = await axios<any[]>({
+    const { data, error } = await makeFetch<any[]>({
       url: getApiUrl("/v1/my/collections/${collection}/cards")
     })
 

@@ -95,6 +95,16 @@ func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (mo
 	return attachment, nil
 }
 
+func PatchAttachment(AttachmentID uuid.UUID, UserID int64, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
+	attachment := models.Attachment{
+		Label: data.Label,
+	}
+	if err := db.Table("attachments").Where("id = ? AND user_id = ?", AttachmentID, UserID).Updates(&attachment).Error; err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
 func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.AttachmentWithTags, error) {
 	var attachment models.AttachmentWithTags
 	if err := db.

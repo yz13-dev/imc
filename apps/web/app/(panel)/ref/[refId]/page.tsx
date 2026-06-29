@@ -12,8 +12,9 @@ import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import RefContent from "../../components/ref-content"
-import NewTags from "../../components/tags/new-tags"
 import RefHeader from "./components/ref-header"
+import NewTags from "./components/tags/new-tags"
+import UpdateModal from "./components/update-modal"
 
 
 type PageProps = {
@@ -95,10 +96,12 @@ export default async function Page({ params }: PageProps) {
                     <SelectValue placeholder="Коллекция" />
                   </SelectTrigger>
                 </Select>
-                <Button variant="outline">
-                  <Edit3Icon />
-                  <span>Изменить</span>
-                </Button>
+                <UpdateModal attachment={attachment}>
+                  <Button variant="outline">
+                    <Edit3Icon />
+                    <span>Изменить</span>
+                  </Button>
+                </UpdateModal>
               </div>
               <div className="w-full bg-card border rounded-2xl py-3 space-y-3">
                 <div className="px-3 flex flex-col gap-1.5">

@@ -18,6 +18,10 @@ export type Attachment = {
   label: string
 }
 
+export type UpdateAttachment = {
+  label: string
+}
+
 export type Tag = {
   id: string
   user_id: number

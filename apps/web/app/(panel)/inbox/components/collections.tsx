@@ -25,13 +25,13 @@ export default function Collections() {
           const attachments = (items[collection.id] || []).slice(0, 3)
           const href = `/${user?.username}/${collection?.id}`
           return (
-            <div key={collection.id} className="min-w-48 rounded-sm overflow-clip p-2 bg-muted relative">
+            <div key={collection.id} className="min-w-48 rounded-sm overflow-clip p-1 bg-muted relative">
               {/*
                 user &&
                 <Link href={href} className="absolute z-10 inset-0" />
               */}
               <div className="w-full">
-                <div className="w-full aspect-square relative gap-2 grid grid-cols-2 grid-rows-2 *:h-full">
+                <div className="w-full aspect-square relative gap-1 grid grid-cols-2 grid-rows-2 *:h-full">
                   {
                     attachments
                       .toSorted((a, b) => {
@@ -46,7 +46,6 @@ export default function Collections() {
                             <RefContent
                               mimeType={item.mime_type}
                               className={cn(
-                                "rounded-sm [&_img]:rounded-sm [&_video]:rounded-sm border",
                                 "nth-[1]:hover:rotate-6 nth-[2]:hover:-rotate-6 nth-[3]:hover:rotate-3 will-change-transform transition-transform",
                                 isLast && "col-span-full"
                               )}

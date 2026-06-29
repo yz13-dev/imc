@@ -1,6 +1,5 @@
 import type { CollectionCardProps } from "@/components/collection-card";
 import CollectionCard from "@/components/collection-card";
-import { getRefSrc } from "@/lib/ref-src";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import CardGridWrapper from "./card-grid-wrapper";
 
@@ -19,14 +18,12 @@ export default function CardGrid({ card, attachments, scope, withPreview = false
       {
         attachments
           .map((item) => {
-            const alt = getRefSrc(item.src)
-            const label = item.label || alt || "-"
+            // const alt = getRefSrc(item.src)
             return (
               <CollectionCard
                 key={item.id}
                 {...item}
                 {...(card ?? {})}
-                label={label}
                 scope={scope}
                 preview={withPreview}
                 style={{

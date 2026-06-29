@@ -31,6 +31,14 @@ func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attac
 	return attachment, nil
 }
 
+func PatchAttachment(AttachmentID uuid.UUID, UserID int64, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
+	attachment, err := repositories.PatchAttachment(AttachmentID, UserID, data, db)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
 func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
 	err := repositories.PostInInbox(UserID, db, attachmentID)
 	if err != nil {

@@ -7,6 +7,7 @@ import { cn } from "@workspace/ui/lib/utils"
 import { ExternalLinkIcon, ListPlusIcon, LockIcon, LockOpenIcon, Trash2Icon } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
+import type { CSSProperties } from "react"
 import { useState } from "react"
 
 type CardDropdownMenuProps = {
@@ -14,6 +15,7 @@ type CardDropdownMenuProps = {
   children: React.ReactElement
   label?: string
   className?: string
+  style?: CSSProperties
 }
 
 
@@ -26,7 +28,7 @@ const trashAttachment = async (id: string) => {
   console.log("TRASHED", result)
 }
 
-export default function CardDropdownMenu({ className = "", children, attachmentId, label = "Без названия" }: CardDropdownMenuProps) {
+export default function CardDropdownMenu({ className = "", children, attachmentId, style = {}, label = "Без названия" }: CardDropdownMenuProps) {
   const [open, setOpen] = useState<boolean>(false)
   const isMetaHeld = useKeyHold("Shift")
 
@@ -84,6 +86,7 @@ export default function CardDropdownMenu({ className = "", children, attachmentI
           e.preventBaseUIHandler()
           setOpen(!open)
         }}
+        style={style}
       />
       <DropdownMenuContent
         className={cn("w-(--anchor-width)", open && "z-50")}

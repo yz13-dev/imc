@@ -1,8 +1,10 @@
 "use client"
 import { OptionalVideoProvider } from "@/components/video-provider";
+import { getAllAttachments } from "@/lib/api/attachments";
 import { getRefSrc } from "@/lib/ref-src";
-import { useGlobalStore } from "@/lib/stores/global-store";
-import { useMemo } from "react";
+import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
+import type { InfiniteData } from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import RefContent from "../ref-content";
 
 export function AttachmentSkeleton() {
@@ -13,15 +15,27 @@ export function AttachmentSkeleton() {
 
 export default function Attachment({ attachmentId }: { attachmentId: string }) {
 
-  const items = useGlobalStore(state => state.collectionsItems)
-  const inbox = useGlobalStore((state) => state.inbox)
+  // const items = useGlobalStore(state => state.collectionsItems)
+  // const inbox = useGlobalStore((state) => state.inbox)
 
-  const attachments = useMemo(() => {
-    const inboxAttachments = inbox.map((attachment) => attachment.attachment)
-    return [...Object.values(items).flat(), ...inboxAttachments]
-  }, [items])
+  const { data } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, string[], number>({
+    getNextPageParam: (lastPageParam, allPages, offset) => {
+      return offset + 25
+    },
+    initialPageParam: 0,
+    queryKey: ["attachments"],
+    queryFn: async ({ pageParam }) => {
+      const data = await getAllAttachments({ offset: pageParam })
+      return data || []
+    }
+  })
 
-  const attachment = attachments.find((item) => item.id === attachmentId)
+  // const attachments = useMemo(() => {
+  //   const inboxAttachments = inbox.map((attachment) => attachment.attachment)
+  //   return [...Object.values(items).flat(), ...inboxAttachments]
+  // }, [items])
+
+  const attachment = (data.pages.flat() || []).find((item) => item.id === attachmentId)
 
   if (!attachment) return null;
 
