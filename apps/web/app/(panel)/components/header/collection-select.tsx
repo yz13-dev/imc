@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useGlobalStore } from "@/lib/stores/global-store"

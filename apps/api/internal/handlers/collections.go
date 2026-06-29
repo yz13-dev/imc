@@ -65,7 +65,7 @@ func PostMyNewCollectionHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to decode request", http.StatusBadRequest)
 		return
 	}
-	data.UserID = int(userID)
+	data.UserID = int64(userID)
 
 	collection, err := services.CreateCollection(&data, db)
 	if err != nil {
@@ -83,7 +83,7 @@ func PostMyNewCollectionHandler(w http.ResponseWriter, r *http.Request) {
 	hub.Publish(userID, events.Event{
 		Type: EventKey,
 		Data: models.EventData{
-			ID: collection.ID,
+			ID: collection.ID.String(),
 		},
 	})
 
@@ -160,7 +160,7 @@ func PostCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		hub.Publish(userID, events.Event{
 			Type: CollectionEventKey,
 			Data: models.EventData{
-				ID: collection.ID,
+				ID: collection.ID.String(),
 			},
 		})
 	}

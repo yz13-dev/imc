@@ -1,7 +1,8 @@
 "use client"
 import { moveAttachmentToCollection, moveToTrashAttachment, permanentlyDeleteAttachment } from "@/lib/api/attachments"
-import { useGlobalStore } from "@/lib/stores/global-store"
+import { getCollections } from "@/lib/api/collections"
 import { useKeyHold } from "@tanstack/react-hotkeys"
+import { useQuery } from "@tanstack/react-query"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { cn } from "@workspace/ui/lib/utils"
 import { ExternalLinkIcon, ListPlusIcon, LockIcon, LockOpenIcon, Trash2Icon } from "lucide-react"
@@ -16,6 +17,7 @@ type CardDropdownMenuProps = {
   label?: string
   className?: string
   style?: CSSProperties
+  readonly?: boolean
 }
 
 
@@ -28,11 +30,14 @@ const trashAttachment = async (id: string) => {
   console.log("TRASHED", result)
 }
 
-export default function CardDropdownMenu({ className = "", children, attachmentId, style = {}, label = "Без названия" }: CardDropdownMenuProps) {
+export default function CardDropdownMenu({ readonly = false, className = "", children, attachmentId, style = {}, label = "Без названия" }: CardDropdownMenuProps) {
   const [open, setOpen] = useState<boolean>(false)
   const isMetaHeld = useKeyHold("Shift")
 
-  const collections = useGlobalStore(state => state.collections)
+  const { data: collections } = useQuery({
+    queryKey: ["attachments", "collections"],
+    queryFn: () => getCollections().then(data => data)
+  })
 
   const moveToCollection = async (collectionId: string) => {
     await moveAttachmentToCollection(attachmentId, collectionId)
@@ -48,6 +53,13 @@ export default function CardDropdownMenu({ className = "", children, attachmentI
     setOpen(false)
   }
 
+  if (readonly) return (
+    <div
+      className={cn("relative", className)}
+    >
+      {children}
+    </div>
+  )
   return (
     <DropdownMenu
       open={open}
@@ -105,7 +117,7 @@ export default function CardDropdownMenu({ className = "", children, attachmentI
           <DropdownMenuSubContent className="w-44">
             <DropdownMenuGroup>
               {
-                collections.map(collection => (
+                (collections || []).map(collection => (
                   <DropdownMenuItem key={collection.id} onClick={() => moveToCollection(collection.id)}>
                     {collection.public ? <LockOpenIcon /> : <LockIcon />}
                     {collection.name}

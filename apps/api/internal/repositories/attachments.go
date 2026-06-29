@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"gorm.io/gorm"
@@ -22,6 +24,20 @@ func GetAttachmentsWithTags(ids []uuid.UUID, UserID int64, db *gorm.DB) ([]model
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND id IN ? AND is_deleted = false", UserID, ids).
+		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
+		Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+	return attachments, nil
+}
+
+func GetPublicAttachmentsWithTags(ids []uuid.UUID, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	var attachments []models.AttachmentWithTags
+	if err := db.
+		Table("attachments").
+		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
+		Where("id IN ? AND is_deleted = false", ids).
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -74,6 +90,43 @@ func GetCollectionAttachments(collectionID uuid.UUID, UserID int64, db *gorm.DB)
 
 }
 
+func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+
+	colleciton, err := GetPublicCollection(collectionID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	if colleciton.Public == false {
+		return nil, err
+	}
+
+	var collectionAttachments []models.CollectionAttachment
+	if err := db.
+		Table("collections_attachments").
+		Where("collection_id = ?", collectionID).
+		Find(&collectionAttachments).Error; err != nil {
+		return nil, err
+	}
+
+	if len(collectionAttachments) == 0 {
+		return []models.AttachmentWithTags{}, nil
+	}
+
+	ids := make([]uuid.UUID, len(collectionAttachments))
+	for i, attachment := range collectionAttachments {
+		ids[i] = attachment.AttachmentID
+	}
+
+	attachments, err := GetPublicAttachmentsWithTags(ids, db)
+	if err != nil {
+		return nil, err
+	}
+
+	return attachments, nil
+
+}
+
 func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (models.Attachment, error) {
 	attachment := models.Attachment{
 		Type:       data.Type,
@@ -116,6 +169,19 @@ func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attac
 		return models.AttachmentWithTags{}, err
 	}
 	return attachment, nil
+}
+
+func GetPublicAttachment(attachmentID uuid.UUID, db *gorm.DB) (*models.AttachmentWithTags, error) {
+	var attachment models.AttachmentWithTags
+	if err := db.
+		Table("attachments").
+		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
+		Where("id = ? AND is_deleted = false", attachmentID).
+		First(&attachment).Error; err != nil {
+		return nil, err
+	}
+	return &attachment, nil
 }
 
 type ListQuery struct {
@@ -180,4 +246,26 @@ func GetTrashAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags
 		return nil, err
 	}
 	return attachments, nil
+}
+
+func GetAttachmentWithCollection(ID uuid.UUID, db *gorm.DB) (*models.CollectionAttachmentWithAttachmentAndAttachment, error) {
+	var result models.CollectionAttachmentWithAttachmentAndAttachment
+
+	err := db.
+		Table("collections_attachments").
+		Preload("Attachment").
+		Preload("Collection").
+		Where("attachment_id = ?", ID).
+		First(&result).Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+
 }

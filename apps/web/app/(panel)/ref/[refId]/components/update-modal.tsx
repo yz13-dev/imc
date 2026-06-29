@@ -1,5 +1,4 @@
 "use client"
-
 import { updateAttachment } from "@/lib/api/attachments";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import { Button } from "@workspace/ui/components/button";

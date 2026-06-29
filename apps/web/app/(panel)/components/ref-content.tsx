@@ -1,7 +1,6 @@
 "use client"
 import Video from "@/components/video"
 import { toBlurDataURL } from "@/lib/blurhash"
-import { getRefSrc } from "@/lib/ref-src"
 import { getAssetsUrl } from "@/lib/url"
 import { cn } from "@workspace/ui/lib/utils"
 import { cubicBezier, motion } from "motion/react"
@@ -26,7 +25,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
   const isVideo = mimeType.startsWith("video/")
   const isGif = mimeType.startsWith("image/gif")
 
-  const resolvedId = getRefSrc(src) || src;
+  const resolvedId = id // getRefSrc(src) || src;
   const refSrc = getAssetsUrl(`/v1/attachments/${resolvedId || src}/file`)
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
 
@@ -49,7 +48,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
       <motion.div
         layoutId={id}
         className={cn(
-          "size-full will-change-auto relative bg-muted overflow-hidden bg-no-repeat bg-cover bg-top-left",
+          "size-full will-change-auto relative bg-muted bg-no-repeat bg-cover bg-top-left",
           "rounded-lg [&_img]:rounded-sm [&_video]:rounded-sm",
         )}
         onClick={() => setId(id)}

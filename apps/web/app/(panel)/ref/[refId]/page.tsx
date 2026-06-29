@@ -117,7 +117,6 @@ export default async function Page({ params }: PageProps) {
                     {tags.length === 0 && <span className="text-muted-foreground h-8">—</span>}
                     {
                       tags.map(tag => {
-
                         return <Badge key={tag.id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.name}</Badge>
                       })
                     }

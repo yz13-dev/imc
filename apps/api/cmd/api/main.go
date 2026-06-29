@@ -101,6 +101,8 @@ func main() {
 			r.Get("/source/check", handlers.GetCheckSource)
 			r.Post("/source/{sourceID}/connect", handlers.PostConnectSource)
 			r.Post("/source/new", handlers.PostNewSource)
+
+			r.Get("/collections/{collectionID}/attachments", handlers.GetPublicCollectionAttachments)
 			// my routes
 			r.Route("/my", func(r chi.Router) {
 				r.Get("/events", handlers.EventsHandler(hub))

@@ -1,5 +1,4 @@
 "use client"
-
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import { useGlobalStore } from "@/lib/stores/global-store"
 import type { Collection } from "@/types/collections"

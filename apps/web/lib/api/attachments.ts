@@ -1,12 +1,14 @@
 
+import { getFetchClient } from "@/lib/fetch";
+import { getApiUrl } from "@/lib/url";
 import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags, UpdateAttachment } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
-import { makeFetch } from "../fetch";
-import { getApiUrl } from "../url";
+
+const fetch = getFetchClient()
 
 export async function updateAttachment(attachmentID: string, body: UpdateAttachment): Promise<AttachmentWithMaybeTagsAndSource | null> {
   try {
-    const { data, error } = await makeFetch<AttachmentWithMaybeTagsAndSource | null>({
+    const { data, error } = await fetch<AttachmentWithMaybeTagsAndSource | null>({
       url: getApiUrl(`/v1/my/attachments/${attachmentID}`),
       method: "PATCH",
       body: body
@@ -26,7 +28,7 @@ export async function updateAttachment(attachmentID: string, body: UpdateAttachm
 
 export async function getInboxAttachments(): Promise<InboxItem[] | null> {
   try {
-    const { data, error } = await makeFetch<InboxItem[]>({
+    const { data, error } = await fetch<InboxItem[]>({
       url: getApiUrl("/v1/my/attachments/inbox")
     })
 
@@ -45,7 +47,7 @@ export async function getInboxAttachments(): Promise<InboxItem[] | null> {
 
 export async function getAttachment(attachmentID: string): Promise<AttachmentWithTags | null> {
   try {
-    const { data, error } = await makeFetch<AttachmentWithTags>({
+    const { data, error } = await fetch<AttachmentWithTags>({
       url: getApiUrl(`/v1/my/attachments/${attachmentID}`)
     })
 
@@ -63,7 +65,7 @@ export async function getAttachment(attachmentID: string): Promise<AttachmentWit
 
 export async function moveAttachmentToCollection(attachmentID: string, collectionID: string): Promise<any> {
   try {
-    const { data, error } = await makeFetch({
+    const { data, error } = await fetch({
       url: getApiUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
       method: "POST",
     })
@@ -82,7 +84,7 @@ export async function moveAttachmentToCollection(attachmentID: string, collectio
 
 export async function getCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
   try {
-    const { data, error } = await makeFetch<AttachmentWithTags[]>({
+    const { data, error } = await fetch<AttachmentWithTags[]>({
       url: getApiUrl(`/v1/my/collections/${collectionID}/attachments`),
     })
 
@@ -109,7 +111,7 @@ export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWi
       if (query.offset !== undefined) url.searchParams.set("offset", query.offset.toString())
       if (query.limit !== undefined) url.searchParams.set("limit", query.limit.toString())
     }
-    const { data, error } = await makeFetch<AttachmentWithTags[]>({
+    const { data, error } = await fetch<AttachmentWithTags[]>({
       url: url.toString(),
     })
 
@@ -127,7 +129,7 @@ export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWi
 
 export async function permanentlyDeleteAttachment(attachmentID: string): Promise<{ id: string } | null> {
   try {
-    const { data, error } = await makeFetch<{ id: string } | null>({
+    const { data, error } = await fetch<{ id: string } | null>({
       url: getApiUrl(`/v1/my/attachments/${attachmentID}`),
       method: "DELETE",
     })
@@ -146,7 +148,7 @@ export async function permanentlyDeleteAttachment(attachmentID: string): Promise
 
 export async function moveToTrashAttachment(attachmentID: string): Promise<{ id: string } | null> {
   try {
-    const { data, error } = await makeFetch<{ id: string } | null>({
+    const { data, error } = await fetch<{ id: string } | null>({
       url: getApiUrl(`/v1/my/attachments/${attachmentID}/trash`),
       method: "POST",
     })
@@ -165,7 +167,7 @@ export async function moveToTrashAttachment(attachmentID: string): Promise<{ id:
 
 export async function getTrashAttachments(): Promise<AttachmentWithMaybeTagsAndSource[] | null> {
   try {
-    const { data, error } = await makeFetch<AttachmentWithMaybeTagsAndSource[]>({
+    const { data, error } = await fetch<AttachmentWithMaybeTagsAndSource[]>({
       url: getApiUrl("/v1/my/attachments/trash")
     })
 

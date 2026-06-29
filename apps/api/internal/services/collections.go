@@ -31,7 +31,15 @@ func GetCollection(collectionID string, userID int64, db *gorm.DB) (*models.Coll
 	return collection, nil
 }
 
-func CreateCollectionAttachment(collectionID string, attachmentID uuid.UUID, db *gorm.DB) (*models.CollectionAttachment, error) {
+func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetPublicCollectionAttachments(collectionID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachments, nil
+}
+
+func CreateCollectionAttachment(collectionID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) (*models.CollectionAttachment, error) {
 	attachment, err := repositories.NewCollectionAttachment(collectionID, attachmentID, db)
 	if err != nil {
 		return nil, err

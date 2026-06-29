@@ -10,9 +10,10 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 type CollectionGridProps = {
   collection: string
   defaultAttachments?: Attachment[]
+  readonly?: boolean
 }
 
-export default function CollectionGrid({ defaultAttachments = [], collection }: CollectionGridProps) {
+export default function CollectionGrid({ defaultAttachments = [], collection, readonly = false }: CollectionGridProps) {
 
   // const attachments = useCollectionAttachments({ collection, attachments: defaultAttachments })
 
@@ -46,6 +47,7 @@ export default function CollectionGrid({ defaultAttachments = [], collection }: 
     <CardGrid
       attachments={attachments}
       scope="ref"
+      readonly={readonly}
     />
   )
 }

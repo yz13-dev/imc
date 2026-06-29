@@ -1,10 +1,9 @@
 "use client"
 import { OptionalVideoProvider } from "@/components/video-provider";
-import { getAllAttachments } from "@/lib/api/attachments";
+import { getAttachment } from "@/lib/api/attachments";
 import { getRefSrc } from "@/lib/ref-src";
-import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
-import type { InfiniteData } from "@tanstack/react-query";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Badge } from "@workspace/ui/components/badge";
 import RefContent from "../ref-content";
 
 export function AttachmentSkeleton() {
@@ -17,25 +16,14 @@ export default function Attachment({ attachmentId }: { attachmentId: string }) {
 
   // const items = useGlobalStore(state => state.collectionsItems)
   // const inbox = useGlobalStore((state) => state.inbox)
+  //
 
-  const { data } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, string[], number>({
-    getNextPageParam: (lastPageParam, allPages, offset) => {
-      return offset + 25
-    },
-    initialPageParam: 0,
-    queryKey: ["attachments"],
-    queryFn: async ({ pageParam }) => {
-      const data = await getAllAttachments({ offset: pageParam })
-      return data || []
-    }
+  const { data, isLoading, isPending } = useSuspenseQuery({
+    queryKey: ["attachments", "ref", attachmentId],
+    queryFn: () => getAttachment(attachmentId).then(data => data)
   })
 
-  // const attachments = useMemo(() => {
-  //   const inboxAttachments = inbox.map((attachment) => attachment.attachment)
-  //   return [...Object.values(items).flat(), ...inboxAttachments]
-  // }, [items])
-
-  const attachment = (data.pages.flat() || []).find((item) => item.id === attachmentId)
+  const attachment = data
 
   if (!attachment) return null;
 
@@ -43,6 +31,7 @@ export default function Attachment({ attachmentId }: { attachmentId: string }) {
   if (!refSrc) return null;
   const title = attachment.label || refSrc || "-"
 
+  const tags = attachment.tags.flatMap(item => item.tag) || []
 
   return (
     <OptionalVideoProvider duration={attachment.duration_ms}>
@@ -55,11 +44,18 @@ export default function Attachment({ attachmentId }: { attachmentId: string }) {
             mimeType={attachment.mime_type}
             blurhash={attachment.blurhash}
             alt={title}
-            className="rounded-sm z-50 [&_img]:rounded-sm [&_video]:rounded-sm"
+            className="rounded-sm max-h-full z-50 [&_img]:rounded-sm [&_video]:rounded-sm"
             style={{
               aspectRatio: `${attachment.width}/${attachment.height}`
             }}
           />
+        }
+      </div>
+      <div className="max-w-4xl w-full flex items-center pt-6 justify-center gap-1">
+        {
+          tags.map(tag => {
+            return <Badge key={tag.id} variant="secondary" className="text-base py-1 uppercase h-fit">{tag.name}</Badge>
+          })
         }
       </div>
     </OptionalVideoProvider>

@@ -36,6 +36,7 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   })
 
   const all = data // useGlobalStore(state => state.all)
+  console.log("[PAGES]", all.pages, all.pages.flat())
   const allAttachments = all.pages.flat().filter(attachment => {
     if (!tagQuery) return true
     return tagQuery.every(tag => attachment.tags.some(t => t.tag.name.includes(tag)))
@@ -51,7 +52,7 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
     await fetchNextPage()
   }
 
-  const debouncedInView = useDebounce(inView, 150)
+  const debouncedInView = useDebounce(inView, 25)
   useEffect(() => {
     if (allAttachments.length !== 0) {
       setDisabled(false)

@@ -9,3 +9,7 @@ export function getApiUrl(path?: string) {
 export function getAssetsUrl(path?: string) {
   return new URL(path || "/", ASSETS_URL).toString()
 }
+
+export function getSiteUrl(path?: string) {
+  return new URL(path || "/", ASSETS_URL).toString()
+}

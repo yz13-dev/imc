@@ -217,19 +217,71 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := middleware.GetUser(r.Context())
-	if !ok {
-		http.Error(w, "user not found", http.StatusUnauthorized)
+	AttachmentID, err := uuid.Parse(attachmentID)
+	if err != nil {
+		http.Error(w, "attachmentID is invalid", http.StatusBadRequest)
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
 
-	key := fmt.Sprintf(
-		"users/%d/attachments/%s",
-		userID,
-		attachmentID,
-	)
+	log.Println("ID", AttachmentID)
+
+	log.Println("ID", AttachmentID)
+
+	var attachment models.Attachment
+
+	collectionAttachment, err := services.GetAttachmentWithCollection(AttachmentID, db)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	if collectionAttachment != nil {
+		// Вложение принадлежит коллекции
+		if collectionAttachment.Collection == nil {
+			http.Error(w, "collection not found", http.StatusInternalServerError)
+			return
+		}
+
+		attachment = collectionAttachment.Attachment
+
+		// Если коллекция приватная — проверяем владельца
+		if !collectionAttachment.Collection.Public {
+			user, ok := middleware.GetUser(r.Context())
+			if !ok {
+				http.Error(w, "user not found", http.StatusUnauthorized)
+				return
+			}
+
+			userID := user.ID.(int64)
+
+			if collectionAttachment.Collection.UserID != userID {
+				http.Error(w, "doesn't have access", http.StatusUnauthorized)
+				return
+			}
+		}
+	} else {
+		// Вложение не принадлежит коллекции — ищем публичное
+		publicAttachment, err := services.GetPublicAttachment(AttachmentID, db)
+		if err != nil {
+			http.Error(w, "doesn't have access", http.StatusUnauthorized)
+			return
+		}
+
+		attachment = publicAttachment.Attachment
+	}
+
+	key := attachment.Src
+	// fmt.Sprintf(
+	// 	"users/%d/attachments/%s",
+	// 	userID,
+	// 	attachmentID,
+	// )
 	log.Println("key", key)
 
 	s3Client, err := storage.NewS3Client()
@@ -420,6 +472,34 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 	}
 
 	attachments, err := services.GetCollectionAttachments(collectionID, userID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}
+
+func GetPublicCollectionAttachments(w http.ResponseWriter, r *http.Request) {
+
+	collectionID, err := uuid.Parse(r.PathValue("collectionID"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachments, err := services.GetPublicCollectionAttachments(collectionID, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

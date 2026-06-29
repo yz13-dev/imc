@@ -31,6 +31,14 @@ func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.Attac
 	return attachment, nil
 }
 
+func GetPublicAttachment(attachmentID uuid.UUID, db *gorm.DB) (*models.AttachmentWithTags, error) {
+	attachment, err := repositories.GetPublicAttachment(attachmentID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachment, nil
+}
+
 func PatchAttachment(AttachmentID uuid.UUID, UserID int64, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
 	attachment, err := repositories.PatchAttachment(AttachmentID, UserID, data, db)
 	if err != nil {
@@ -93,4 +101,12 @@ func GetTrashAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags
 		return nil, err
 	}
 	return attachments, nil
+}
+
+func GetAttachmentWithCollection(ID uuid.UUID, db *gorm.DB) (*models.CollectionAttachmentWithAttachmentAndAttachment, error) {
+	attachment, err := repositories.GetAttachmentWithCollection(ID, db)
+	if err != nil {
+		return nil, err
+	}
+	return attachment, nil
 }

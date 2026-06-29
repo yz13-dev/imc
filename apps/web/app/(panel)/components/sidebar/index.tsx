@@ -139,6 +139,14 @@ const CollectionItem = ({ username, collection }: { username: string; collection
   const loading = isLoading || isPending
 
   const count = data?.length ?? 0
+  if (loading) return (
+    <SidebarMenuItem>
+      <SidebarMenuSkeleton />
+      <SidebarMenuBadge>
+        <Skeleton className="h-5 w-6" />
+      </SidebarMenuBadge>
+    </SidebarMenuItem>
+  )
   return (
     <SidebarMenuItem key={collection.id}>
       <SidebarMenuButton render={<Link href={`/${username}/${collection.id}`} />}>
@@ -146,7 +154,7 @@ const CollectionItem = ({ username, collection }: { username: string; collection
         <span>{collection.name}</span>
       </SidebarMenuButton>
       <SidebarMenuBadge>
-        {loading ? <Skeleton className="h-5 w-6" /> : count}
+        {count}
       </SidebarMenuBadge>
     </SidebarMenuItem>
   )

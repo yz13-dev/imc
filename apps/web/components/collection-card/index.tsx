@@ -46,9 +46,10 @@ export type CollectionCardProps = {
   preview?: boolean
   noLink?: boolean
   containerClassName?: string
+  readonly?: boolean
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ tags = [], mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "" }: CollectionCardProps) {
+export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "" }: CollectionCardProps) {
 
   const href = scope ? `/${scope}/${id}` : `/${id}`
 
@@ -56,22 +57,26 @@ export default function CollectionCard({ tags = [], mime_type, id, src, scope = 
 
   const isVideo = mime_type.startsWith("video/")
 
+
   return (
     <CardContextMenu
       attachmentId={id}
       label={label}
+      readonly={readonly}
       className={cn(
-        "w-full p-1 bg-muted rounded-xl relative overflow-clip group break-inside-avoid",
+        "w-full p-1 bg-muted rounded-lg relative group break-inside-avoid",
         containerClassName
       )}
     >
       <div className="flex flex-col">
-        <div
-          className="absolute inset-0 size-full rounded-xl blur-xs bg-no-repeat bg-cover bg-center"
-          style={{
-            backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
-          }}
-        />
+        <div className="absolute inset-0 size-full rounded-lg overflow-clip">
+          <div
+            className="absolute inset-0 size-full rounded-lg blur-xs bg-no-repeat bg-cover bg-center"
+            style={{
+              backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
+            }}
+          />
+        </div>
         <OptionalVideoProvider isVideo={isVideo} duration={duration_ms}>
           {/*<div className="w-full flex justify-center pb-2"></div>*/}
           <AnimatePresence>

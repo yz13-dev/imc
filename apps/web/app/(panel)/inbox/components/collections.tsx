@@ -25,7 +25,7 @@ export default function Collections() {
           const attachments = (items[collection.id] || []).slice(0, 3)
           const href = `/${user?.username}/${collection?.id}`
           return (
-            <div key={collection.id} className="min-w-48 rounded-sm overflow-clip p-1 bg-muted relative">
+            <div key={collection.id} className="min-w-48 rounded-xl overflow-clip p-1 bg-muted relative">
               {/*
                 user &&
                 <Link href={href} className="absolute z-10 inset-0" />

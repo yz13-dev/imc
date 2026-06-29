@@ -28,12 +28,16 @@ function Tags({ tags = {} }: { tags?: TagStats }) {
     .map(([tagName, stat]) => {
       const isActive = tagQuery?.includes(tagName)
       return (
-        <Button key={tagName} variant={isActive ? "default" : "outline"} onClick={() => setTagQuery(prev => {
-          if (prev?.includes(tagName)) {
-            return prev.filter(t => t !== tagName)
-          }
-          return [...(prev || []), tagName]
-        })}>
+        <Button
+          key={tagName}
+          variant={isActive ? "default" : "outline"}
+          onClick={() => setTagQuery(prev => {
+            if (prev?.includes(tagName)) {
+              return prev.filter(t => t !== tagName)
+            }
+            return [...(prev || []), tagName]
+          })}
+        >
           <span>{tagName}</span>
           <span className="text-muted-foreground">{stat.count}</span>
         </Button>
@@ -56,6 +60,7 @@ export default function TagStats({ queryKey }: TagStatsProps) {
   })
 
   const tags = getTagsFromData(data)?.flatMap(item => item.tags)
+
   const tagStats = getTagsStats(tags)
 
   return (

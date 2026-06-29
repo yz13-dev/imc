@@ -1,11 +1,12 @@
 
-import { makeFetch } from "../fetch";
-import { getApiUrl } from "../url";
+import { getApiUrl } from "@/lib/url";
+import { getFetchClient } from "../fetch";
 
+const fetch = getFetchClient()
 
 export async function getCollectionCards(collection: string) {
   try {
-    const { data, error } = await makeFetch<any[]>({
+    const { data, error } = await fetch<any[]>({
       url: getApiUrl("/v1/my/collections/${collection}/cards")
     })
 
