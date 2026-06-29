@@ -2,6 +2,7 @@ package config
 
 import (
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/thecodearcher/limen"
@@ -10,6 +11,8 @@ import (
 )
 
 func NewAuthConfig(adapter limen.DatabaseAdapter) *limen.Config {
+	IsProd := os.Getenv("APP_ENV") == "production"
+	Secure := IsProd == true
 	return &limen.Config{
 		BaseURL:  "http://localhost:8080",
 		Database: adapter,
@@ -19,7 +22,7 @@ func NewAuthConfig(adapter limen.DatabaseAdapter) *limen.Config {
 		HTTP: limen.NewDefaultHTTPConfig(
 			limen.WithHTTPSessionCookieName("imc_session"),
 			limen.WithHTTPCookieSameSite(http.SameSiteNoneMode),
-			limen.WithHTTPCookieSecure(false),
+			limen.WithHTTPCookieSecure(Secure),
 			limen.WithHTTPCookieHTTPOnly(true),
 			limen.WithHTTPOriginCheck(true),
 			limen.WithHTTPCookieCrossDomainEnabled(),
