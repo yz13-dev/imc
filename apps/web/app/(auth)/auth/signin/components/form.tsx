@@ -1,8 +1,8 @@
 "use client"
 
 import { API_URL } from "@/lib/api/const"
-import { axios } from "@/lib/axios-client"
 import { sendTokenToExtension } from "@/lib/extensions"
+import { getFetchClient } from "@/lib/fetch"
 import { useForm } from "@tanstack/react-form-nextjs"
 import { Button } from "@workspace/ui/components/button"
 import { Field, FieldError } from "@workspace/ui/components/field"
@@ -30,21 +30,20 @@ const formSchema = z.object({
 
 const signIn = async (email: string, password: string) => {
   try {
-    const { data, error } = await axios({
-      baseURL: API_URL,
+    const fetch = getFetchClient()
+    const { data, error } = await fetch({
       method: "POST",
       url: new URL("/auth/signin/credential", API_URL).toString(),
       headers: {
         "Content-Type": "application/json",
       },
-      withCredentials: true,
-      data: {
+      body: {
         "credential": email,
         "password": password,
         "remember_me": true
       }
     })
-    return { data, error: error?.message }
+    return { data, error: error }
   } catch (error) {
     return { data: null, error: error instanceof Error ? error.message : String(error) }
   }
