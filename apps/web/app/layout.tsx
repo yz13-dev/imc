@@ -8,6 +8,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Suspense } from "react";
 
 
 const sans = localFont({
@@ -88,17 +89,19 @@ export default function RootLayout({
       className={cn("antialiased", sans.variable, mono.variable, serif.variable, pixel.variable)}
     >
       <body>
-        <ThemeProvider>
-          <Toaster />
-          <TooltipProvider>
-            <NuqsAdapter>
-              <QueryProvider>
-                <QueryTheme />
-                {children}
-              </QueryProvider>
-            </NuqsAdapter>
-          </TooltipProvider>
-        </ThemeProvider>
+        <Suspense fallback={<></>}>
+          <ThemeProvider>
+            <Toaster />
+            <TooltipProvider>
+              <NuqsAdapter>
+                <QueryProvider>
+                  <QueryTheme />
+                  {children}
+                </QueryProvider>
+              </NuqsAdapter>
+            </TooltipProvider>
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   )
