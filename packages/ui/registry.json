@@ -17,9 +17,9 @@
       ],
       "files": [
         {
-          "path": "imc/video.tsx",
-          "type": "registry:component",
-          "target": "src/components/video.tsx"
+          "path": "src/components/video.tsx",
+          "target": "imc/video.tsx",
+          "type": "registry:component"
         }
       ]
     },
@@ -30,9 +30,9 @@
       "description": "Simple implementation of interval hook",
       "files": [
         {
-          "path": "use-interval.tsx",
-          "type": "registry:hook",
-          "target": "src/hooks/use-interval.tsx"
+          "path": "src/hooks/use-interval.tsx",
+          "target": "hooks/use-interval.tsx",
+          "type": "registry:hook"
         }
       ]
     }
