@@ -9,7 +9,7 @@
       "title": "Video",
       "description": "<video /> wrapper with muted autoplay, and in-view awareness",
       "registryDependencies": [
-        "hooks/use-interval"
+        "yz13-dev/imc/use-interval"
       ],
       "dependencies": [
         "motion",
