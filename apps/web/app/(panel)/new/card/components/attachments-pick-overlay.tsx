@@ -31,7 +31,7 @@ export default function AttachmentsPickOverlay() {
       }}
     >
       <div
-        className="w-full max-w-2xl h-full overflow-y-auto"
+        className="w-full max-w-2xl h-full mx-auto overflow-y-auto"
         onClickCapture={e => {
           const target = e.target as HTMLElement
           console.log("click", e)

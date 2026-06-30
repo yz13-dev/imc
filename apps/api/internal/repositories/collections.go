@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetCollections(UserID int64, db *gorm.DB) ([]models.Collection, error) {
+func GetCollections(UserID string, db *gorm.DB) ([]models.Collection, error) {
 	var collections []models.Collection
 	if err := db.Where("user_id = ?", UserID).Find(&collections).Error; err != nil {
 		return nil, err
@@ -29,9 +29,9 @@ func NewCollection(data *models.NewCollection, db *gorm.DB) (*models.Collection,
 	return collection, nil
 }
 
-func GetCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
+func GetCollection(collectionID string, UserID string, db *gorm.DB) (*models.Collection, error) {
 	var collection models.Collection
-	if err := db.Where("id = ? AND user_id = ?", collectionID, userID).First(&collection).Error; err != nil {
+	if err := db.Where("id = ? AND user_id = ?", collectionID, UserID).First(&collection).Error; err != nil {
 		return nil, err
 	}
 	return &collection, nil
@@ -56,12 +56,12 @@ func NewCollectionAttachment(collectionID uuid.UUID, attachmentID uuid.UUID, db 
 	return &attachment, nil
 }
 
-func DeleteCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
+func DeleteCollection(collectionID string, UserID string, db *gorm.DB) (*models.Collection, error) {
 	var collection models.Collection
 
 	if err := db.
 		Table("collections").
-		Where("id = ? AND user_id = ?", collectionID, userID).
+		Where("id = ? AND user_id = ?", collectionID, UserID).
 		First(&collection).
 		Error; err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func DeleteCollection(collectionID string, userID int64, db *gorm.DB) (*models.C
 
 	if err := db.
 		Table("collections").
-		Where("id = ? AND user_id = ?", collectionID, userID).
+		Where("id = ? AND user_id = ?", collectionID, UserID).
 		Delete(&collection).Error; err != nil {
 		return nil, err
 	}

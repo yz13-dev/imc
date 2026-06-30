@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetMyCards(UserID int64, db *gorm.DB) ([]models.Card, error) {
+func GetMyCards(UserID string, db *gorm.DB) ([]models.Card, error) {
 	cards, err := repositories.GetCards(UserID, db)
 	if err != nil {
 		return nil, err
@@ -14,7 +14,7 @@ func GetMyCards(UserID int64, db *gorm.DB) ([]models.Card, error) {
 	return cards, nil
 }
 
-func CreateCard(UserID int64, data *models.NewCard, db *gorm.DB) (models.Card, error) {
+func CreateCard(UserID string, data *models.NewCard, db *gorm.DB) (models.Card, error) {
 	card, err := repositories.CreateCard(UserID, data, db)
 	if err != nil {
 		return models.Card{}, err

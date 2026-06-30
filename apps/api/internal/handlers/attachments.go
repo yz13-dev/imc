@@ -35,7 +35,7 @@ func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -75,7 +75,7 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	s3Client, err := storage.NewS3Client()
 	if err != nil {
@@ -258,7 +258,7 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			userID := user.ID.(int64)
+			userID := user.ID
 
 			if collectionAttachment.Collection.UserID != userID {
 				http.Error(w, "doesn't have access", http.StatusUnauthorized)
@@ -328,7 +328,7 @@ func GetAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -380,7 +380,7 @@ func PatchAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -413,7 +413,7 @@ func PostInInbox(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -457,7 +457,7 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID // as uint64
 
 	collectionID, err := uuid.Parse(r.PathValue("collectionID"))
 	if err != nil {
@@ -533,7 +533,7 @@ func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -566,7 +566,7 @@ func DeleteAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	attachmentID := r.PathValue("attachmentID")
 	if attachmentID == "" {
@@ -623,7 +623,7 @@ func TrashAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	attachmentID := r.PathValue("attachmentID")
 	if attachmentID == "" {
@@ -672,7 +672,7 @@ func UnTrashAttachment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	attachmentID := r.PathValue("attachmentID")
 	if attachmentID == "" {
@@ -721,7 +721,7 @@ func GetTrashAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {

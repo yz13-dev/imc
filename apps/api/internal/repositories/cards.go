@@ -5,13 +5,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetCards(UserID int64, db *gorm.DB) ([]models.Card, error) {
+func GetCards(UserID string, db *gorm.DB) ([]models.Card, error) {
 	var cards []models.Card
 	err := db.Find(&cards, "user_id = ?", UserID).Error
 	return cards, err
 }
 
-func CreateCard(UserID int64, data *models.NewCard, db *gorm.DB) (models.Card, error) {
+func CreateCard(UserID string, data *models.NewCard, db *gorm.DB) (models.Card, error) {
 	var card = models.Card{
 		UserID:      UserID,
 		Title:       data.Title,

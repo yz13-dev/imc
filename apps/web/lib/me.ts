@@ -1,7 +1,7 @@
 "use server"
 import { makeFetch } from "@/lib/fetch/fetch";
 import type { User } from "@/types/user";
-import { getApiUrl } from "./url";
+import { getAuthUrl } from "./url";
 
 
 
@@ -9,7 +9,7 @@ export async function getMe(): Promise<User | null> {
   try {
     const { data, error } = await makeFetch<{ user: User | null }>({
       method: "GET",
-      url: getApiUrl("/auth/me"),
+      url: getAuthUrl("/api/auth/get-session"),
     })
     if (error) throw error;
 

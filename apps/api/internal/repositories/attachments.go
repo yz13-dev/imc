@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func GetAttachments(UserID int64, db *gorm.DB) ([]models.Attachment, error) {
+func GetAttachments(UserID string, db *gorm.DB) ([]models.Attachment, error) {
 	var attachments []models.Attachment
 	if err := db.Where("user_id = ? AND is_deleted = false", UserID).Find(&attachments).Error; err != nil {
 		return nil, err
@@ -17,7 +17,7 @@ func GetAttachments(UserID int64, db *gorm.DB) ([]models.Attachment, error) {
 	return attachments, nil
 }
 
-func GetAttachmentsWithTags(ids []uuid.UUID, UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetAttachmentsWithTags(ids []uuid.UUID, UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	if err := db.
 		Table("attachments").
@@ -45,7 +45,7 @@ func GetPublicAttachmentsWithTags(ids []uuid.UUID, db *gorm.DB) ([]models.Attach
 	return attachments, nil
 }
 
-func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID int64, db *gorm.DB) (models.AttachmentWithInbox, error) {
+func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID string, db *gorm.DB) (models.AttachmentWithInbox, error) {
 	var inbox models.Inbox
 	var attachment models.Attachment
 
@@ -63,7 +63,7 @@ func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID int64, db *gorm.
 	}, nil
 }
 
-func GetCollectionAttachments(collectionID uuid.UUID, UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetCollectionAttachments(collectionID uuid.UUID, UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var collectionAttachments []models.CollectionAttachment
 	if err := db.
 		Table("collections_attachments").
@@ -127,7 +127,7 @@ func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]mode
 
 }
 
-func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (models.Attachment, error) {
+func PostNewAttachment(UserID string, db *gorm.DB, data models.NewAttachment) (models.Attachment, error) {
 	attachment := models.Attachment{
 		Type:       data.Type,
 		MimeType:   data.MimeType,
@@ -148,7 +148,7 @@ func PostNewAttachment(UserID int64, db *gorm.DB, data models.NewAttachment) (mo
 	return attachment, nil
 }
 
-func PatchAttachment(AttachmentID uuid.UUID, UserID int64, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
+func PatchAttachment(AttachmentID uuid.UUID, UserID string, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
 	attachment := models.Attachment{
 		Label: data.Label,
 	}
@@ -158,7 +158,7 @@ func PatchAttachment(AttachmentID uuid.UUID, UserID int64, data models.UpdateAtt
 	return attachment, nil
 }
 
-func GetAttachment(UserID int64, attachmentID string, db *gorm.DB) (models.AttachmentWithTags, error) {
+func GetAttachment(UserID string, attachmentID string, db *gorm.DB) (models.AttachmentWithTags, error) {
 	var attachment models.AttachmentWithTags
 	if err := db.
 		Table("attachments").
@@ -189,7 +189,7 @@ type ListQuery struct {
 	Limit  int
 }
 
-func GetAllAttachments(UserID int64, query ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetAllAttachments(UserID string, query ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	if err := db.
 		Table("attachments").
@@ -205,25 +205,25 @@ func GetAllAttachments(UserID int64, query ListQuery, db *gorm.DB) ([]models.Att
 	return attachments, nil
 }
 
-func TrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
+func TrashAttachment(UserID string, attachmentID string, db *gorm.DB) error {
 	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).Update("is_deleted", true).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func UntrashAttachment(UserID int64, attachmentID string, db *gorm.DB) error {
+func UntrashAttachment(UserID string, attachmentID string, db *gorm.DB) error {
 	if err := db.Table("attachments").Where("user_id = ? AND id = ?", UserID, attachmentID).Update("is_deleted", false).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func DeleteAttachment(userID int64, attachmentID string, db *gorm.DB) (models.Attachment, error) {
+func DeleteAttachment(UserID string, attachmentID string, db *gorm.DB) (models.Attachment, error) {
 	var attachment models.Attachment
 
 	if err := db.
-		Where("user_id = ? AND id = ?", userID, attachmentID).
+		Where("user_id = ? AND id = ?", UserID, attachmentID).
 		First(&attachment).Error; err != nil {
 		return models.Attachment{}, err
 	}
@@ -235,7 +235,7 @@ func DeleteAttachment(userID int64, attachmentID string, db *gorm.DB) (models.At
 	return attachment, nil
 }
 
-func GetTrashAttachments(UserID int64, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetTrashAttachments(UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	if err := db.
 		Table("attachments").

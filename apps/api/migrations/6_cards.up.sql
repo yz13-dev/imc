@@ -4,9 +4,7 @@ CREATE TABLE IF NOT EXISTS cards (
     default gen_random_uuid(),
 
   -- Владелец карточки
-  user_id BIGSERIAL not null
-    references users(id)
-    on delete cascade,
+  user_id text not null,
 
   -- Название
   title text not null,

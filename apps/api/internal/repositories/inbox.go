@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
+func PostInInbox(UserID string, db *gorm.DB, attachmentID uuid.UUID) error {
 	inbox := models.NewInbox{
 		UserID:       UserID,
 		AttachmentID: attachmentID,
@@ -17,7 +17,7 @@ func PostInInbox(UserID int64, db *gorm.DB, attachmentID uuid.UUID) error {
 	return nil
 }
 
-func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.InboxItem, error) {
+func GetInboxAttachments(UserID string, db *gorm.DB) ([]models.InboxItem, error) {
 	var inboxes []models.Inbox
 	if err := db.Table("inbox_items").Where("user_id = ?", UserID).Find(&inboxes).Error; err != nil {
 		return nil, err
@@ -60,9 +60,9 @@ func GetInboxAttachments(UserID int64, db *gorm.DB) ([]models.InboxItem, error) 
 	return items, nil
 }
 
-func DeleteInboxItem(inboxItemID uuid.UUID, userID int64, db *gorm.DB) error {
+func DeleteInboxItem(inboxItemID uuid.UUID, UserID string, db *gorm.DB) error {
 	var inboxItem models.Inbox
-	if err := db.Table("inbox_items").Where("attachment_id = ? AND user_id = ?", inboxItemID, userID).First(&inboxItem).Error; err != nil {
+	if err := db.Table("inbox_items").Where("attachment_id = ? AND user_id = ?", inboxItemID, UserID).First(&inboxItem).Error; err != nil {
 		return err
 	}
 	if err := db.Table("inbox_items").Delete(&inboxItem).Error; err != nil {

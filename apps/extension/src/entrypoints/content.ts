@@ -21,6 +21,10 @@ export default defineContentScript({
       const allowedOrigins = [
         "http://localhost:3000",
         "http://localhost:5173",
+        "http://localhost:4444",
+        "https://localhost:4444",
+        "https://imc.yz13.dev",
+        "https://auth.yz13.dev",
         "https://yz13.dev"
       ];
 

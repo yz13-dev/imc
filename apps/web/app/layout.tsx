@@ -1,3 +1,4 @@
+import QueryTheme from "@/components/query-theme";
 import { ThemeProvider } from "@/components/theme-provider";
 import QueryProvider from "@/providers/query";
 import { Toaster } from "@workspace/ui/components/sonner";
@@ -92,6 +93,7 @@ export default function RootLayout({
           <TooltipProvider>
             <NuqsAdapter>
               <QueryProvider>
+                <QueryTheme />
                 {children}
               </QueryProvider>
             </NuqsAdapter>

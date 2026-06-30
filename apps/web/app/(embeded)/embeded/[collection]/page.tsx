@@ -1,5 +1,5 @@
 import CollectionGrid from "@/app/(panel)/[user]/[collection]/components/collection-grid";
-import { getCollectionAttachments } from "@/lib/api/attachments";
+import { getPublicCollectionAttachments } from "@/lib/api/attachments";
 import { getQueryClient } from "@/lib/query-client";
 
 
@@ -19,7 +19,7 @@ export default async function Page({ params }: PageProps) {
     .prefetchQuery({
       queryKey: ["attachments", "collections", collection],
       queryFn: () => {
-        const data = getCollectionAttachments(collection)
+        const data = getPublicCollectionAttachments(collection)
         return data
       }
     })

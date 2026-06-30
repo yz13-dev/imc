@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetCollections(UserID int64, db *gorm.DB) ([]models.Collection, error) {
+func GetCollections(UserID string, db *gorm.DB) ([]models.Collection, error) {
 	collections, err := repositories.GetCollections(UserID, db)
 	if err != nil {
 		return nil, err
@@ -23,8 +23,8 @@ func CreateCollection(data *models.NewCollection, db *gorm.DB) (*models.Collecti
 	return collection, nil
 }
 
-func GetCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
-	collection, err := repositories.GetCollection(collectionID, userID, db)
+func GetCollection(collectionID string, UserID string, db *gorm.DB) (*models.Collection, error) {
+	collection, err := repositories.GetCollection(collectionID, UserID, db)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +47,8 @@ func CreateCollectionAttachment(collectionID uuid.UUID, attachmentID uuid.UUID, 
 	return attachment, nil
 }
 
-func DeleteCollection(collectionID string, userID int64, db *gorm.DB) (*models.Collection, error) {
-	collection, err := repositories.DeleteCollection(collectionID, userID, db)
+func DeleteCollection(collectionID string, UserID string, db *gorm.DB) (*models.Collection, error) {
+	collection, err := repositories.DeleteCollection(collectionID, UserID, db)
 	if err != nil {
 		return nil, err
 	}

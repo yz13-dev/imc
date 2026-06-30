@@ -14,12 +14,13 @@ import (
 
 func GetMyCollectionsHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
+	log.Println("collections", user, ok)
 	if !ok {
 		http.Error(w, "user not found", http.StatusUnauthorized)
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -52,7 +53,7 @@ func PostMyNewCollectionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -65,7 +66,7 @@ func PostMyNewCollectionHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to decode request", http.StatusBadRequest)
 		return
 	}
-	data.UserID = int64(userID)
+	data.UserID = userID
 
 	collection, err := services.CreateCollection(&data, db)
 	if err != nil {
@@ -106,7 +107,7 @@ func PostCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -197,7 +198,7 @@ func DeleteCollectionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {

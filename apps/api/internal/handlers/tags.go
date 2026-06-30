@@ -26,7 +26,7 @@ func GetTagsSearch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {
@@ -69,7 +69,7 @@ func PostNewTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := user.ID.(int64) // as uint64
+	userID := user.ID
 
 	db, ok := middleware.GetDB(r.Context())
 	if !ok {

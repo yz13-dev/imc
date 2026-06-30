@@ -32,11 +32,12 @@ export async function getInboxAttachments(): Promise<InboxItem[] | null> {
       url: getApiUrl("/v1/my/attachments/inbox")
     })
 
+    console.log("[INBOX]", data, error)
+
     if (error) {
       throw error;
     }
 
-    // console.log("[INBOX]", data)
     return data;
 
   } catch (error) {
@@ -86,6 +87,24 @@ export async function getCollectionAttachments(collectionID: string): Promise<At
   try {
     const { data, error } = await fetch<AttachmentWithTags[]>({
       url: getApiUrl(`/v1/my/collections/${collectionID}/attachments`),
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
+  }
+}
+
+export async function getPublicCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
+  try {
+    const { data, error } = await fetch<AttachmentWithTags[]>({
+      url: getApiUrl(`/v1/collections/${collectionID}/attachments`),
     })
 
     if (error) {

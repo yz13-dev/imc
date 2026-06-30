@@ -63,7 +63,7 @@ func main() {
 		log.Fatalf("Failed to create limen: %v", err)
 	}
 
-	handler := auth.Handler()
+	// handler := auth.Handler()
 	r.Use(cors.Handler(cors.Options{
 		Debug: true,
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -89,12 +89,14 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
-	r.Handle("/auth/*", handler)
+	// r.Handle("/auth/*", handler)
+	r.Use(internalMiddleware.UserInstance(auth))
+
+	r.Get("/auth/me", handlers.GetMe)
 
 	r.Group(func(r chi.Router) {
 		hub := events.NewHub()
 		r.Use(internalMiddleware.DBInstance(gormdb))
-		r.Use(internalMiddleware.UserInstance(auth))
 		r.Use(internalMiddleware.EventsHubMiddleware(hub))
 
 		r.Route("/v1", func(r chi.Router) {

@@ -18,7 +18,7 @@ func EventsHandler(hub *events.Hub) http.HandlerFunc {
 			return
 		}
 
-		userID := user.ID.(int64) // as uint64
+		userID := user.ID
 
 		flusher, ok := w.(http.Flusher)
 		if !ok {

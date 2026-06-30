@@ -1,6 +1,8 @@
 package events
 
-import "sync"
+import (
+	"sync"
+)
 
 type Event struct {
 	Type string `json:"type"`
@@ -9,11 +11,11 @@ type Event struct {
 
 type Hub struct {
 	mu      sync.RWMutex
-	clients map[int64]map[chan Event]struct{}
+	clients map[string]map[chan Event]struct{}
 }
 
 func NewHub() *Hub {
 	return &Hub{
-		clients: make(map[int64]map[chan Event]struct{}),
+		clients: make(map[string]map[chan Event]struct{}),
 	}
 }

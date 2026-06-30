@@ -1,5 +1,6 @@
 import { FieldSeparator } from "@workspace/ui/components/field";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Form from "./components/form";
 
 
@@ -10,6 +11,7 @@ export default async function Page({ searchParams }: PageProps) {
 
   const { next } = await searchParams;
 
+  return redirect(`https://localhost:4444/auth/signin?next=http://localhost:5173`)
 
   return (
     <div className="max-w-md mx-auto flex flex-col gap-8">

@@ -21,15 +21,15 @@ func DisconnectTagFromAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *go
 	return nil
 }
 
-func CreateTag(name string, userId int64, db *gorm.DB) (*models.Tag, error) {
-	tag, err := repositories.CreateNewTag(models.NewTag{Name: name, UserID: userId}, db)
+func CreateTag(name string, UserID string, db *gorm.DB) (*models.Tag, error) {
+	tag, err := repositories.CreateNewTag(models.NewTag{Name: name, UserID: UserID}, db)
 	if err != nil {
 		return nil, err
 	}
 	return tag, nil
 }
 
-func SearchTags(query string, UserID int64, db *gorm.DB) ([]models.Tag, error) {
+func SearchTags(query string, UserID string, db *gorm.DB) ([]models.Tag, error) {
 	tags, err := repositories.SearchTags(query, UserID, db)
 	if err != nil {
 		return nil, err

@@ -2,9 +2,7 @@ CREATE TABLE IF NOT EXISTS tags (
   id uuid primary key
     default gen_random_uuid(),
 
-  user_id BIGSERIAL not null
-    references users(id)
-    on delete cascade,
+  user_id text not null,
 
   name text not null,
 

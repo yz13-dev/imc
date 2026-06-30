@@ -17,7 +17,7 @@ func CreateNewTag(data models.NewTag, db *gorm.DB) (*models.Tag, error) {
 	return &tag, nil
 }
 
-func SearchTags(query string, UserID int64, db *gorm.DB) ([]models.Tag, error) {
+func SearchTags(query string, UserID string, db *gorm.DB) ([]models.Tag, error) {
 	var tags []models.Tag
 	if err := db.Table("tags").Where("user_id = ? AND name LIKE ?", UserID, "%"+query+"%").Find(&tags).Error; err != nil {
 		return nil, err

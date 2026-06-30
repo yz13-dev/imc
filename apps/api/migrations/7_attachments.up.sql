@@ -8,9 +8,7 @@ CREATE TABLE IF NOT EXISTS attachments (
   id uuid primary key
     default gen_random_uuid(),
 
-  user_id BIGSERIAL not null
-    references users(id)
-    on delete cascade,
+  user_id text not null,
 
   source_id uuid
     references sources(id)
@@ -58,11 +56,3 @@ CREATE TABLE IF NOT EXISTS attachments (
 
 CREATE INDEX IF NOT EXISTS idx_attachments_user_id
   on attachments(user_id);
--- Быстро получить вложения карточки
-CREATE INDEX IF NOT EXISTS idx_attachments_card_id
-  ON attachments(card_id);
-
--- Только одна обложка на карточку
-CREATE UNIQUE INDEX IF NOT EXISTS idx_attachment_single_cover
-  ON attachments(card_id)
-  WHERE is_cover = true;

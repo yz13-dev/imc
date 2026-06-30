@@ -7,10 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID int64, db *gorm.DB) (models.AttachmentWithInbox, error) {
+func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID string, db *gorm.DB) (models.AttachmentWithInbox, error) {
 	return repositories.GetAttachmentWithInboxCheck(attachmentID, UserID, db)
 }
 
-func DeleteFromAttachmentInbox(attachmentID uuid.UUID, UserID int64, db *gorm.DB) error {
+func DeleteFromAttachmentInbox(attachmentID uuid.UUID, UserID string, db *gorm.DB) error {
 	return repositories.DeleteInboxItem(attachmentID, UserID, db)
 }

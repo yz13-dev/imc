@@ -18,7 +18,7 @@ type Attachment struct {
 	IsCover    bool      `json:"is_cover"`
 	Blurhash   string    `json:"blurhash"`
 	CreatedAt  time.Time `gorm:"default:now()" json:"created_at"`
-	UserID     int64     `json:"user_id"`
+	UserID     string    `json:"user_id"`
 	Label      string    `json:"label"`
 	IsDeleted  bool      `gorm:"default:false" json:"is_deleted"`
 }
@@ -40,7 +40,7 @@ type NewAttachment struct {
 	IsCover    bool
 	Blurhash   string
 	CreatedAt  time.Time `gorm:"default:now()"`
-	UserID     int64
+	UserID     string    `json:"user_id"`
 	Label      string
 }
 

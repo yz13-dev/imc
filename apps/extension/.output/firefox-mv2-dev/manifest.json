@@ -1,0 +1,63 @@
+{
+  "manifest_version": 2,
+  "name": "IMC",
+  "description": "Сохраняйте вдохновления и референсы в IMC",
+  "version": "0.1.0",
+  "short_name": "IMC",
+  "icons": {
+    "16": "/imc-16-16.png",
+    "32": "/imc-32-32.png",
+    "48": "/imc-48-48.png",
+    "128": "/imc-128-128.png"
+  },
+  "permissions": [
+    "cookies",
+    "storage",
+    "tabs",
+    "contextMenus",
+    "http://localhost/*",
+    "http://localhost:8080/*",
+    "https://localhost:8080/*",
+    "https://api.imc.your-domain.com/*",
+    "https://*/*"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "imc@yz13.dev"
+    }
+  },
+  "commands": {
+    "wxt:reload-extension": {
+      "description": "Reload the extension during development",
+      "suggested_key": {
+        "default": "Alt+R"
+      }
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content-scripts/content.js"
+      ]
+    }
+  ],
+  "content_security_policy": "script-src 'self' http://localhost:3000; object-src 'self';",
+  "browser_action": {
+    "default_title": "IMC",
+    "theme_icons": [
+      {
+        "dark": "/imc-dark.png",
+        "light": "/imc-light.png",
+        "size": 64
+      }
+    ]
+  }
+}

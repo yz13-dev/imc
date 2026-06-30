@@ -1,9 +1,13 @@
-import { API_URL, ASSETS_URL } from "./api/const";
+import { API_URL, ASSETS_URL, AUTH_URL } from "./api/const";
 
 
 
 export function getApiUrl(path?: string) {
   return new URL(path || "/", API_URL).toString()
+}
+
+export function getAuthUrl(path?: string) {
+  return new URL(path || "/", AUTH_URL).toString()
 }
 
 export function getAssetsUrl(path?: string) {

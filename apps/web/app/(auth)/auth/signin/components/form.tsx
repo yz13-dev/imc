@@ -1,6 +1,6 @@
 "use client"
 
-import { API_URL } from "@/lib/api/const"
+import { AUTH_URL } from "@/lib/api/const"
 import { sendTokenToExtension } from "@/lib/extensions"
 import { getFetchClient } from "@/lib/fetch"
 import { useForm } from "@tanstack/react-form-nextjs"
@@ -33,14 +33,14 @@ const signIn = async (email: string, password: string) => {
     const fetch = getFetchClient()
     const { data, error } = await fetch({
       method: "POST",
-      url: new URL("/auth/signin/credential", API_URL).toString(),
+      url: new URL("/api/auth/sign-in/email", AUTH_URL).toString(),
       headers: {
         "Content-Type": "application/json",
       },
       body: {
-        "credential": email,
+        "username": email,
         "password": password,
-        "remember_me": true
+        "rememberMe": true
       }
     })
     return { data, error: error }
@@ -89,7 +89,8 @@ export default function Form({ next = "/" }: { next?: string }) {
             })
           } else {
             // @ts-expect-error
-            sendTokenToExtension(data!.token)
+            const token = data?.session?.token;
+            sendTokenToExtension(token)
             toast.success("Вход выполнен", {
               id: toastId
             })
