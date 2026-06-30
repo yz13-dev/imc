@@ -13,7 +13,7 @@ export type Card = {
   id: string
   title: string
   description: string
-  user_id: number
+  user_id: string
   created_at: string
   updated_at: string
 }
@@ -21,5 +21,5 @@ export type Card = {
 export type NewCard = {
   title: string
   description: string
-  user_id: number
+  user_id: string
 }

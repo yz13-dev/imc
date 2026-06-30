@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Form from "./components/form";
 
 
@@ -5,7 +6,9 @@ import Form from "./components/form";
 export default function Page() {
   return (
     <div>
-      <Form />
+      <Suspense fallback={<></>}>
+        <Form />
+      </Suspense>
     </div>
   )
 }

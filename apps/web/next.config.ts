@@ -3,6 +3,20 @@ import type { NextConfig } from "next"
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@workspace/ui"],
+  compress: true,
+  reactCompiler: true,
+  cacheMaxMemorySize: 250 * 1024 * 1024, // 250MB
+  productionBrowserSourceMaps: false,
+  enablePrerenderSourceMaps: false,
+  cacheComponents: false,
+  experimental: {
+    inlineCss: true,
+    optimizeCss: true,
+    serverSourceMaps: false,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {

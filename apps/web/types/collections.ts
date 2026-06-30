@@ -6,5 +6,5 @@ export type Collection = {
   created_at: string
   updated_at: string
   public: boolean
-  user_id: number
+  user_id: string
 }

@@ -14,7 +14,7 @@ export type Attachment = {
   is_cover: boolean
   blurhash: string
   created_at: Date
-  user_id: number
+  user_id: string
   label: string
 }
 
@@ -24,7 +24,7 @@ export type UpdateAttachment = {
 
 export type Tag = {
   id: string
-  user_id: number
+  user_id: string
   name: string
   created_at: Date
 }
