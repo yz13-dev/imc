@@ -18,7 +18,7 @@
       "files": [
         {
           "path": "src/components/video.tsx",
-          "target": "component/imc/video.tsx",
+          "target": "components/imc/video.tsx",
           "type": "registry:component"
         }
       ]
