@@ -1,0 +1,9 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "imc",
+  "homepage": "https://ui.yz13.dev",
+  "include": [
+    "packages/ui/registry.json"
+  ],
+  "items": []
+}

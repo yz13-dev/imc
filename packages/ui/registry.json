@@ -1,0 +1,40 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "yz13-imc-ui",
+  "homepage": "https://ui.yz13.dev",
+  "items": [
+    {
+      "name": "video",
+      "type": "registry:block",
+      "title": "Video",
+      "description": "<video /> wrapper with muted autoplay, and in-view awareness",
+      "registryDependencies": [
+        "@hooks/use-interval"
+      ],
+      "dependencies": [
+        "motion",
+        "zustand"
+      ],
+      "files": [
+        {
+          "path": "imc/video.tsx",
+          "type": "registry:component",
+          "target": "src/components/video.tsx"
+        }
+      ]
+    },
+    {
+      "name": "use-interval",
+      "type": "registry:hook",
+      "title": "UseInterval",
+      "description": "Simple implementation of interval hook",
+      "files": [
+        {
+          "path": "use-interval.tsx",
+          "type": "registry:hook",
+          "target": "src/hooks/use-interval.tsx"
+        }
+      ]
+    }
+  ]
+}

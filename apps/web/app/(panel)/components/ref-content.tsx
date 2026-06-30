@@ -56,9 +56,6 @@ export default function RefContent({ id, blurhash, src, className = "", children
           duration: .15,
           ease: cubicBezier(.56, .17, .05, .85)
         }}
-      // style={{
-      //   backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
-      // }}
       >
         {
           HIDE_CONTENT &&

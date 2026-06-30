@@ -1,15 +1,12 @@
-
 "use client"
-
 import useInterval from "@/hooks/use-interval"
 import { useVideoStore } from "@/lib/stores/video-store"
 import { cn } from "@workspace/ui/lib/utils"
 import { useInView } from "motion/react"
 import { useEffect, useRef } from "react"
 
-type VideoProps = {
+type VideoProps = {} & React.ComponentPropsWithoutRef<"video">
 
-} & React.ComponentPropsWithoutRef<"video">
 export default function Video({ className = "", ...props }: VideoProps) {
 
   const ref = useRef<HTMLVideoElement>(null)
