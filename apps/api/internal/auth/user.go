@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/yz13-dev/imc/api/internal/models"
 )
@@ -15,10 +16,21 @@ type GetUserResponse struct {
 }
 
 func GetUser(ctx context.Context, cookies []*http.Cookie) (*GetUserResponse, error) {
+
+	isProd := os.Getenv("APP_ENV") == "production"
+
+	base := "https://localhost:4444"
+	if isProd {
+		base = "https://auth.yz13.dev"
+	}
+	const path = "/api/auth/get-session"
+
+	url := fmt.Sprintf("%s%s", base, path)
+
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		"https://localhost:4444/api/auth/get-session",
+		url,
 		nil,
 	)
 	if err != nil {
