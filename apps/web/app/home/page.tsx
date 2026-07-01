@@ -1,7 +1,6 @@
 import { Button } from "@workspace/ui/components/button";
 import { ImcWithTextIcon } from "@workspace/ui/components/logo/imc";
 import { Separator } from "@workspace/ui/components/separator";
-import ThemeImage from "@workspace/ui/components/theme-image";
 import { ArrowUpIcon } from "lucide-react";
 import { Suspense } from "react";
 import LoginButtons, { LoginButtonsSkeleton } from "./components/login-buttons";
@@ -62,12 +61,16 @@ export default function Page() {
           <div className="container mx-auto p-6 bg-background dark border-x relative">
             <div className="w-full aspect-video relative rounded-md overflow-clip">
               <div className="size-full absolute inset-0 z-10 bg-linear-to-b from-transparent from-20% via-background/75 to-90% to-background" />
-              <ThemeImage
+              <iframe
+                src="http://localhost:5173/embeded/0f32c38c-4b87-4756-ac17-6b0f34ac5e25"
+                className="size-full"
+              />
+              {/*<ThemeImage
                 srcLight="/hero/demo-shot.png"
                 srcDark="/hero/demo-shot-dark.png"
                 fill
                 alt="Demo shot"
-              />
+              />*/}
             </div>
           </div>
         </div>

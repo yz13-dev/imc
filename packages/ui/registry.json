@@ -24,6 +24,23 @@
       ]
     },
     {
+      "name": "reference",
+      "type": "registry:block",
+      "title": "Reference",
+      "description": "Component to wrap attachments in card",
+      "registryDependencies": [
+        "badge",
+        "button"
+      ],
+      "files": [
+        {
+          "path": "src/components/reference.tsx",
+          "target": "components/imc/reference.tsx",
+          "type": "registry:component"
+        }
+      ]
+    },
+    {
       "name": "use-interval",
       "type": "registry:hook",
       "title": "UseInterval",

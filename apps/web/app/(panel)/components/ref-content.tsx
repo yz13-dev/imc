@@ -2,8 +2,7 @@
 import Video from "@/components/video"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { getAssetsUrl } from "@/lib/url"
-import { cn } from "@workspace/ui/lib/utils"
-import { cubicBezier, motion } from "motion/react"
+import { Reference, ReferenceContent, ReferenceOverlay } from "@workspace/ui/components/reference"
 import Image from "next/image"
 import { useQueryState } from "nuqs"
 
@@ -30,40 +29,19 @@ export default function RefContent({ id, blurhash, src, className = "", children
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
 
   return (
-    <motion.figure
-      layout
-      layoutRoot
-      layoutCrossfade={false}
-      className={cn(
-        "w-full relative",
-        className
-      )}
+    <Reference
+      className={className}
       style={style}
-      transition={{
-        duration: .15,
-        ease: cubicBezier(.56, .17, .05, .85)
-      }}
     >
       {children}
-      <motion.div
-        layoutId={id}
-        className={cn(
-          "size-full will-change-auto relative bg-muted bg-no-repeat bg-cover bg-top-left",
-          "rounded-lg [&_img]:rounded-sm [&_video]:rounded-sm",
-        )}
-        onClick={() => setId(id)}
-        transition={{
-          duration: .15,
-          ease: cubicBezier(.56, .17, .05, .85)
-        }}
-      >
+      <ReferenceContent>
         {
           HIDE_CONTENT &&
           isVideo &&
           <Video
+            data-slot="reference-attachment"
             src={refSrc}
             draggable={false}
-            className="size-full object-cover object-top-left"
             loop
             muted
             autoPlay
@@ -74,9 +52,9 @@ export default function RefContent({ id, blurhash, src, className = "", children
           HIDE_CONTENT &&
           isGif &&
           <Image
+            data-slot="reference-attachment"
             src={refSrc}
             draggable={false}
-            className="size-full object-cover object-top-left"
             unoptimized
             fill
             loading="lazy"
@@ -89,9 +67,9 @@ export default function RefContent({ id, blurhash, src, className = "", children
           HIDE_CONTENT &&
           !isVideo && !isGif &&
           <Image
+            data-slot="reference-attachment"
             src={refSrc}
             draggable={false}
-            className="size-full object-cover object-top-left"
             unoptimized
             fill
             loading="lazy"
@@ -100,8 +78,8 @@ export default function RefContent({ id, blurhash, src, className = "", children
             alt={alt}
           />
         }
-        <div className="absolute inset-0" data-id={id} />
-      </motion.div>
-    </motion.figure>
+        <ReferenceOverlay />
+      </ReferenceContent>
+    </Reference>
   )
 }
