@@ -68,7 +68,11 @@ function ReferenceFooterGroup({ className, children, ...props }: ReferenceFooter
   return (
     <div
       data-slot="reference-footer-group"
-      className={cn("flex items-center gap-1", className)}
+      className={cn(
+        "flex items-center gap-1",
+        "*:data-[slot=avatar]:size-5 *:data-[slot=avatar]:rounded-full *:data-[slot=avatar]:overflow-clip *:data-[slot=avatar]:*:rounded-full *:data-[slot=avatar]:after:rounded-full",
+        className
+      )}
       {...props}
     >
       {children}

@@ -78,7 +78,6 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
           />
         </div>
         <OptionalVideoProvider isVideo={isVideo} duration={duration_ms}>
-          {/*<div className="w-full flex justify-center pb-2"></div>*/}
           <AnimatePresence>
             <RefContent
               id={id}
