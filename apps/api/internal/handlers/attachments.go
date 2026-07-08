@@ -167,7 +167,7 @@ func PostNewAttachment(w http.ResponseWriter, r *http.Request) {
 	log.Println("ext", ext)
 
 	key := fmt.Sprintf(
-		"users/%d/attachments/%s%s",
+		"users/%s/attachments/%s%s",
 		userID,
 		attachmentID,
 		path.Ext(header.Filename),
