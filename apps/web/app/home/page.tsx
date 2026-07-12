@@ -1,3 +1,4 @@
+import { getSiteUrl } from "@/lib/url";
 import { Button } from "@workspace/ui/components/button";
 import { ImcWithTextIcon } from "@workspace/ui/components/logo/imc";
 import { Separator } from "@workspace/ui/components/separator";
@@ -62,7 +63,7 @@ export default function Page() {
             <div className="w-full aspect-video relative rounded-md overflow-clip">
               <div className="size-full absolute inset-0 z-10 bg-linear-to-b from-transparent from-20% via-background/75 to-90% to-background" />
               <iframe
-                src="http://localhost:5173/embeded/0f32c38c-4b87-4756-ac17-6b0f34ac5e25"
+                src={getSiteUrl("/embeded/0f32c38c-4b87-4756-ac17-6b0f34ac5e25")}
                 className="size-full"
               />
               {/*<ThemeImage
