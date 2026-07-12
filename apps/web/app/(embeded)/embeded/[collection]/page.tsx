@@ -29,6 +29,8 @@ export default async function Page({ params }: PageProps) {
       readonly
       collection={collection}
       defaultAttachments={[]}
+      queryKey={["attachments", "collections", collection]}
+      queryFn={getPublicCollectionAttachments(collection)}
     />
   )
 }

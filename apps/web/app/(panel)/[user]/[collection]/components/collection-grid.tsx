@@ -3,23 +3,30 @@ import CardGrid from "@/app/(panel)/components/card-grid"
 import CardGridWrapper from "@/app/(panel)/components/card-grid-wrapper"
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { getCollectionAttachments } from "@/lib/api/attachments"
-import type { Attachment } from "@/types/attachments"
+import type { Attachment, AttachmentWithTags } from "@/types/attachments"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
 
-type CollectionGridProps = {
+type CollectionGridProps<T> = {
   collection: string
   defaultAttachments?: Attachment[]
   readonly?: boolean
+  queryKey?: string[]
+  queryFn?: Promise<T>
+
 }
 
-export default function CollectionGrid({ defaultAttachments = [], collection, readonly = false }: CollectionGridProps) {
+export default function CollectionGrid<T extends AttachmentWithTags[] | null>({ defaultAttachments = [], collection, readonly = false, queryFn, queryKey }: CollectionGridProps<T>) {
 
   // const attachments = useCollectionAttachments({ collection, attachments: defaultAttachments })
 
   const { data, isLoading } = useSuspenseQuery({
-    queryKey: ["attachments", "collections", collection],
+    queryKey: queryKey || ["attachments", "collections", collection],
     queryFn: () => {
+      if (queryFn) {
+        const data = queryFn;
+        return data;
+      }
       const data = getCollectionAttachments(collection)
       return data
     }
