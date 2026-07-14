@@ -18,7 +18,7 @@ export async function getUser() {
     const token = await getToken()
 
     if (!token) throw new Error("No token found");
-    const response = await fetch("https://localhost:8080/auth/me", {
+    const response = await fetch(`${import.meta.env.WXT_API_URL}/auth/me`, {
       credentials: "include",
       headers: {
         "Authorization": `Bearer ${token}`

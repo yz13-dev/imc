@@ -43,7 +43,7 @@ export default defineBackground(() => {
       console.log("[ USER ]", user)
       if (status !== 200 || !user) {
         browser.tabs.create({
-          url: `http://localhost:5173/auth/signin?next=${url.toString()}`,
+          url: `${import.meta.env.WXT_APP_URL}/auth/signin?next=${url.toString()}`,
         });
         return;
       }
@@ -89,9 +89,17 @@ export default defineBackground(() => {
         console.log("[ CLEARED-ATTACHMENT-URL ]", attachmentUrl)
 
         const blob = await fetchAttachments(attachmentUrl)
+        if (!blob) {
+          console.error("[ ATTACHMENT-FETCH-FAILED ]", attachmentUrl)
+          return
+        }
+
         const attachment = await uploadAttachment(blob)
-        if (attachment) console.log("[ ATTACHMENT-UPLOADED ]", !!attachment)
-        // console.log("attachment", attachment)
+        if (!attachment) {
+          console.error("[ ATTACHMENT-UPLOAD-FAILED ]", attachmentUrl)
+          return
+        }
+        console.log("[ ATTACHMENT-UPLOADED ]", !!attachment)
 
         const id = attachment.id
 

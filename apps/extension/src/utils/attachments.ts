@@ -1,8 +1,13 @@
 
 export async function fetchAttachments(url: string) {
-  const response = await fetch(url);
-  const data = await response.blob();
-  return data;
+  try {
+    const response = await fetch(url);
+    const data = await response.blob();
+    return data;
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
 export async function uploadAttachment(file: Blob) {
@@ -15,7 +20,7 @@ export async function uploadAttachment(file: Blob) {
 
     formData.append("file", file)
 
-    const response = await fetch("https://localhost:8080/v1/my/attachments/new", {
+    const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/my/attachments/new`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -35,7 +40,7 @@ export async function inboxAttachment(id: string) {
 
   if (!token) throw new Error("No token found");
 
-  const response = await fetch(`https://localhost:8080/v1/my/attachments/inbox?attachmentID=${id}`, {
+  const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/my/attachments/inbox?attachmentID=${id}`, {
     method: "POST",
     credentials: "include",
     headers: {

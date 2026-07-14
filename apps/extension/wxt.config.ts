@@ -20,10 +20,9 @@ export default defineConfig({
       "contextMenus",
     ],
 
+    // "https://*/*" already covers the API host (prod and dev), needed anyway
+    // to fetch/save images from any site the user visits.
     host_permissions: [
-      "http://localhost:8080/*",
-      "https://localhost:8080/*",
-      "https://api.imc.your-domain.com/*",
       "https://*/*"
     ],
 
