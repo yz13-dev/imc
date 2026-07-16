@@ -24,7 +24,7 @@ export async function getCollections(): Promise<Collection[] | null> {
 
 export async function createCollection({ name, description, user_id }: { name: string, description?: string, user_id: string }) {
   try {
-    const { data, error } = await fetch<any>({
+    const { data, error } = await fetch<Collection>({
       method: "POST",
       url: getApiUrl("/v1/my/collections/new"),
       body: { name, description, user_id }

@@ -32,8 +32,6 @@ export async function getInboxAttachments(): Promise<InboxItem[] | null> {
       url: getApiUrl("/v1/my/attachments/inbox")
     })
 
-    console.log("[INBOX]", data, error)
-
     if (error) {
       throw error;
     }
@@ -64,9 +62,9 @@ export async function getAttachment(attachmentID: string): Promise<AttachmentWit
   }
 }
 
-export async function moveAttachmentToCollection(attachmentID: string, collectionID: string): Promise<any> {
+export async function moveAttachmentToCollection(attachmentID: string, collectionID: string): Promise<unknown> {
   try {
-    const { data, error } = await fetch({
+    const { data, error } = await fetch<unknown>({
       url: getApiUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
       method: "POST",
     })
@@ -194,7 +192,6 @@ export async function getTrashAttachments(): Promise<AttachmentWithMaybeTagsAndS
       throw error;
     }
 
-    // console.log("[INBOX]", data)
     return data;
 
   } catch (error) {

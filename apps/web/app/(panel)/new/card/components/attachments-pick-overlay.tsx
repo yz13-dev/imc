@@ -13,12 +13,10 @@ export default function AttachmentsPickOverlay() {
     }
   })
   const all = data || []
-  // const all = useGlobalStore(state => state.all)
 
   const selected = useNewCardStore(state => state.attachments)
   const setSelected = useNewCardStore(state => state.setAttachments)
 
-  // const openPicker = useNewCardStore(state => state.openPicker)
   const setOpenPicker = useNewCardStore(state => state.setOpenPicker)
 
   const withoutSelected = all.filter(a => !selected.some(s => s.id === a.id))
@@ -34,14 +32,10 @@ export default function AttachmentsPickOverlay() {
         className="w-full max-w-2xl h-full mx-auto overflow-y-auto"
         onClickCapture={e => {
           const target = e.target as HTMLElement
-          console.log("click", e)
-          console.log("target", target)
           const id = target.getAttribute("data-id")
-          console.log("id", id)
 
           if (id) {
             const attachment = all.find(a => a.id === id)
-            console.log("attachment", attachment)
             if (attachment) {
               setSelected([...selected, attachment])
               setOpenPicker(false)

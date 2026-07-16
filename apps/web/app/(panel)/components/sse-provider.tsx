@@ -32,7 +32,6 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
   }
 
   const onInboxChange = (e: MessageEvent) => {
-    console.log("[ NEW INBOX EVENT ]", e, e.type)
     if (e.type === "inbox:new") {
       refreshInbox()
       queryClient.invalidateQueries({ queryKey: ["attachments", "inbox"] })
@@ -43,7 +42,6 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     }
   }
   const onCollectionsChange = (e: MessageEvent) => {
-    console.log("[ NEW COLLECTIONS EVENT ]", e, e.type)
     if (e.type === "collections:new") {
       refreshCollections()
       queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
@@ -58,7 +56,6 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     }
   }
   const onTrashChange = (e: MessageEvent) => {
-    console.log("[ NEW TRASH EVENT ]", e, e.type)
     if (e.type === "trash:new") {
       fullRefresh()
       queryClient.invalidateQueries({ queryKey: ["attachments", "trash"] })
@@ -70,7 +67,6 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
   }
 
   const onCollectionChange = (e: MessageEvent) => {
-    console.log("[ NEW COLLECTION EVENT ]", e, e.type)
     if (e.type === "collection:new") {
       refreshCollections()
       const data = getEventData(e)

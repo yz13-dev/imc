@@ -1,6 +1,8 @@
 "use server"
 
 import { cookies } from "next/headers";
+import { parseResponse } from "./parse-response";
+
 type MakeFetchProps = {
   url: string
   body?: any
@@ -22,12 +24,9 @@ export async function makeFetch<T>({ url, headers, body, ...props }: MakeFetchPr
       credentials: "include"
     })
 
-    const json: T = await response.json()
-
-    return { data: json, error: null }
+    return await parseResponse<T>(response)
 
   } catch (error) {
-    console.warn(error)
     return { data: null, error: error instanceof Error ? error.message : String(error) }
   }
 }

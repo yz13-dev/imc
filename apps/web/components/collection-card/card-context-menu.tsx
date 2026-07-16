@@ -22,12 +22,10 @@ type CardDropdownMenuProps = {
 
 
 const removeAttachment = async (id: string) => {
-  const result = await permanentlyDeleteAttachment(id)
-  console.log("REMOVED", result)
+  await permanentlyDeleteAttachment(id)
 }
 const trashAttachment = async (id: string) => {
-  const result = await moveToTrashAttachment(id)
-  console.log("TRASHED", result)
+  await moveToTrashAttachment(id)
 }
 
 export default function CardDropdownMenu({ readonly = false, className = "", children, attachmentId, style = {}, label = "Без названия" }: CardDropdownMenuProps) {

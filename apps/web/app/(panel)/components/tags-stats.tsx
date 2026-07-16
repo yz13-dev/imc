@@ -9,7 +9,6 @@ import { Button } from "@workspace/ui/components/button";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 
 function getTagsFromData(data: any): AttachmentWithMaybeTagsAndSource[] {
-  console.log("[DATA]", data)
   if (Array.isArray(data)) {
     return (data || []) as AttachmentWithMaybeTagsAndSource[]
   }

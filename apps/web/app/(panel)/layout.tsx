@@ -46,11 +46,8 @@ export default async function Layout({ children }: LayoutProps) {
   const [user, collections] = await Promise.all([userPromise, collectionsPromise])
   if (!user) return redirect("/")
 
-  // const userId = user.id
   const username = user.username
   const email = user.email
-  // console.log("user", user)
-  // console.log("username", username)
 
   return (
     <UserProvider user={user}>

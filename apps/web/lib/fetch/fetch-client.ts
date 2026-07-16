@@ -1,3 +1,5 @@
+import { parseResponse } from "./parse-response";
+
 type MakeFetchProps = {
   url: string
   body?: any
@@ -12,12 +14,9 @@ export async function makeClientFetch<T>({ url, headers, body, ...props }: MakeF
       credentials: "include"
     })
 
-    const json: T = await response.json()
-
-    return { data: json, error: null }
+    return await parseResponse<T>(response)
 
   } catch (error) {
-    console.warn(error)
     return { data: null, error: error instanceof Error ? error.message : String(error) }
   }
 }

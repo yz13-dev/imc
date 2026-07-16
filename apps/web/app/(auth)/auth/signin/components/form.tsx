@@ -28,10 +28,15 @@ const formSchema = z.object({
     .min(8, "Пароль должен быть минимум 8 символов")
 })
 
+type SignInResponse = {
+  user: unknown
+  token: string
+}
+
 const signIn = async (email: string, password: string) => {
   try {
     const fetch = getFetchClient()
-    const { data, error } = await fetch({
+    const { data, error } = await fetch<SignInResponse>({
       method: "POST",
       url: new URL("/api/auth/sign-in/email", AUTH_URL).toString(),
       headers: {
@@ -74,50 +79,24 @@ export default function Form({ next = "/" }: { next?: string }) {
       }
     },
     onSubmit: async ({ value }) => {
-      const isEmail = value["email-or-username"].includes("@")
       setLoading(true)
       const toastId = toast.loading("Входим в аккаунт")
       try {
-        if (isEmail) {
-          const { data, error } = await signIn(
-            value["email-or-username"],
-            value.password
-          )
-          if (error) {
-            toast.error(error, {
-              id: toastId
-            })
-          } else {
-            // @ts-expect-error
-            const token = data?.session?.token;
-            sendTokenToExtension(token)
-            toast.success("Вход выполнен", {
-              id: toastId
-            })
-            router.push(next)
-            // if (data.redirect && data.url) {
-            //   router.push(data.url)
-            // } else router.push(next)
-          }
-        }
-        if (!isEmail) {
-          const { data, error } = await signIn(
-            value["email-or-username"],
-            value.password
-          )
+        const { data, error } = await signIn(
+          value["email-or-username"],
+          value.password
+        )
 
-          if (error) {
-            toast.error(error, {
-              id: toastId
-            })
-          } else {
-            // @ts-expect-error
-            sendTokenToExtension(data!.token)
-            toast.success("Вход выполнен", {
-              id: toastId
-            })
-            router.push(next)
-          }
+        if (error) {
+          toast.error(error, {
+            id: toastId
+          })
+        } else {
+          if (data?.token) sendTokenToExtension(data.token)
+          toast.success("Вход выполнен", {
+            id: toastId
+          })
+          router.push(next)
         }
 
       } catch (error) {

@@ -18,26 +18,20 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
 
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
 
-  const [reachedEnd, setReachedEnd] = useState(false)
-
-  const { data, fetchNextPage } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, string[], number>({
-    getNextPageParam: (lastPageParam, allPages, offset) => {
-      return offset + 25
+  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, string[], number>({
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
+      if (!lastPage || lastPage.length === 0) return undefined
+      return lastPageParam + 25
     },
     initialPageParam: 0,
     queryKey: ["attachments"],
     queryFn: async ({ pageParam }) => {
       const data = await getAllAttachments({ offset: pageParam })
-      if (!data || data.length === 0) {
-        setReachedEnd(true)
-      }
       return data || []
     }
   })
 
-  const all = data // useGlobalStore(state => state.all)
-  console.log("[PAGES]", all.pages, all.pages.flat())
-  const allAttachments = all.pages.flat().filter(attachment => {
+  const allAttachments = data.pages.flat().filter(attachment => {
     if (!tagQuery) return true
     return tagQuery.every(tag => attachment.tags.some(t => t.tag.name.includes(tag)))
   })
@@ -48,7 +42,7 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   const [disabled, setDisabled] = useState(true)
 
   const step = async () => {
-    if (disabled || reachedEnd) return
+    if (disabled || !hasNextPage) return
     await fetchNextPage()
   }
 
@@ -59,7 +53,6 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
     }
   }, [allAttachments.length])
   useEffect(() => {
-    console.log("IN-VIEW", debouncedInView, disabled)
     if (disabled) return
     if (debouncedInView) {
       step()

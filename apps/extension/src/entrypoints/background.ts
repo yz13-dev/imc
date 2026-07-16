@@ -13,14 +13,11 @@ export default defineBackground(() => {
   });
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
-    console.log("[ MESSAGE ]", message)
     // Проверяем тип сообщения, которое прислал наш контент-скрипт
     if (message && message.type === "AUTH_SUCCESS" && message.token) {
 
       // Сохраняем токен во внутреннюю безопасную память расширения
       browser.storage.local.set({ imc_token: message.token }, () => {
-        console.log("Ура! Токен сохранен внутри расширения.");
-
         // Опционально: отправляем ответ назад контент-скрипту, если нужно
         sendResponse({ success: true });
       });

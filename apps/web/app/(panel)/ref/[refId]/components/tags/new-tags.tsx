@@ -51,8 +51,6 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
 
     const { connect, disconnect } = decideAboutTags(initialTags, tags)
 
-    console.log("connect", connect, "disconnect", disconnect)
-
     for (const tag of connect) {
       await connectTag(attachmentId, tag.id)
     }
@@ -128,9 +126,6 @@ export default function NewTags({ children, attachmentId, initialTags: initialTa
         </div>
         <Command
           className="p-0 rounded-none"
-          onValueChange={(value) => {
-            console.log("selected", value)
-          }}
         >
           <CommandInput
             placeholder="Начните вводить..."

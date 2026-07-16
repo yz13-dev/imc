@@ -49,8 +49,6 @@ export default function Form() {
       description
     })
 
-    console.log("card", card)
-
     if (card) {
       for (const attachment of selected) {
         await createCardsAttachments(attachment.id, {
