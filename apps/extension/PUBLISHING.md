@@ -35,6 +35,22 @@ source page.
 > monitor page content and does not send any data without an explicit user
 > action.
 
+## Notes for reviewer (Firefox AMO)
+
+`bun run zip:firefox` produces both `extension-<version>-firefox.zip` and
+`extension-<version>-sources.zip` — the sources archive is required because
+the shipped build is minified. It does not include `.env` (gitignored), so a
+reviewer rebuilding from source needs these env vars set first — they're not
+secret, just the public app URLs already visible in the built bundle:
+
+```
+WXT_API_URL=https://api.imc.yz13.dev
+WXT_APP_URL=https://imc.yz13.dev
+```
+
+Build steps: `bun install && bun run build:firefox`. Paste this whole section
+into the "Notes to Reviewer" field on submission.
+
 ## Remote code
 
 The extension does not execute remote code — all JS is bundled and packaged
