@@ -6,12 +6,14 @@ export default defineConfig({
   srcDir: "./src",
   debug: true,
   manifest: {
-    name: "IMC",
-    short_name: "IMC",
+    default_locale: "ru",
 
-    version: "0.1.0",
+    name: "__MSG_extName__",
+    short_name: "__MSG_extShortName__",
 
-    description: "Сохраняйте вдохновления и референсы в IMC",
+    version: "0.1.1",
+
+    description: "__MSG_extDescription__",
 
     permissions: [
       "storage",

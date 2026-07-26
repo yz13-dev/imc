@@ -31,7 +31,7 @@ src/
 | `WXT_API_URL`   | base URL of the IMC API                    |
 | `WXT_APP_URL`   | base URL of the IMC web app (for sign-in redirects) |
 
-`.env` holds production values, `.env.development` holds local ones (used by `dev`/`dev:firefox`).
+`.env` holds production values, `.env.development` holds local ones (used by `dev`/`dev:firefox`). Both are gitignored; if neither is present, `src/utils/env.ts` falls back to the production URLs, so a fresh clone still builds a working extension without any setup.
 
 ## Development
 
@@ -58,6 +58,16 @@ bun run compile         # type-check only (tsc --noEmit)
 - `host_permissions: https://*/*` — needed to download images/videos from any site the user visits (media is often hosted on a CDN domain different from the page itself), and to talk to the IMC API. Because of this permission, the browser shows a "read and change data on all sites" warning — this needs to be justified in the extension's store listing (see `PUBLISHING.md`).
 
 The manifest previously also had `cookies` and `tabs` — both were removed: `cookies` was unused (no `browser.cookies.*` calls anywhere), and `tabs` was redundant — `tabs.create`/`tabs.sendMessage` don't require it, and access to `tab.title`/`tab.favIconUrl` in the context menu handler is already covered by `host_permissions`.
+
+## Localization
+
+The manifest's `name`/`short_name`/`description` and the context menu item text
+are localized via standard WebExtension i18n (`public/_locales/<lang>/messages.json`,
+`default_locale: "ru"` in `wxt.config.ts`). Currently supports `ru` and `en`. To
+add a language, add `public/_locales/<lang>/messages.json` with the same keys
+(`extName`, `extShortName`, `extDescription`, `contextMenuSave`) — no code
+changes needed. New/changed message keys need a rebuild (`bun run dev`/`build`)
+for `browser.i18n.getMessage` types to regenerate.
 
 ## Publishing
 

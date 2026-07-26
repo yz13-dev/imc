@@ -1,3 +1,4 @@
+import { API_URL } from "@/utils/env";
 
 export async function fetchAttachments(url: string) {
   try {
@@ -20,7 +21,7 @@ export async function uploadAttachment(file: Blob) {
 
     formData.append("file", file)
 
-    const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/my/attachments/new`, {
+    const response = await fetch(`${API_URL}/v1/my/attachments/new`, {
       method: "POST",
       body: formData,
       credentials: "include",
@@ -40,7 +41,7 @@ export async function inboxAttachment(id: string) {
 
   if (!token) throw new Error("No token found");
 
-  const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/my/attachments/inbox?attachmentID=${id}`, {
+  const response = await fetch(`${API_URL}/v1/my/attachments/inbox?attachmentID=${id}`, {
     method: "POST",
     credentials: "include",
     headers: {

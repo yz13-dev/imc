@@ -72,8 +72,48 @@ declare module "wxt/browser" {
       substitutions?: string | string[],
       options?: GetMessageOptions,
     ): string;
+    /**
+     * Extension name
+     *
+     * "IMC"
+     */
     getMessage(
-      messageName: "@@extension_id" | "@@ui_locale" | "@@bidi_dir" | "@@bidi_reversed_dir" | "@@bidi_start_edge" | "@@bidi_end_edge",
+      messageName: "extName",
+      substitutions?: string | string[],
+      options?: GetMessageOptions,
+    ): string;
+    /**
+     * Extension short name
+     *
+     * "IMC"
+     */
+    getMessage(
+      messageName: "extShortName",
+      substitutions?: string | string[],
+      options?: GetMessageOptions,
+    ): string;
+    /**
+     * Extension description
+     *
+     * "Сохраняйте вдохновения и референсы в IMC"
+     */
+    getMessage(
+      messageName: "extDescription",
+      substitutions?: string | string[],
+      options?: GetMessageOptions,
+    ): string;
+    /**
+     * Context menu item on images/videos
+     *
+     * "Сохранить в IMC"
+     */
+    getMessage(
+      messageName: "contextMenuSave",
+      substitutions?: string | string[],
+      options?: GetMessageOptions,
+    ): string;
+    getMessage(
+      messageName: "@@extension_id" | "@@ui_locale" | "@@bidi_dir" | "@@bidi_reversed_dir" | "@@bidi_start_edge" | "@@bidi_end_edge" | "extName" | "extShortName" | "extDescription" | "contextMenuSave",
       substitutions?: string | string[],
       options?: GetMessageOptions,
     ): string;

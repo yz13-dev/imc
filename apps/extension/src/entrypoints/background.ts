@@ -1,4 +1,5 @@
 import { getUser } from "@/utils/auth";
+import { APP_URL } from "@/utils/env";
 import { parseImageUrl } from "@/utils/images";
 
 export default defineBackground(() => {
@@ -7,7 +8,7 @@ export default defineBackground(() => {
       .contextMenus
       .create({
         id: "save-to-imc",
-        title: "Сохранить в IMC",
+        title: browser.i18n.getMessage("contextMenuSave"),
         contexts: ["image", "video"],
       });
   });
@@ -39,7 +40,7 @@ export default defineBackground(() => {
       const { status, data: user } = await getUser();
       if (status !== 200 || !user) {
         browser.tabs.create({
-          url: `${import.meta.env.WXT_APP_URL}/auth/signin?next=${url.toString()}`,
+          url: `${APP_URL}/auth/signin?next=${url.toString()}`,
         });
         return;
       }

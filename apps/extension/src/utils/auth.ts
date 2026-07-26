@@ -1,3 +1,4 @@
+import { API_URL } from "@/utils/env";
 
 export async function getToken() {
   try {
@@ -18,7 +19,7 @@ export async function getUser() {
     const token = await getToken()
 
     if (!token) throw new Error("No token found");
-    const response = await fetch(`${import.meta.env.WXT_API_URL}/auth/me`, {
+    const response = await fetch(`${API_URL}/auth/me`, {
       credentials: "include",
       headers: {
         "Authorization": `Bearer ${token}`

@@ -1,5 +1,4 @@
-
-
+import { API_URL } from "@/utils/env";
 
 export function getSourceData() {
   const favicon =
@@ -23,7 +22,7 @@ export async function createSource({ title, url, favicon, attachment_id }: { tit
 
     if (!token) throw new Error("No token found");
 
-    const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/source/new`, {
+    const response = await fetch(`${API_URL}/v1/source/new`, {
       method: "POST",
       body: JSON.stringify({ name: title, domain, slug, favicon_url: favicon, attachment_id }),
       credentials: "include",
@@ -51,7 +50,7 @@ export async function checkSource({ url }: { url: string }): Promise<{ id: strin
   if (!token) return null
 
   try {
-    const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/source/check?domain=${domain}&slug=${slug}`, {
+    const response = await fetch(`${API_URL}/v1/source/check?domain=${domain}&slug=${slug}`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -72,7 +71,7 @@ export async function connectSource({ sourceID, attachmentID }: { sourceID: stri
   if (!token) return null
 
   try {
-    const response = await fetch(`${import.meta.env.WXT_API_URL}/v1/source/${sourceID}/connect?attachmentID=${attachmentID}`, {
+    const response = await fetch(`${API_URL}/v1/source/${sourceID}/connect?attachmentID=${attachmentID}`, {
       method: "POST",
       credentials: "include",
       headers: {

@@ -1,0 +1,18 @@
+{
+  "extName": {
+    "message": "IMC",
+    "description": "Extension name"
+  },
+  "extShortName": {
+    "message": "IMC",
+    "description": "Extension short name"
+  },
+  "extDescription": {
+    "message": "Сохраняйте вдохновения и референсы в IMC",
+    "description": "Extension description"
+  },
+  "contextMenuSave": {
+    "message": "Сохранить в IMC",
+    "description": "Context menu item on images/videos"
+  }
+}

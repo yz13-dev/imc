@@ -1,4 +1,6 @@
 const globals = {
+  "API_URL": true,
+  "APP_URL": true,
   "AutoMount": true,
   "AutoMountOptions": true,
   "Browser": true,

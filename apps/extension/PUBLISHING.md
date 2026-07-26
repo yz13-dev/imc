@@ -39,17 +39,11 @@ source page.
 
 `bun run zip:firefox` produces both `extension-<version>-firefox.zip` and
 `extension-<version>-sources.zip` — the sources archive is required because
-the shipped build is minified. It does not include `.env` (gitignored), so a
-reviewer rebuilding from source needs these env vars set first — they're not
-secret, just the public app URLs already visible in the built bundle:
-
-```
-WXT_API_URL=https://api.imc.yz13.dev
-WXT_APP_URL=https://imc.yz13.dev
-```
-
-Build steps: `bun install && bun run build:firefox`. Paste this whole section
-into the "Notes to Reviewer" field on submission.
+the shipped build is minified. It does not include `.env` (gitignored), but
+that's fine: `src/utils/env.ts` falls back to the production URLs
+(`https://api.imc.yz13.dev`, `https://imc.yz13.dev`) when the env vars aren't
+set, so a plain `bun install && bun run build:firefox` from the submitted
+sources reproduces the same build byte-for-byte, no setup needed.
 
 ## Remote code
 
