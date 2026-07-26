@@ -1,60 +1,64 @@
 # IMC Extension
 
-Браузерное расширение для [IMC](https://imc.yz13.dev) — сохраняйте вдохновение и референсы (картинки, gif и видео) прямо со страниц, которые вы просматриваете, а затем сортируйте их в дашборде.
+Browser extension for [IMC](https://imc.yz13.dev) — save inspiration and references (images, gifs, and videos) right from the pages you're browsing, then sort them in the dashboard.
 
-Собрано на [WXT](https://wxt.dev) + React, поддерживает Chrome (MV3) и Firefox.
+Built with [WXT](https://wxt.dev) + React, supports Chrome (MV3) and Firefox.
 
-## Как это работает
+## How it works
 
-- На картинках, gif и видео на любой странице добавляется пункт контекстного меню **«Сохранить в IMC»**.
-- Если пользователь не авторизован, открывается страница входа (`WXT_APP_URL/auth/signin`), после чего страница отправляет токен обратно в расширение через `postMessage`/CustomEvent (см. `src/entrypoints/content.ts`).
-- После сохранения токена расширение скачивает файл, загружает его в IMC API, кладёт во «входящие» и привязывает к источнику (странице), с которой был сохранён контент — создавая источник, если его ещё нет.
+- A **"Save to IMC"** context menu item is added on images, gifs, and videos on any page.
+- If the user isn't signed in, the sign-in page opens (`WXT_APP_URL/auth/signin`), after which the page sends the token back to the extension via `postMessage`/CustomEvent (see `src/entrypoints/content.ts`).
+- Once the token is stored, the extension downloads the file, uploads it to the IMC API, puts it in the inbox, and links it to the source (the page it was saved from) — creating the source if it doesn't exist yet.
 
-## Структура
+## Structure
 
 ```
 src/
   entrypoints/
-    background.ts   # контекстное меню, обработка авторизации, пайплайн сохранения
-    content.ts       # мост между страницей и background: обмен токеном и данными источника
+    background.ts   # context menu, auth handling, save pipeline
+    content.ts       # bridge between the page and background: token and source data exchange
   utils/
-    auth.ts          # получение токена / текущего пользователя
-    attachments.ts    # скачивание файла и загрузка вложения в IMC
-    images.ts         # очистка URL картинок (twimg, dribbble и т.д.)
-    source.ts         # проверка/создание источника, получение favicon страницы
+    auth.ts          # get token / current user
+    attachments.ts    # download file and upload attachment to IMC
+    images.ts         # clean up image URLs (twimg, dribbble, etc.)
+    source.ts         # check/create source, get page favicon
 ```
 
-## Переменные окружения
+## Environment variables
 
-| Переменная      | Назначение                          |
-| --------------- | ------------------------------------ |
-| `WXT_API_URL`   | базовый URL API IMC                  |
-| `WXT_APP_URL`   | базовый URL веб-приложения IMC (для редиректа на вход) |
+| Variable        | Purpose                                   |
+| ---------------- | ------------------------------------------ |
+| `WXT_API_URL`   | base URL of the IMC API                    |
+| `WXT_APP_URL`   | base URL of the IMC web app (for sign-in redirects) |
 
-`.env` — продовые значения, `.env.development` — локальные (используются в `dev`/`dev:firefox`).
+`.env` holds production values, `.env.development` holds local ones (used by `dev`/`dev:firefox`).
 
-## Разработка
+## Development
 
 ```sh
 bun install
-bun run dev            # Chrome, режим разработки
-bun run dev:firefox    # Firefox, режим разработки
+bun run dev            # Chrome, dev mode
+bun run dev:firefox    # Firefox, dev mode
 ```
 
-## Сборка и упаковка
+## Build and package
 
 ```sh
-bun run build           # production-сборка для Chrome (MV3)
-bun run build:firefox   # production-сборка для Firefox
-bun run zip             # собрать и запаковать .zip для Chrome Web Store
-bun run zip:firefox     # собрать и запаковать .zip для Firefox AMO
-bun run compile         # только проверка типов (tsc --noEmit)
+bun run build           # production build for Chrome (MV3)
+bun run build:firefox   # production build for Firefox
+bun run zip             # build and package a .zip for the Chrome Web Store
+bun run zip:firefox     # build and package a .zip for Firefox AMO
+bun run compile         # type-check only (tsc --noEmit)
 ```
 
-## Разрешения
+## Permissions
 
-- `storage` — хранение токена авторизации в `browser.storage.local`.
-- `contextMenus` — пункт «Сохранить в IMC» в контекстном меню.
-- `host_permissions: https://*/*` — нужно, чтобы скачивать картинки/видео с любого сайта, который посещает пользователь (CDN картинки часто на домене, отличном от домена страницы), и обращаться к API IMC. Из-за этого разрешения браузер покажет предупреждение «читает и изменяет данные на всех сайтах» — при публикации это нужно будет обосновать в описании расширения.
+- `storage` — stores the auth token in `browser.storage.local`.
+- `contextMenus` — the "Save to IMC" context menu item.
+- `host_permissions: https://*/*` — needed to download images/videos from any site the user visits (media is often hosted on a CDN domain different from the page itself), and to talk to the IMC API. Because of this permission, the browser shows a "read and change data on all sites" warning — this needs to be justified in the extension's store listing (see `PUBLISHING.md`).
 
-Ранее в манифесте были также `cookies` и `tabs` — оба убраны: `cookies` нигде не использовался (нет вызовов `browser.cookies.*`), а `tabs` был избыточен — `tabs.create`/`tabs.sendMessage` не требуют этого разрешения, а доступ к `tab.title`/`tab.favIconUrl` в обработчике контекстного меню уже покрывается `host_permissions`.
+The manifest previously also had `cookies` and `tabs` — both were removed: `cookies` was unused (no `browser.cookies.*` calls anywhere), and `tabs` was redundant — `tabs.create`/`tabs.sendMessage` don't require it, and access to `tab.title`/`tab.favIconUrl` in the context menu handler is already covered by `host_permissions`.
+
+## Publishing
+
+See `PUBLISHING.md` for the privacy policy link and permission justification text for the Chrome Web Store / Firefox AMO listing forms.
