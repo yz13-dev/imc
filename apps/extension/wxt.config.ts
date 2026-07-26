@@ -14,9 +14,7 @@ export default defineConfig({
     description: "Сохраняйте вдохновления и референсы в IMC",
 
     permissions: [
-      "cookies",
       "storage",
-      "tabs",
       "contextMenus",
     ],
 

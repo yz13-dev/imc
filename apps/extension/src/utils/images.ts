@@ -7,8 +7,6 @@ export function parseImageUrl(baseUrl: string): string {
     let url = new URL(baseUrl)
     const domain = url.hostname
 
-    console.log("[ DOMAIN ]", domain)
-
     if (domain.endsWith("twimg.com")) {
       url = cleanXcomUrl(url)
     }

@@ -1,5 +1,60 @@
 # IMC Extension
 
-Main purpouse of this extension to save images, gif's and videos. After in dashboard user can sort saved content.
+Браузерное расширение для [IMC](https://imc.yz13.dev) — сохраняйте вдохновение и референсы (картинки, gif и видео) прямо со страниц, которые вы просматриваете, а затем сортируйте их в дашборде.
 
-To do so extension add button in context menu on images, gif's and videos elements. So it would be "Save in IMC"
+Собрано на [WXT](https://wxt.dev) + React, поддерживает Chrome (MV3) и Firefox.
+
+## Как это работает
+
+- На картинках, gif и видео на любой странице добавляется пункт контекстного меню **«Сохранить в IMC»**.
+- Если пользователь не авторизован, открывается страница входа (`WXT_APP_URL/auth/signin`), после чего страница отправляет токен обратно в расширение через `postMessage`/CustomEvent (см. `src/entrypoints/content.ts`).
+- После сохранения токена расширение скачивает файл, загружает его в IMC API, кладёт во «входящие» и привязывает к источнику (странице), с которой был сохранён контент — создавая источник, если его ещё нет.
+
+## Структура
+
+```
+src/
+  entrypoints/
+    background.ts   # контекстное меню, обработка авторизации, пайплайн сохранения
+    content.ts       # мост между страницей и background: обмен токеном и данными источника
+  utils/
+    auth.ts          # получение токена / текущего пользователя
+    attachments.ts    # скачивание файла и загрузка вложения в IMC
+    images.ts         # очистка URL картинок (twimg, dribbble и т.д.)
+    source.ts         # проверка/создание источника, получение favicon страницы
+```
+
+## Переменные окружения
+
+| Переменная      | Назначение                          |
+| --------------- | ------------------------------------ |
+| `WXT_API_URL`   | базовый URL API IMC                  |
+| `WXT_APP_URL`   | базовый URL веб-приложения IMC (для редиректа на вход) |
+
+`.env` — продовые значения, `.env.development` — локальные (используются в `dev`/`dev:firefox`).
+
+## Разработка
+
+```sh
+bun install
+bun run dev            # Chrome, режим разработки
+bun run dev:firefox    # Firefox, режим разработки
+```
+
+## Сборка и упаковка
+
+```sh
+bun run build           # production-сборка для Chrome (MV3)
+bun run build:firefox   # production-сборка для Firefox
+bun run zip             # собрать и запаковать .zip для Chrome Web Store
+bun run zip:firefox     # собрать и запаковать .zip для Firefox AMO
+bun run compile         # только проверка типов (tsc --noEmit)
+```
+
+## Разрешения
+
+- `storage` — хранение токена авторизации в `browser.storage.local`.
+- `contextMenus` — пункт «Сохранить в IMC» в контекстном меню.
+- `host_permissions: https://*/*` — нужно, чтобы скачивать картинки/видео с любого сайта, который посещает пользователь (CDN картинки часто на домене, отличном от домена страницы), и обращаться к API IMC. Из-за этого разрешения браузер покажет предупреждение «читает и изменяет данные на всех сайтах» — при публикации это нужно будет обосновать в описании расширения.
+
+Ранее в манифесте были также `cookies` и `tabs` — оба убраны: `cookies` нигде не использовался (нет вызовов `browser.cookies.*`), а `tabs` был избыточен — `tabs.create`/`tabs.sendMessage` не требуют этого разрешения, а доступ к `tab.title`/`tab.favIconUrl` в обработчике контекстного меню уже покрывается `host_permissions`.

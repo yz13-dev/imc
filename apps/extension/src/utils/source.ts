@@ -6,7 +6,6 @@ export function getSourceData() {
     document.querySelector<HTMLLinkElement>(
       'link[rel~="icon"], link[rel="shortcut icon"]',
     )?.href ?? null;
-  console.log("favicon-", favicon)
   return {
     favicon
   };
@@ -37,7 +36,7 @@ export async function createSource({ title, url, favicon, attachment_id }: { tit
     return response.json();
 
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return null
   }
 }
@@ -63,7 +62,7 @@ export async function checkSource({ url }: { url: string }): Promise<{ id: strin
 
     return response.json()
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return null
   }
 }
@@ -83,7 +82,7 @@ export async function connectSource({ sourceID, attachmentID }: { sourceID: stri
 
     return response.json()
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return null
   }
 }

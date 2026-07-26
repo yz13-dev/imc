@@ -37,7 +37,6 @@ export default defineBackground(() => {
 
       const url = new URL(tab!.url!);
       const { status, data: user } = await getUser();
-      console.log("[ USER ]", user)
       if (status !== 200 || !user) {
         browser.tabs.create({
           url: `${import.meta.env.WXT_APP_URL}/auth/signin?next=${url.toString()}`,
@@ -50,40 +49,16 @@ export default defineBackground(() => {
       const sourceUrl = url.toString()
 
       let sourceFavicon = tab?.favIconUrl?.startsWith("data:") ? null : tab?.favIconUrl;
-      console.log("[ FAVICON ]", sourceFavicon)
       if (!sourceFavicon && tab.id) {
         const response = await browser.tabs.sendMessage(tab.id!, {
           type: "GET_SOURCE_DATA",
         });
-        console.log("[ SOURCE-DATA ]", response);
         sourceFavicon = response?.favicon;
       }
 
-      // const source = {
-      //   title: sourceTitle,
-      //   url: sourceUrl,
-      //   favicon: sourceFavicon,
-      // }
-
-
-      // const filenameArray = (new URL(info?.srcUrl || "").pathname)?.split("/")
-      // const filename = filenameArray?.[filenameArray.length - 1];
-
-      // const attachment = {
-      //   src: info?.srcUrl,
-      //   title: `${sourceTitle} - ${filename}`,
-      //   filename,
-      // }
-
       if (info.srcUrl) {
-
         const checkedSource = await checkSource({ url: sourceUrl })
-        console.log("[ SOURCE ]", sourceUrl)
-        console.log("[ EXIST ]", checkedSource?.exist)
-        // console.log("checkedSource", checkedSource, sourceUrl)
-
         const attachmentUrl = parseImageUrl(info.srcUrl)
-        console.log("[ CLEARED-ATTACHMENT-URL ]", attachmentUrl)
 
         const blob = await fetchAttachments(attachmentUrl)
         if (!blob) {
@@ -96,31 +71,21 @@ export default defineBackground(() => {
           console.error("[ ATTACHMENT-UPLOAD-FAILED ]", attachmentUrl)
           return
         }
-        console.log("[ ATTACHMENT-UPLOADED ]", !!attachment)
 
         const id = attachment.id
 
         if (id) {
-          const { status: attachmentStatus } = await inboxAttachment(id)
-          console.log("[ INBOXED ]", attachmentStatus === 201)
+          await inboxAttachment(id)
           if (checkedSource?.exist === true) {
-            console.log("[ CONNECT ]", checkedSource.id, id)
             await connectSource({ sourceID: checkedSource.id, attachmentID: id })
           } else {
-            console.log("[ CREATE ]", sourceTitle || url.hostname, attachmentUrl)
             const source = await createSource({ title: sourceTitle || url.hostname, url: attachmentUrl, favicon: sourceFavicon || undefined, attachment_id: id })
             if (source) {
-              console.log("[ CONNECT ]", source.id, id)
               await connectSource({ sourceID: source.id, attachmentID: id })
             }
           }
         }
       }
-
-
-      // console.log("favicon", sourceFavicon)
-      // console.log("source", source)
-      // console.log(attachment);
     },
   );
 });
