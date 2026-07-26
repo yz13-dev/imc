@@ -68,3 +68,25 @@ imports from external URLs.
 Check: "I do not sell or transfer user data to third parties" and "I do not
 use or transfer user data for purposes unrelated to the item's single
 purpose".
+
+## Data collection permissions (Firefox manifest)
+
+Firefox requires `browser_specific_settings.gecko.data_collection_permissions`
+in the manifest (see
+https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/).
+Set in `wxt.config.ts`:
+
+```json
+"data_collection_permissions": {
+  "required": ["authenticationInfo", "websiteContent"],
+  "optional": []
+}
+```
+
+- **`authenticationInfo`** — the auth token stored in `browser.storage.local`.
+- **`websiteContent`** — the saved image/video file plus the source page's
+  title, URL, and favicon sent to the IMC API when saving.
+
+`personallyIdentifyingInfo` (account email) is not declared here — the
+extension itself never reads or stores the email, only an opaque token; the
+web app's own sign-in page handles the email/account identity.

@@ -33,7 +33,15 @@ export default defineConfig({
 
     browser_specific_settings: {
       "gecko": {
-        "id": "imc@yz13.dev"
+        "id": "imc@yz13.dev",
+        // https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/
+        "data_collection_permissions": {
+          // authenticationInfo: the token saved in browser.storage.local
+          // websiteContent: the saved image/video plus the source page's
+          // title, URL and favicon sent to the IMC API when saving
+          "required": ["authenticationInfo", "websiteContent"],
+          "optional": []
+        }
       }
     },
 
