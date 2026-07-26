@@ -16,9 +16,6 @@ export async function getMe(): Promise<User | null> {
     const user = data?.user;
     if (!user) return null;
 
-    // @ts-expect-error
-    delete user.password;
-
     return user;
   } catch (error) {
     console.error(error)

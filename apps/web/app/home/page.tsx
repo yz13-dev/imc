@@ -63,7 +63,7 @@ export default function Page() {
             <div className="w-full aspect-video relative rounded-md overflow-clip">
               <div className="size-full absolute inset-0 z-10 bg-linear-to-b from-transparent from-20% via-background/75 to-90% to-background" />
               <iframe
-                src={getSiteUrl("/embeded/0f32c38c-4b87-4756-ac17-6b0f34ac5e25")}
+                src={getSiteUrl("/embeded/6a66def2-f4c1-4909-b2ec-6daffc26d25b")}
                 className="size-full"
               />
               {/*<ThemeImage

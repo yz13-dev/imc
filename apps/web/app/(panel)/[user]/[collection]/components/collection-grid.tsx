@@ -21,10 +21,12 @@ export default function CollectionGrid<T extends AttachmentWithTags[] | null>({ 
   // const attachments = useCollectionAttachments({ collection, attachments: defaultAttachments })
 
   const { data, isLoading } = useSuspenseQuery({
+    initialData: defaultAttachments,
     queryKey: queryKey || ["attachments", "collections", collection],
     queryFn: () => {
       if (queryFn) {
         const data = queryFn;
+        console.log("data")
         return data;
       }
       const data = getCollectionAttachments(collection)
