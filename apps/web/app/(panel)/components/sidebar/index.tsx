@@ -10,7 +10,7 @@ import { PlusIcon, SquareLibraryIcon } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useMemo } from "react";
 import NewCollectionModal from "../modals/new-collection";
-import SidebarNav from "./nav";
+import SidebarNav, { SidebarNavSkeleton } from "./nav";
 
 type AppSidebarProps = {
   username?: string
@@ -34,26 +34,7 @@ export default function AppSidebar({ username = "", email = "", collections: def
   return (
     <Sidebar>
       <SidebarContent>
-        <Suspense fallback={<>
-          <SidebarMenuItem>
-            <SidebarMenuSkeleton />
-            <SidebarMenuBadge>
-              <Skeleton className="h-5 w-6" />
-            </SidebarMenuBadge>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuSkeleton />
-            <SidebarMenuBadge>
-              <Skeleton className="h-5 w-6" />
-            </SidebarMenuBadge>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuSkeleton />
-            <SidebarMenuBadge>
-              <Skeleton className="h-5 w-6" />
-            </SidebarMenuBadge>
-          </SidebarMenuItem>
-        </>}>
+        <Suspense fallback={<SidebarNavSkeleton />}>
           <SidebarNav username={username} />
         </Suspense>
         <SidebarSeparator />
@@ -78,26 +59,7 @@ export default function AppSidebar({ username = "", email = "", collections: def
           </NewCollectionModal>
           <SidebarGroupContent>
             <SidebarMenu>
-              <Suspense fallback={<>
-                <SidebarMenuItem>
-                  <SidebarMenuSkeleton />
-                  <SidebarMenuBadge>
-                    <Skeleton className="h-5 w-6" />
-                  </SidebarMenuBadge>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuSkeleton />
-                  <SidebarMenuBadge>
-                    <Skeleton className="h-5 w-6" />
-                  </SidebarMenuBadge>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuSkeleton />
-                  <SidebarMenuBadge>
-                    <Skeleton className="h-5 w-6" />
-                  </SidebarMenuBadge>
-                </SidebarMenuItem>
-              </>}>
+              <Suspense fallback={<SidebarNavSkeleton />}>
                 {
                   collections
                     .map(collection => {

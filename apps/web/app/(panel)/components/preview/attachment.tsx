@@ -22,7 +22,7 @@ function AttachmentContent({ attachmentId, id, src, mime_type, blurhash, label, 
       mimeType={mime_type}
       blurhash={blurhash}
       alt={label}
-      className="rounded-sm max-h-full z-50 [&_img]:rounded-sm [&_video]:rounded-sm will-change-transform transition-all"
+      className="rounded-sm max-h-full z-50 [&_img]:rounded-sm [&_video]:rounded-sm will-change-transform"
       style={{
         aspectRatio: `${width}/${height}`
       }}

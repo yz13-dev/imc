@@ -3,6 +3,7 @@ import { getQueryClient } from "@/lib/query-client";
 import { useGlobalStore } from "@/lib/stores/global-store";
 import { getApiUrl } from "@/lib/url";
 import type { EventData } from "@/types/sse";
+import type { QueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 
@@ -11,6 +12,11 @@ type ServerSideEventsProps = {
 
 function getEventData<T extends EventData>(e: MessageEvent): T {
   return JSON.parse(e.data)
+}
+
+async function revalidate(q: QueryClient, key: string[]) {
+  await q.invalidateQueries({ queryKey: key })
+  await q.refetchQueries({ queryKey: key })
 }
 
 export default function ServerSideEvents({ }: ServerSideEventsProps) {
@@ -34,35 +40,35 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
   const onInboxChange = (e: MessageEvent) => {
     if (e.type === "inbox:new") {
       refreshInbox()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "inbox"] })
+      revalidate(queryClient, ["inbox"])
     }
     if (e.type === "inbox:remove") {
       refreshInbox()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "inbox"] })
+      revalidate(queryClient, ["inbox"])
     }
   }
   const onCollectionsChange = (e: MessageEvent) => {
     if (e.type === "collections:new") {
       refreshCollections()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
+      revalidate(queryClient, ["attachments", "collections"])
     }
     if (e.type === "collections:update") {
       refreshCollections()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
+      revalidate(queryClient, ["attachments", "collections"])
     }
     if (e.type === "collections:remove") {
       refreshCollections()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "collections"] })
+      revalidate(queryClient, ["attachments", "collections"])
     }
   }
   const onTrashChange = (e: MessageEvent) => {
     if (e.type === "trash:new") {
       fullRefresh()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "trash"] })
+      revalidate(queryClient, ["attachments", "trash"])
     }
     if (e.type === "trash:remove") {
       refreshTrash()
-      queryClient.invalidateQueries({ queryKey: ["attachments", "trash"] })
+      revalidate(queryClient, ["attachments", "trash"])
     }
   }
 
@@ -70,17 +76,17 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     if (e.type === "collection:new") {
       refreshCollections()
       const data = getEventData(e)
-      queryClient.invalidateQueries({ queryKey: ["attachments", "collection", data.id] })
+      revalidate(queryClient, ["attachments", "collection", data.id])
     }
     if (e.type === "collection:update") {
       refreshCollections()
       const data = getEventData(e)
-      queryClient.invalidateQueries({ queryKey: ["attachments", "collection", data.id] })
+      revalidate(queryClient, ["attachments", "collection", data.id])
     }
     if (e.type === "collection:remove") {
       refreshCollections()
       const data = getEventData(e)
-      queryClient.invalidateQueries({ queryKey: ["attachments", "collection", data.id] })
+      revalidate(queryClient, ["attachments", "collection", data.id])
     }
   }
 
