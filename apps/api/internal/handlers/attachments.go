@@ -10,6 +10,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"image"
 	_ "image/gif"
@@ -234,6 +235,7 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 	log.Println("ID", AttachmentID)
 
 	var attachment models.Attachment
+	isPublic := false
 
 	collectionAttachment, err := services.GetAttachmentWithCollection(AttachmentID, db)
 	if err != nil {
@@ -249,6 +251,7 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		attachment = collectionAttachment.Attachment
+		isPublic = collectionAttachment.Collection.Public
 
 		// Если коллекция приватная — проверяем владельца
 		if !collectionAttachment.Collection.Public {
@@ -274,6 +277,7 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		attachment = publicAttachment.Attachment
+		isPublic = true
 	}
 
 	key := attachment.Src
@@ -300,6 +304,37 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer obj.Body.Close()
+
+	etag := ""
+	if obj.ETag != nil {
+		etag = *obj.ETag
+		w.Header().Set("ETag", etag)
+	}
+
+	if obj.LastModified != nil {
+		w.Header().Set("Last-Modified", obj.LastModified.UTC().Format(http.TimeFormat))
+	}
+
+	// Ключ вложения не переиспользуется и не перезаписывается — контент неизменяем
+	if isPublic {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	} else {
+		w.Header().Set("Cache-Control", "private, max-age=31536000, immutable")
+	}
+
+	if etag != "" && r.Header.Get("If-None-Match") == etag {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+
+	if obj.LastModified != nil {
+		if since := r.Header.Get("If-Modified-Since"); since != "" {
+			if t, err := http.ParseTime(since); err == nil && !obj.LastModified.After(t.Add(time.Second)) {
+				w.WriteHeader(http.StatusNotModified)
+				return
+			}
+		}
+	}
 
 	if obj.ContentType != nil {
 		w.Header().Set("Content-Type", *obj.ContentType)
