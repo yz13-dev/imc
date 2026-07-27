@@ -127,7 +127,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
               src={src}
               className={cn(
                 "outline-4 outline-transparent group/-hover:outline-foreground/10 bg/-foreground/10",
-                "group-hover:scale/-101 will-change-transform",
+                "group-hover:scale/-101",
                 className
               )}
               blurhash={blurhash}
