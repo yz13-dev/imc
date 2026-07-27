@@ -1,4 +1,5 @@
 import { cn } from "@workspace/ui/lib/utils"
+import { motion } from "motion/react"
 
 export type OverlayProps = React.ComponentPropsWithoutRef<"div">
 
@@ -6,8 +7,11 @@ export type OverlayProps = React.ComponentPropsWithoutRef<"div">
 
 export default function Overlay({ className = "", children, onClick, ...props }: OverlayProps) {
   return (
-    <div
-      className={cn("fixed inset-0 w-full h-svh z-50 py-6 backdrop-blur-sm flex flex-col items-center justify-end bg-black/10", className)}
+    <motion.div
+      initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      animate={{ opacity: 1, backdropFilter: "blur(8px)" }}
+      exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      className={cn("fixed inset-0 w-full h-svh z-50 py-6 flex flex-col items-center justify-end bg-black/10", className)}
       onClick={e => {
         e.stopPropagation()
         if (onClick) onClick(e)
@@ -15,6 +19,6 @@ export default function Overlay({ className = "", children, onClick, ...props }:
       {...props}
     >
       {children}
-    </div>
+    </motion.div>
   )
 }
