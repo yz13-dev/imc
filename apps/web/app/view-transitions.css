@@ -1,0 +1,16 @@
+/* View transition pseudo-elements live at the document root, not scoped to
+   any component, so this has to be a plain global stylesheet. Currently the
+   only named transitions in the app are the attachment-<id> ones used by the
+   collection card <-> preview morph (see components/collection-card and
+   app/(panel)/components/preview). */
+
+::view-transition-group(*) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 220ms;
+  animation-timing-function: ease-out;
+}

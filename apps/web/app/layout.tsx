@@ -9,6 +9,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
+import "./view-transitions.css";
 
 
 const sans = localFont({
@@ -93,7 +94,7 @@ export default function RootLayout({
           <ThemeProvider>
             <Toaster />
             <TooltipProvider>
-              <NuqsAdapter>
+              <NuqsAdapter defaultOptions={{}}>
                 <QueryProvider>
                   <QueryTheme />
                   {children}

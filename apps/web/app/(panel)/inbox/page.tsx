@@ -12,15 +12,7 @@ import Collections from "./components/collections"
 import InboxGrid, { InboxGridSkeleton } from "./components/inbox-grid"
 
 
-type PageProps = {
-  searchParams: Promise<{
-    attachment?: string
-  }>
-}
-
-export default async function Page({ searchParams }: PageProps) {
-  const { attachment } = await searchParams
-
+export default async function Page() {
   const queryClient = getQueryClient()
 
   await queryClient.prefetchQuery({
@@ -39,21 +31,18 @@ export default async function Page({ searchParams }: PageProps) {
         </HeaderContent>
       </Header>
       <AnimatePresence mode="popLayout">
-        {
-          attachment &&
-          <Cover coverKey="attachment">
-            <Suspense fallback={<AttachmentSkeleton />}>
-              <Attachment attachmentId={attachment} />
-            </Suspense>
-          </Cover>
-        }
+        <Cover coverKey="attachment">
+          <Suspense fallback={<AttachmentSkeleton />}>
+            <Attachment />
+          </Suspense>
+        </Cover>
       </AnimatePresence>
       <div className="w-full p-6">
         <Collections />
       </div>
       <div className="w-full space-y-6 px-6 pt-6">
         <Suspense fallback={<InboxGridSkeleton />}>
-          <InboxGrid defaultInbox={[]} />
+          <InboxGrid />
         </Suspense>
       </div>
     </HydrationBoundary>

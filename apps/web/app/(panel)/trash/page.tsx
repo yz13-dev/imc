@@ -7,15 +7,7 @@ import Attachment, { AttachmentSkeleton } from "../components/preview/attachment
 import Cover from "../components/preview/cover"
 
 
-type PageProps = {
-  searchParams: Promise<{
-    attachment?: string
-  }>
-}
-
-export default async function Page({ searchParams }: PageProps) {
-  const { attachment } = await searchParams
-
+export default async function Page() {
   const attachments = await getTrashAttachments()
 
   return (
@@ -23,14 +15,11 @@ export default async function Page({ searchParams }: PageProps) {
       <Header>
       </Header>
       <AnimatePresence mode="popLayout">
-        {
-          attachment &&
-          <Cover coverKey="attachment">
-            <Suspense fallback={<AttachmentSkeleton />}>
-              <Attachment attachmentId={attachment} />
-            </Suspense>
-          </Cover>
-        }
+        <Cover coverKey="attachment">
+          <Suspense fallback={<AttachmentSkeleton />}>
+            <Attachment />
+          </Suspense>
+        </Cover>
       </AnimatePresence>
       <div className="w-full space-y-6 px-6 pt-6">
         {

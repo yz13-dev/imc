@@ -4,7 +4,6 @@ import { toBlurDataURL } from "@/lib/blurhash"
 import { getAssetsUrl } from "@/lib/url"
 import { Reference, ReferenceContent, ReferenceOverlay } from "@workspace/ui/components/reference"
 import Image from "next/image"
-import { useQueryState } from "nuqs"
 
 const HIDE_CONTENT = true;
 
@@ -17,16 +16,17 @@ type RefContentType = {
   mimeType: string
   alt?: string
   style?: React.CSSProperties
+  viewTransitionName?: string
 }
-export default function RefContent({ id, blurhash, src, className = "", children, mimeType, alt = "", style = {} }: RefContentType) {
+export default function RefContent({ id, blurhash, src, className = "", children, mimeType, alt = "", style = {}, viewTransitionName }: RefContentType) {
 
-  const [_, setId] = useQueryState("attachment")
   const isVideo = mimeType.startsWith("video/")
   const isGif = mimeType.startsWith("image/gif")
 
   const resolvedId = id // getRefSrc(src) || src;
   const refSrc = getAssetsUrl(`/v1/attachments/${resolvedId || src}/file`)
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
+  const mediaStyle: React.CSSProperties | undefined = viewTransitionName ? { viewTransitionName } : undefined
 
   return (
     <Reference
@@ -46,6 +46,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
             muted
             autoPlay
             aria-label={alt}
+            style={mediaStyle}
           />
         }
         {
@@ -61,6 +62,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
             placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
             blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
             alt={alt}
+            style={mediaStyle}
           />
         }
         {
@@ -76,6 +78,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
             placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
             blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
             alt={alt}
+            style={mediaStyle}
           />
         }
         <ReferenceOverlay />

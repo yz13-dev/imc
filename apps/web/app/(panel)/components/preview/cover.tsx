@@ -2,7 +2,8 @@
 import type { OverlayProps } from "@/components/overlay";
 import Overlay from "@/components/overlay";
 import useCover from "@/hooks/use-cover";
-import { useQueryState } from "nuqs";
+import { withViewTransition } from "@/lib/view-transition";
+import { parseAsString, useQueryState } from "nuqs";
 import { useEffect } from "react";
 
 
@@ -12,7 +13,7 @@ type CoverProps = {
 
 export default function Cover({ children, coverKey = "id" }: CoverProps) {
   const { lock, unlock } = useCover()
-  const [id, setId] = useQueryState(coverKey)
+  const [id, setId] = useQueryState(coverKey, parseAsString)
   useEffect(() => {
     if (!id) {
       unlock()
@@ -26,7 +27,7 @@ export default function Cover({ children, coverKey = "id" }: CoverProps) {
     <Overlay
       onClick={e => {
         e.stopPropagation()
-        setId(null)
+        withViewTransition(() => setId(null))
       }}
     >
       {children}

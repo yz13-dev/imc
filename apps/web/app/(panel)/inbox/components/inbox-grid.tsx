@@ -1,7 +1,6 @@
 "use client"
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { getInboxAttachments } from "@/lib/api/attachments"
-import type { InboxItem } from "@/types/inbox"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import CardGrid from "../../components/card-grid"
 import CardGridWrapper from "../../components/card-grid-wrapper"
@@ -21,14 +20,10 @@ export function InboxGridSkeleton() {
   )
 }
 
-type InboxGridProps = {
-  defaultInbox?: InboxItem[]
-}
+export default function InboxGrid() {
 
-export default function InboxGrid({ defaultInbox = [] }: InboxGridProps) {
-
-  const { data, isLoading, isPending } = useSuspenseQuery({ queryKey: ["inbox"], queryFn: getInboxAttachments })
-  const attachments = (data || []).map(item => item.attachment) // useInboxAttachments({ inbox: defaultInbox })
+  const { data, isLoading, isPending } = useSuspenseQuery({ queryKey: ["attachments", "inbox"], queryFn: getInboxAttachments })
+  const attachments = (data || []).map(item => item.attachment)
 
   if (isLoading || isPending) return <InboxGridSkeleton />
   return (

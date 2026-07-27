@@ -2,8 +2,10 @@
 import { OptionalVideoProvider } from "@/components/video-provider";
 import { getAttachment } from "@/lib/api/attachments";
 import { getRefSrc } from "@/lib/ref-src";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
+import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@workspace/ui/components/badge";
+import { parseAsString, useQueryState } from "nuqs";
 import RefContent from "../ref-content";
 
 export function AttachmentSkeleton() {
@@ -12,42 +14,45 @@ export function AttachmentSkeleton() {
   );
 }
 
-export default function Attachment({ attachmentId }: { attachmentId: string }) {
+function AttachmentContent({ attachmentId, id, src, mime_type, blurhash, label, width, height }: { attachmentId: string | null } & AttachmentWithMaybeTagsAndSource) {
+  return (
+    <RefContent
+      id={id}
+      src={src}
+      mimeType={mime_type}
+      blurhash={blurhash}
+      alt={label}
+      className="rounded-sm max-h-full z-50 [&_img]:rounded-sm [&_video]:rounded-sm will-change-transform transition-all"
+      style={{
+        aspectRatio: `${width}/${height}`
+      }}
+      viewTransitionName={attachmentId ? `attachment-${id}` : undefined}
+    />
+  )
+}
 
-  // const items = useGlobalStore(state => state.collectionsItems)
-  // const inbox = useGlobalStore((state) => state.inbox)
-  //
+export default function Attachment() {
 
-  const { data, isLoading, isPending } = useSuspenseQuery({
+  const [attachmentId] = useQueryState("attachment", parseAsString)
+
+  const { data } = useQuery({
     queryKey: ["attachments", "ref", attachmentId],
-    queryFn: () => getAttachment(attachmentId).then(data => data)
+    queryFn: () => getAttachment(attachmentId!),
+    enabled: !!attachmentId
   })
 
   const attachment = data
-
-  if (!attachment) return null;
-
-  const refSrc = getRefSrc(attachment.src)
-  if (!refSrc) return null;
-  const title = attachment.label || refSrc || "-"
-
-  const tags = attachment.tags.flatMap(item => item.tag) || []
+  const tags = (attachment?.tags || []).flatMap(item => item.tag) || []
 
   return (
-    <OptionalVideoProvider duration={attachment.duration_ms}>
+    <OptionalVideoProvider duration={attachment?.duration_ms || 0}>
       <div className="max-w-4xl w-full h-full overflow-y-auto">
         {
           attachment &&
-          <RefContent
-            id={attachment.id}
-            src={refSrc}
-            mimeType={attachment.mime_type}
-            blurhash={attachment.blurhash}
-            alt={title}
-            className="rounded-sm max-h-full z-50 [&_img]:rounded-sm [&_video]:rounded-sm"
-            style={{
-              aspectRatio: `${attachment.width}/${attachment.height}`
-            }}
+          <AttachmentContent
+            {...data}
+            attachmentId={attachmentId}
+            src={getRefSrc(attachment.src) || attachment.src}
           />
         }
       </div>
