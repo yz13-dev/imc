@@ -52,9 +52,12 @@ export default function CardFooter({ source, duration_ms, label, tags = [], href
         }
         {
           tags.length > 0 &&
-          <ReferenceBadge>
-            <TagsIcon />
-            <span>{firstTag}{tags.length > 1 && ` +${tags.length - 1}`}</span>
+          <ReferenceBadge className="gap-1">
+            <TagsIcon className="shrink-0 size-3!" />
+            <span className="h-4 shrink-0 inline-block">
+              <span className="uppercase">{firstTag}</span>
+              {tags.length > 1 && ` +${tags.length - 1}`}
+            </span>
           </ReferenceBadge>
         }
         <ReferenceButton

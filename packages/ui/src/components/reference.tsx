@@ -102,7 +102,7 @@ function ReferenceBadge({ className = "", children, ...props }: ReferenceBadgePr
   return (
     <Badge
       className={cn(
-        "h-6 bg-foreground/50 tabular-nums border-foreground/25 text-background max-w-full line-clamp-1! backdrop-blur-3xl",
+        "h-6 bg-foreground/50 tabular-nums border-foreground/25 text-background max-w-full backdrop-blur-3xl",
         className
       )}
       {...props}
