@@ -107,6 +107,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
       readonly={readonly}
       className={cn(
         "w-full p-1 bg-muted rounded-lg relative group break-inside-avoid",
+        activeAttachmentId ? "-z-10" : "z-auto",
         containerClassName
       )}
     >
