@@ -1,0 +1,28 @@
+services:
+  assets:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile.assets
+    env_file:
+      - .env
+    environment:
+      IMGPROXY_URL: http://imgproxy:8080
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./cert.pem:/code/cert.pem:ro
+      - ./key.pem:/code/key.pem:ro
+    depends_on:
+      - imgproxy
+
+  imgproxy:
+    image: darthsim/imgproxy:latest
+    environment:
+      IMGPROXY_USE_S3: "true"
+      IMGPROXY_S3_REGION: ${S3_REGION}
+      IMGPROXY_S3_ENDPOINT: ${S3_ENDPOINT_URL}
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      IMGPROXY_ALLOWED_SOURCES: "s3://"
+      IMGPROXY_USE_ETAG: "true"
+    restart: unless-stopped

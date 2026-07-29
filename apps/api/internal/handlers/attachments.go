@@ -21,6 +21,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/google/uuid"
 	"github.com/yz13-dev/imc/api/internal/events"
+	"github.com/yz13-dev/imc/api/internal/imgproxy"
 	"github.com/yz13-dev/imc/api/internal/middleware"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"github.com/yz13-dev/imc/api/internal/repositories"
@@ -288,6 +289,11 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 	// )
 	log.Println("key", key)
 
+	if attachment.Type == "image" {
+		serveImageAttachment(w, r, key, isPublic)
+		return
+	}
+
 	s3Client, err := storage.NewS3Client()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -347,6 +353,53 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 	_, err = io.Copy(w, obj.Body)
 	if err != nil {
 		log.Printf("copy object body: %v", err)
+	}
+}
+
+// serveImageAttachment streams an image attachment through imgproxy so it can
+// apply on-the-fly resize/format transforms (via ?w=/?h=/?fit=/?format=) instead
+// of proxying the raw S3 object directly.
+func serveImageAttachment(w http.ResponseWriter, r *http.Request, key string, isPublic bool) {
+	url := imgproxy.BuildURL(storage.GetBucketName(), key, imgproxy.OptionsFromQuery(r.URL.Query()))
+
+	resp, err := imgproxy.Fetch(r.Context(), url, r.Header.Get("If-None-Match"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Ключ вложения не переиспользуется и не перезаписывается — контент неизменяем
+	if isPublic {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	} else {
+		w.Header().Set("Cache-Control", "private, max-age=31536000, immutable")
+	}
+
+	if etag := resp.Header.Get("ETag"); etag != "" {
+		w.Header().Set("ETag", etag)
+	}
+
+	if resp.StatusCode == http.StatusNotModified {
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, "failed to fetch attachment", http.StatusBadGateway)
+		return
+	}
+
+	if ct := resp.Header.Get("Content-Type"); ct != "" {
+		w.Header().Set("Content-Type", ct)
+	}
+	if cl := resp.Header.Get("Content-Length"); cl != "" {
+		w.Header().Set("Content-Length", cl)
+	}
+	w.Header().Set("Content-Disposition", "inline")
+
+	if _, err := io.Copy(w, resp.Body); err != nil {
+		log.Printf("copy imgproxy response body: %v", err)
 	}
 }
 
