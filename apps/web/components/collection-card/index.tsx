@@ -133,6 +133,10 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
               blurhash={blurhash}
               style={style}
               viewTransitionName={!isActive ? `attachment-${id}` : undefined}
+              // Mirrors the @sm..@7xl column counts in CardGridWrapper, offset
+              // by the fixed sidebar + page padding (~320px) so next/image
+              // doesn't fetch a full-viewport-wide image for a grid thumbnail.
+              sizes="(min-width: 1600px) calc((100vw - 320px) / 6), (min-width: 1344px) calc((100vw - 320px) / 5), (min-width: 1216px) calc((100vw - 320px) / 4), (min-width: 896px) calc((100vw - 320px) / 3), (min-width: 704px) calc((100vw - 320px) / 2), 100vw"
             >
               {
                 !noLink &&

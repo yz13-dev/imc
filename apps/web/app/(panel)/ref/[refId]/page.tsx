@@ -68,6 +68,8 @@ export default async function Page({ params }: PageProps) {
                   style={{
                     aspectRatio: `${attachment.width}/${attachment.height}`
                   }}
+                  // Matches the xl:w-2/3 lg:w-1/2 w-full wrapper above.
+                  sizes="(min-width: 1280px) 67vw, (min-width: 1024px) 50vw, 100vw"
                 />
               </AnimatePresence>
             </div>

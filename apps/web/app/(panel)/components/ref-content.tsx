@@ -17,8 +17,12 @@ type RefContentType = {
   alt?: string
   style?: React.CSSProperties
   viewTransitionName?: string
+  // Hint for next/image's srcset selection — without it, a `fill` image
+  // defaults to 100vw and always fetches the largest device size, even when
+  // rendered as a small grid thumbnail.
+  sizes?: string
 }
-export default function RefContent({ id, blurhash, src, className = "", children, mimeType, alt = "", style = {}, viewTransitionName }: RefContentType) {
+export default function RefContent({ id, blurhash, src, className = "", children, mimeType, alt = "", style = {}, viewTransitionName, sizes = "100vw" }: RefContentType) {
 
   const isVideo = mimeType.startsWith("video/")
   const isGif = mimeType.startsWith("image/gif")
@@ -58,6 +62,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
             draggable={false}
             unoptimized
             fill
+            sizes={sizes}
             loading="lazy"
             placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
             blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
@@ -72,8 +77,8 @@ export default function RefContent({ id, blurhash, src, className = "", children
             data-slot="reference-attachment"
             src={refSrc}
             draggable={false}
-            unoptimized
             fill
+            sizes={sizes}
             loading="lazy"
             placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
             blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}

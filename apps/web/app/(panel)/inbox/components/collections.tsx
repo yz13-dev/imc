@@ -49,6 +49,8 @@ export default function Collections() {
                                 "nth-[1]:hover:rotate-6 nth-[2]:hover:-rotate-6 nth-[3]:hover:rotate-3 will-change-transform transition-transform",
                                 isLast && "col-span-full"
                               )}
+                              // Fixed 2-col grid inside a max-w-48 (192px) tile.
+                              sizes={isLast ? "192px" : "96px"}
                               {...item}
                             />
                           </OptionalVideoProvider>

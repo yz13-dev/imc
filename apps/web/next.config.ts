@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
+    // Local dev serves attachments from https://localhost:8082, which resolves
+    // to a loopback IP that Next's optimizer blocks by default (SSRF guard).
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
     remotePatterns: [
       {
         protocol: "https",
@@ -27,13 +30,13 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "localhost",
-        port: "8080",
+        port: "8082",
         pathname: "/**",
       },
       {
         protocol: "http",
         hostname: "localhost",
-        port: "8080",
+        port: "8082",
         pathname: "/**",
       },
     ]

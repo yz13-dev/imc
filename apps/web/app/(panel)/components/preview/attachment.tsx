@@ -27,6 +27,8 @@ function AttachmentContent({ attachmentId, id, src, mime_type, blurhash, label, 
         aspectRatio: `${width}/${height}`
       }}
       viewTransitionName={attachmentId ? `attachment-${id}` : undefined}
+      // Matches the wrapping div's max-w-4xl (896px).
+      sizes="(min-width: 896px) 896px, 100vw"
     />
   )
 }
