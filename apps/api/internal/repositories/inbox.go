@@ -19,7 +19,7 @@ func PostInInbox(UserID string, db *gorm.DB, attachmentID uuid.UUID) error {
 
 func GetInboxAttachments(UserID string, db *gorm.DB) ([]models.InboxItem, error) {
 	var inboxes []models.Inbox
-	if err := db.Table("inbox_items").Where("user_id = ?", UserID).Find(&inboxes).Error; err != nil {
+	if err := db.Table("inbox_items").Where("user_id = ?", UserID).Order("created_at DESC").Find(&inboxes).Error; err != nil {
 		return nil, err
 	}
 
