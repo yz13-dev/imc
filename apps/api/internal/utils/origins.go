@@ -1,6 +1,26 @@
 package utils
 
-import "os"
+import (
+	"os"
+	"regexp"
+	"strings"
+)
+
+func MatchOrigin(allowed []string, origin string) bool {
+	for _, pattern := range allowed {
+		if pattern == origin {
+			return true
+		}
+		if !strings.Contains(pattern, "*") {
+			continue
+		}
+		regexPattern := "^" + strings.ReplaceAll(regexp.QuoteMeta(pattern), `\*`, ".*") + "$"
+		if matched, _ := regexp.MatchString(regexPattern, origin); matched {
+			return true
+		}
+	}
+	return false
+}
 
 func GetOrigins() []string {
 	IsProd := os.Getenv("APP_ENV") == "production"

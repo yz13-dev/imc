@@ -4,11 +4,13 @@ import { useGlobalStore } from "@/lib/stores/global-store";
 import { getApiUrl } from "@/lib/url";
 import type { EventData } from "@/types/sse";
 import type { QueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 
 type ServerSideEventsProps = {
 }
+
+type SSESubscription = [string, (e: MessageEvent) => void]
 
 function getEventData<T extends EventData>(e: MessageEvent): T {
   return JSON.parse(e.data)
@@ -28,67 +30,52 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
   const refreshCollections = useGlobalStore(state => state.refreshCollections);
   const refreshTrash = useGlobalStore(state => state.refreshTrash);
 
-  const fullRefresh = async () => {
-    await refreshInbox()
-    await refreshCollections()
-    await refreshTrash()
-    for (const collection of collections) {
-      await refreshCollection(collection.id)
-    }
-  }
+  const collectionsRef = useRef(collections)
+  useEffect(() => {
+    collectionsRef.current = collections
+  }, [collections])
 
-  const onInboxChange = (e: MessageEvent) => {
-    if (e.type === "inbox:new") {
+  const subscriptions = useMemo<SSESubscription[]>(() => {
+    const onInboxChange = () => {
       refreshInbox()
-      revalidate(queryClient, ["inbox"])
+      revalidate(queryClient, ["attachments", "inbox"])
     }
-    if (e.type === "inbox:remove") {
-      refreshInbox()
-      revalidate(queryClient, ["inbox"])
-    }
-  }
-  const onCollectionsChange = (e: MessageEvent) => {
-    if (e.type === "collections:new") {
+    const onCollectionsChange = () => {
       refreshCollections()
       revalidate(queryClient, ["attachments", "collections"])
     }
-    if (e.type === "collections:update") {
+    const onCollectionChange = (e: MessageEvent) => {
       refreshCollections()
-      revalidate(queryClient, ["attachments", "collections"])
+      const data = getEventData(e)
+      revalidate(queryClient, ["attachments", "collection", data.id])
     }
-    if (e.type === "collections:remove") {
-      refreshCollections()
-      revalidate(queryClient, ["attachments", "collections"])
-    }
-  }
-  const onTrashChange = (e: MessageEvent) => {
-    if (e.type === "trash:new") {
-      fullRefresh()
+    const onTrashNew = async () => {
+      await refreshInbox()
+      await refreshCollections()
+      await refreshTrash()
+      for (const collection of collectionsRef.current) {
+        await refreshCollection(collection.id)
+      }
       revalidate(queryClient, ["attachments", "trash"])
     }
-    if (e.type === "trash:remove") {
+    const onTrashRemove = () => {
       refreshTrash()
       revalidate(queryClient, ["attachments", "trash"])
     }
-  }
 
-  const onCollectionChange = (e: MessageEvent) => {
-    if (e.type === "collection:new") {
-      refreshCollections()
-      const data = getEventData(e)
-      revalidate(queryClient, ["attachments", "collection", data.id])
-    }
-    if (e.type === "collection:update") {
-      refreshCollections()
-      const data = getEventData(e)
-      revalidate(queryClient, ["attachments", "collection", data.id])
-    }
-    if (e.type === "collection:remove") {
-      refreshCollections()
-      const data = getEventData(e)
-      revalidate(queryClient, ["attachments", "collection", data.id])
-    }
-  }
+    return [
+      ["inbox:new", onInboxChange],
+      ["inbox:remove", onInboxChange],
+      ["collection:new", onCollectionChange],
+      ["collection:update", onCollectionChange],
+      ["collection:remove", onCollectionChange],
+      ["collections:new", onCollectionsChange],
+      ["collections:update", onCollectionsChange],
+      ["collections:remove", onCollectionsChange],
+      ["trash:new", onTrashNew],
+      ["trash:remove", onTrashRemove],
+    ]
+  }, [queryClient, refreshInbox, refreshCollection, refreshCollections, refreshTrash])
 
   useEffect(() => {
     const es = new EventSource(getApiUrl("/v1/my/events"), {
@@ -100,37 +87,30 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     es.onerror = (err) => {
       console.warn("[sse] connection error, browser will retry", err)
     }
-    // inbox
-    es.addEventListener("inbox:new", onInboxChange)
-    es.addEventListener("inbox:remove", onInboxChange)
-    //collection
-    es.addEventListener("collection:new", onCollectionChange)
-    es.addEventListener("collection:update", onCollectionChange)
-    es.addEventListener("collection:remove", onCollectionChange)
-    //collections
-    es.addEventListener("collections:new", onCollectionsChange)
-    es.addEventListener("collections:update", onCollectionsChange)
-    es.addEventListener("collections:remove", onCollectionsChange)
-    // trash
-    es.addEventListener("trash:new", onTrashChange)
-    es.addEventListener("trash:remove", onTrashChange)
+
+    const isDev = process.env.NODE_ENV !== "production"
+    const wrapped: SSESubscription[] = subscriptions.map(([type, handler]) => {
+      if (!isDev) return [type, handler]
+      return [type, (e: MessageEvent) => {
+        try {
+          console.log(`[sse] ${type}`, e.data ? JSON.parse(e.data) : undefined)
+        } catch {
+          console.log(`[sse] ${type}`, e.data)
+        }
+        handler(e)
+      }]
+    })
+
+    for (const [type, handler] of wrapped) {
+      es.addEventListener(type, handler)
+    }
 
     return () => {
-      // inbox
-      es.removeEventListener("inbox:new", onInboxChange)
-      es.removeEventListener("inbox:remove", onInboxChange)
-      //collection
-      es.removeEventListener("collection:new", onCollectionChange)
-      es.removeEventListener("collection:update", onCollectionChange)
-      es.removeEventListener("collection:remove", onCollectionChange)
-      //collections
-      es.removeEventListener("collections:new", onCollectionsChange)
-      es.removeEventListener("collections:update", onCollectionsChange)
-      es.removeEventListener("collections:remove", onCollectionsChange)
-      // trash
-      es.removeEventListener("trash:new", onTrashChange)
-      es.removeEventListener("trash:remove", onTrashChange)
+      for (const [type, handler] of wrapped) {
+        es.removeEventListener(type, handler)
+      }
+      es.close()
     }
-  }, [])
+  }, [subscriptions])
   return null
 }

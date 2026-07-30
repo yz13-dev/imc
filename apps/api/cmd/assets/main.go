@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"slices"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -76,7 +75,7 @@ func main() {
 			}
 
 			allowed := utils.GetOrigins()
-			if slices.Contains(allowed, origin) {
+			if utils.MatchOrigin(allowed, origin) {
 				return true
 			}
 
