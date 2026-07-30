@@ -1,5 +1,7 @@
 package events
 
+import "log"
+
 func (h *Hub) Subscribe(UserID string) chan Event {
 	ch := make(chan Event, 10)
 
@@ -34,7 +36,7 @@ func (h *Hub) Publish(UserID string, event Event) {
 		select {
 		case ch <- event:
 		default:
-			// клиент медленный, пропускаем событие
+			log.Printf("sse: dropping event %q for user %s, subscriber channel full", event.Type, UserID)
 		}
 	}
 }

@@ -94,6 +94,12 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
     const es = new EventSource(getApiUrl("/v1/my/events"), {
       withCredentials: true
     })
+    es.onopen = () => {
+      console.log("[sse] connected")
+    }
+    es.onerror = (err) => {
+      console.warn("[sse] connection error, browser will retry", err)
+    }
     // inbox
     es.addEventListener("inbox:new", onInboxChange)
     es.addEventListener("inbox:remove", onInboxChange)
