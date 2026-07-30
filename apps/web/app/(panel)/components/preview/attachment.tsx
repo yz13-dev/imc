@@ -17,6 +17,7 @@ export function AttachmentSkeleton() {
 function AttachmentContent({ attachmentId, id, src, mime_type, blurhash, label, width, height }: { attachmentId: string | null } & AttachmentWithMaybeTagsAndSource) {
   return (
     <RefContent
+      quality={100}
       id={id}
       src={src}
       mimeType={mime_type}
@@ -28,7 +29,7 @@ function AttachmentContent({ attachmentId, id, src, mime_type, blurhash, label, 
       }}
       viewTransitionName={attachmentId ? `attachment-${id}` : undefined}
       // Matches the wrapping div's max-w-4xl (896px).
-      sizes="(min-width: 896px) 896px, 100vw"
+      sizes="100vw"
     />
   )
 }

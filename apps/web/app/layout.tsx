@@ -94,7 +94,7 @@ export default function RootLayout({
           <ThemeProvider>
             <Toaster />
             <TooltipProvider>
-              <NuqsAdapter defaultOptions={{}}>
+              <NuqsAdapter>
                 <QueryProvider>
                   <QueryTheme />
                   {children}

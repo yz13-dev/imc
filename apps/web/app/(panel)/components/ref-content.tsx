@@ -21,8 +21,9 @@ type RefContentType = {
   // defaults to 100vw and always fetches the largest device size, even when
   // rendered as a small grid thumbnail.
   sizes?: string
+  quality?: number
 }
-export default function RefContent({ id, blurhash, src, className = "", children, mimeType, alt = "", style = {}, viewTransitionName, sizes = "100vw" }: RefContentType) {
+export default function RefContent({ quality = 75, id, blurhash, src, className = "", children, mimeType, alt = "", style = {}, viewTransitionName, sizes = "100vw" }: RefContentType) {
 
   const isVideo = mimeType.startsWith("video/")
   const isGif = mimeType.startsWith("image/gif")
@@ -68,6 +69,7 @@ export default function RefContent({ id, blurhash, src, className = "", children
             blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
             alt={alt}
             style={mediaStyle}
+            quality={quality}
           />
         }
         {
@@ -83,7 +85,9 @@ export default function RefContent({ id, blurhash, src, className = "", children
             placeholder={hasBlurhash && blurhash ? "blur" : "empty"}
             blurDataURL={hasBlurhash && blurhash ? toBlurDataURL(blurhash, mimeType) : undefined}
             alt={alt}
+
             style={mediaStyle}
+            quality={quality}
           />
         }
         <ReferenceOverlay />
