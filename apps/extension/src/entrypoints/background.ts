@@ -3,15 +3,23 @@ import { APP_URL } from "@/utils/env";
 import { parseImageUrl } from "@/utils/images";
 
 export default defineBackground(() => {
-  browser.runtime.onInstalled.addListener(async () => {
-    browser
-      .contextMenus
-      .create({
-        id: "save-to-imc",
-        title: browser.i18n.getMessage("contextMenuSave"),
-        contexts: ["image", "video"],
-      });
-  });
+  function createContextMenu() {
+    browser.contextMenus.create({
+      id: "save-to-imc",
+      title: browser.i18n.getMessage("contextMenuSave"),
+      contexts: ["image", "video"],
+    }, () => {
+      // Отлавливаем возможные ошибки дублирования id в консоли
+      if (browser.runtime.lastError) {
+        console.log("Контекстное меню уже создано или произошла ошибка:", browser.runtime.lastError.message);
+      }
+    });
+  }
+  // Пункты контекстного меню не сохраняются между перезапусками браузера
+  // и service worker'а, поэтому создаём меню прямо при выполнении
+  // background-скрипта — оно выполняется заново при установке,
+  // старте браузера и каждом пробуждении service worker'а (MV3).
+  createContextMenu();
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // Проверяем тип сообщения, которое прислал наш контент-скрипт

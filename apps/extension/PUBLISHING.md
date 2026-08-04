@@ -35,6 +35,22 @@ source page.
 > monitor page content and does not send any data without an explicit user
 > action.
 
+## Version notes (0.1.2)
+
+Bug fix only, no new permissions and no behavior change visible to reviewers
+beyond the fix itself:
+
+> The "Save to IMC" context menu item could disappear after the browser was
+> restarted. The extension only (re)created it inside `runtime.onInstalled`,
+> which fires on install/update but not on every browser startup — and
+> context menu items are not persisted by the browser across restarts.
+> Fixed by creating the menu item unconditionally when the background
+> script runs (`src/entrypoints/background.ts`), which covers install,
+> browser startup, and (for Chrome's MV3 service worker) every wake-up.
+> A duplicate-id error from a second `contextMenus.create` call in the same
+> session is caught via the create callback and ignored — it just means the
+> item already exists.
+
 ## Notes for reviewer (Firefox AMO)
 
 `bun run zip:firefox` produces both `extension-<version>-firefox.zip` and
