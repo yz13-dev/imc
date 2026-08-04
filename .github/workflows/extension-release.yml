@@ -41,6 +41,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "Extension ${{ github.ref_name }}"
+          name: "${{ github.ref_name }}"
           files: apps/extension/.output/extension-*.zip
           generate_release_notes: true
