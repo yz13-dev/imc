@@ -73,7 +73,7 @@ export default function CardDropdownMenu({ readonly = false, className = "", chi
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 w-full h-svh z-50 py-6 backdrop-blur-sm flex items-end justify-center bg-black/10"
+            className="fixed inset-0 w-full h-svh z-40 py-6 backdrop-blur-sm flex items-end justify-center bg-black/10"
           />
         }
       </AnimatePresence>
