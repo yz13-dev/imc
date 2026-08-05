@@ -78,7 +78,7 @@ export default function CardDropdownMenu({ readonly = false, className = "", chi
         }
       </AnimatePresence>
       <DropdownMenuTrigger
-        className={cn("relative", open && "z-50", className)}
+        className={cn("relative", className)}
         render={children}
         nativeButton={false}
         onClick={e => {
