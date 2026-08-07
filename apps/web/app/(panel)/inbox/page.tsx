@@ -1,14 +1,14 @@
-import { getInboxAttachments } from "@/lib/api/attachments"
+import { getCollectionAttachments, getInboxAttachments } from "@/lib/api/attachments"
+import { getCollections } from "@/lib/api/collections"
 import { getQueryClient } from "@/lib/query-client"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
 import Header, { HeaderContent } from "../components/header"
-import SidebarTrigger from "../components/header/sidebar-trigger"
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
 import Cover from "../components/preview/cover"
 import { InboxTagStats } from "../components/tags-stats"
-import Collections from "./components/collections"
+import Collections, { CollectionsSkeleton } from "./components/collections"
 import InboxGrid, { InboxGridSkeleton } from "./components/inbox-grid"
 
 
@@ -17,15 +17,26 @@ export default async function Page() {
 
   await queryClient.prefetchQuery({
     queryKey: ["attachments", "inbox"],
-    queryFn: () => getInboxAttachments().then(data => data), // <-- serialize the data on the server
+    queryFn: () => getInboxAttachments()
   })
+
+  const collections = await queryClient.fetchQuery({
+    queryKey: ["attachments", "collections"],
+    queryFn: () => getCollections()
+  })
+
+  await Promise.all(
+    (collections || []).map(collection =>
+      queryClient.prefetchQuery({
+        queryKey: ["attachments", "collections", collection.id],
+        queryFn: () => getCollectionAttachments(collection.id)
+      })
+    )
+  )
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Header>
-        <HeaderContent>
-          <SidebarTrigger />
-        </HeaderContent>
         <InboxTagStats />
         <HeaderContent>
         </HeaderContent>
@@ -38,7 +49,9 @@ export default async function Page() {
         </Cover>
       </AnimatePresence>
       <div className="w-full p-6">
-        <Collections />
+        <Suspense fallback={<CollectionsSkeleton />}>
+          <Collections />
+        </Suspense>
       </div>
       <div className="w-full space-y-6 px-6 pt-6">
         <Suspense fallback={<InboxGridSkeleton />}>

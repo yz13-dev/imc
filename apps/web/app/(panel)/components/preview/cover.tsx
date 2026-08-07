@@ -3,6 +3,7 @@ import type { OverlayProps } from "@/components/overlay";
 import Overlay from "@/components/overlay";
 import useCover from "@/hooks/use-cover";
 import { withViewTransition } from "@/lib/view-transition";
+import { useHotkey } from "@tanstack/react-hotkeys";
 import { parseAsString, useQueryState } from "nuqs";
 import { useEffect } from "react";
 
@@ -22,6 +23,9 @@ export default function Cover({ children, coverKey = "id" }: CoverProps) {
     lock()
     return () => unlock()
   }, [id])
+  useHotkey("Escape", () => {
+    withViewTransition(() => setId(null))
+  }, { enabled: !!id })
   if (!id) return null
   return (
     <Overlay

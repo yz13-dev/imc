@@ -364,6 +364,7 @@ func serveImageAttachment(w http.ResponseWriter, r *http.Request, key string, is
 
 	resp, err := imgproxy.Fetch(r.Context(), url, r.Header.Get("If-None-Match"))
 	if err != nil {
+		log.Printf("imgproxy fetch failed: url=%s err=%v", url, err)
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return
 	}
@@ -386,6 +387,8 @@ func serveImageAttachment(w http.ResponseWriter, r *http.Request, key string, is
 	}
 
 	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
+		log.Printf("imgproxy fetch failed: url=%s status=%d body=%s", url, resp.StatusCode, body)
 		http.Error(w, "failed to fetch attachment", http.StatusBadGateway)
 		return
 	}

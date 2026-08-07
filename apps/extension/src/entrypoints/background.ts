@@ -1,8 +1,9 @@
 import { getUser } from "@/utils/auth";
-import { APP_URL } from "@/utils/env";
+import { APP_URL, USE_TEST } from "@/utils/env";
 import { parseImageUrl } from "@/utils/images";
 
 export default defineBackground(() => {
+  if (USE_TEST) console.log("USE_TEST is enabled");
   function createContextMenu() {
     browser.contextMenus.create({
       id: "save-to-imc",
@@ -56,6 +57,7 @@ export default defineBackground(() => {
       const sourceTitle = tab?.title
 
       const sourceUrl = url.toString()
+      const sourceBaseUrl = url.origin
 
       let sourceFavicon = tab?.favIconUrl?.startsWith("data:") ? null : tab?.favIconUrl;
       if (!sourceFavicon && tab.id) {
@@ -67,8 +69,8 @@ export default defineBackground(() => {
 
       if (info.srcUrl) {
         const checkedSource = await checkSource({ url: sourceUrl })
-        const attachmentUrl = parseImageUrl(info.srcUrl)
-
+        const attachmentUrl = parseImageUrl({ url: info.srcUrl, base: sourceBaseUrl })
+        if (USE_TEST) console.log("attachmentUrl", attachmentUrl)
         const blob = await fetchAttachments(attachmentUrl)
         if (!blob) {
           console.error("[ ATTACHMENT-FETCH-FAILED ]", attachmentUrl)
@@ -83,7 +85,7 @@ export default defineBackground(() => {
 
         const id = attachment.id
 
-        if (id) {
+        if (id && !USE_TEST) {
           await inboxAttachment(id)
           if (checkedSource?.exist === true) {
             await connectSource({ sourceID: checkedSource.id, attachmentID: id })

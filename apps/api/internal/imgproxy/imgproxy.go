@@ -13,10 +13,11 @@ import (
 var client = &http.Client{Timeout: 30 * time.Second}
 
 type Options struct {
-	Width  int
-	Height int
-	Fit    string
-	Format string
+	Width   int
+	Height  int
+	Fit     string
+	Format  string
+	Quality int
 }
 
 func OptionsFromQuery(q map[string][]string) Options {
@@ -29,12 +30,14 @@ func OptionsFromQuery(q map[string][]string) Options {
 
 	width, _ := strconv.Atoi(get("w"))
 	height, _ := strconv.Atoi(get("h"))
+	quality, _ := strconv.Atoi(get("q"))
 
 	return Options{
-		Width:  width,
-		Height: height,
-		Fit:    get("fit"),
-		Format: get("format"),
+		Width:   width,
+		Height:  height,
+		Fit:     get("fit"),
+		Format:  get("format"),
+		Quality: quality,
 	}
 }
 
@@ -53,6 +56,10 @@ func BuildURL(bucket, key string, opts Options) string {
 
 	if opts.Format != "" {
 		segments = append(segments, fmt.Sprintf("f:%s", opts.Format))
+	}
+
+	if opts.Quality > 0 {
+		segments = append(segments, fmt.Sprintf("q:%d", opts.Quality))
 	}
 
 	processing := strings.Join(segments, "/")

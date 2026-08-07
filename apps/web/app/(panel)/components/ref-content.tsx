@@ -1,6 +1,7 @@
 "use client"
 import Video from "@/components/video"
 import { toBlurDataURL } from "@/lib/blurhash"
+import { assetImageLoader } from "@/lib/image-loader"
 import { getAssetsUrl } from "@/lib/url"
 import { Reference, ReferenceContent, ReferenceOverlay } from "@workspace/ui/components/reference"
 import Image from "next/image"
@@ -78,6 +79,7 @@ export default function RefContent({ quality = 75, id, blurhash, src, className 
           <Image
             data-slot="reference-attachment"
             src={refSrc}
+            loader={assetImageLoader}
             draggable={false}
             fill
             sizes={sizes}
