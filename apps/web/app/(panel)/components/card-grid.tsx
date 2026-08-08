@@ -11,9 +11,10 @@ type CardGridProps = {
   className?: string
   card?: Partial<CollectionCardProps>
   readonly?: boolean
+  collectionSelector?: boolean
 }
 
-export default function CardGrid({ readonly = false, card, attachments, scope, withPreview = false, className = "" }: CardGridProps) {
+export default function CardGrid({ readonly = false, card, attachments, scope, withPreview = false, className = "", collectionSelector = false }: CardGridProps) {
   return (
     <CardGridWrapper className={className}>
       {
@@ -28,6 +29,7 @@ export default function CardGrid({ readonly = false, card, attachments, scope, w
                 scope={scope}
                 preview={withPreview}
                 readonly={readonly}
+                collectionSelector={collectionSelector}
                 style={{
                   aspectRatio: `${item.width}/${item.height}`
                 }}

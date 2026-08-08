@@ -5,7 +5,6 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import Header, { HeaderContent } from "../../components/header"
 import CollectionMenu from "../../components/header/collection-menu"
 import CollectionSelect from "../../components/header/collection-select"
-import SidebarTrigger from "../../components/header/sidebar-trigger"
 import TagStats from "../../components/tags-stats"
 import CollectionGrid from "./components/collection-grid"
 
@@ -43,7 +42,6 @@ export default async function Page({ params, searchParams }: PageProps) {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Header>
         <HeaderContent>
-          <SidebarTrigger />
           <CollectionSelect defaultCollection={collection} />
         </HeaderContent>
         <TagStats queryKey={collection} />

@@ -1,7 +1,6 @@
 import { CollectionCardSkeleton } from "@/components/collection-card";
 import CardGridWrapper from "../../components/card-grid-wrapper";
 import Header, { HeaderContent } from "../../components/header";
-import SidebarTrigger from "../../components/header/sidebar-trigger";
 
 
 
@@ -10,7 +9,6 @@ export default function Loading() {
     <>
       <Header>
         <HeaderContent>
-          <SidebarTrigger />
         </HeaderContent>
         <HeaderContent>
         </HeaderContent>

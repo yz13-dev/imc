@@ -2,6 +2,7 @@
 import RefContent from "@/app/(panel)/components/ref-content"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
+import { resolveAssetImageUrl } from "@/lib/image-loader"
 import { getAssetsUrl } from "@/lib/url"
 import { withViewTransition } from "@/lib/view-transition"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
@@ -12,6 +13,7 @@ import { AnimatePresence } from "motion/react"
 import { parseAsString, useQueryState } from "nuqs"
 import CardContextMenu from "./card-context-menu"
 import CardFooter from "./card-footer"
+import CardHeader from "./card-header"
 
 
 export type CollectionCardSkeletonProps = {
@@ -50,15 +52,18 @@ export type CollectionCardProps = {
   noLink?: boolean
   containerClassName?: string
   readonly?: boolean
+  collectionSelector?: boolean
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "", ...rest }: CollectionCardProps) {
+export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "", collectionSelector = false, ...rest }: CollectionCardProps) {
 
+  const attachment: AttachmentWithMaybeTagsAndSource = { tags, id, src, mime_type, blurhash, duration_ms, label, source, ...rest }
   const href = scope ? `/${scope}/${id}` : `/${id}`
 
   const cardTags = tags ?? []
 
   const isVideo = mime_type.startsWith("video/")
+  const isGif = mime_type.startsWith("image/gif")
 
   const queryClient = useQueryClient()
   const [activeAttachmentId, setActiveAttachmentId] = useQueryState("attachment", parseAsString)
@@ -82,16 +87,23 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
 
   // The preview mounts a brand new <img>. If it hasn't decoded yet when the
   // view transition captures its "after" state, the browser has nothing to
-  // morph into and the transition silently no-ops. Same URL as the card, so
-  // this normally resolves instantly from the browser's own HTTP cache.
+  // morph into and the transition silently no-ops (or flashes a placeholder).
+  // preview/attachment.tsx always requests quality=100 (gifs go through
+  // unoptimized, so they keep the bare URL) — resolve the same URL here so
+  // this actually warms the cache entry the preview's <Image> will use,
+  // rather than a differently-sized/qualified variant of the same asset.
   const preloadMedia = async () => {
     if (isVideo || typeof window === "undefined") return
+    const rawUrl = getAssetsUrl(`/v1/attachments/${id}/file`)
     const img = new window.Image()
-    img.src = getAssetsUrl(`/v1/attachments/${id}/file`)
+    img.src = isGif ? rawUrl : resolveAssetImageUrl(rawUrl, 100)
     try {
-      await img.decode()
+      await Promise.race([
+        img.decode(),
+        new Promise((_, reject) => setTimeout(reject, 800)),
+      ])
     } catch {
-      // Ignore decode/network failures — worst case the transition no-ops.
+      // Ignore decode/network/timeout failures — worst case the transition no-ops.
     }
   }
   const openPreview = async () => {
@@ -101,6 +113,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
 
 
   return (
+
     <CardContextMenu
       attachmentId={id}
       label={label}
@@ -155,7 +168,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
                   } : undefined}
                 />
               }
-
+              <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
               <CardFooter duration_ms={duration_ms} href={href} source={source} tags={cardTags} label={label} />
             </RefContent>
           </AnimatePresence>

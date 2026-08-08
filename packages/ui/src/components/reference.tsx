@@ -26,13 +26,12 @@ function Reference({ className = "", children, style, ...props }: ReferenceProps
 type ReferenceContentProps = {} & React.ComponentPropsWithoutRef<"div">
 
 function ReferenceContent({ className = "", children, ...props }: ReferenceContentProps) {
-
   return (
     <div
-      eata-slot="reference-content"
+      data-slot="reference-content"
       className={cn(
         "rounded-lg [&_img]:rounded-sm [&_video]:rounded-sm bg-muted relative size-full",
-        "*:data-[slot=reference-attachment]:size-full *:data-[slot=reference-attachment]:object-cover *:data-[slot=reference-attachment]:object-top-left",
+        "[&_[data-slot=reference-attachment]]:size-full [&_[data-slot=reference-attachment]]:object-cover [&_[data-slot=reference-attachment]]:object-top-left",
         className
       )}
       {...props}
@@ -45,6 +44,38 @@ function ReferenceContent({ className = "", children, ...props }: ReferenceConte
 type ReferenceOverlayProps = {} & React.ComponentPropsWithoutRef<"div">
 function ReferenceOverlay({ id, className = "", ...props }: ReferenceOverlayProps) {
   return <div className={cn("absolute size-full inset-0", className)} data-id={id} {...props} />
+}
+
+type ReferenceHeaderProps = {} & React.ComponentPropsWithoutRef<"div">
+function ReferenceHeader({ className, children, ...props }: ReferenceHeaderProps) {
+  return (
+    <div
+      className={cn(
+        "absolute top-2 left-0 px-2 z-10 w-full flex items-center justify-between *:w-1/2 gap-1",
+        "*:first:justify-start *:last:justify-end",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+
+type ReferenceHeaderGroupProps = {} & React.ComponentPropsWithoutRef<"div">
+function ReferenceHeaderGroup({ className, children, ...props }: ReferenceHeaderGroupProps) {
+  return (
+    <div
+      data-slot="reference-header-group"
+      className={cn(
+        "flex items-center gap-1",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 }
 
 type ReferenceFooterProps = {} & React.ComponentPropsWithoutRef<"div">
@@ -64,7 +95,7 @@ function ReferenceFooter({ className, children, ...props }: ReferenceFooterProps
 }
 
 type ReferenceFooterGroupProps = {} & React.ComponentPropsWithoutRef<"div">
-function ReferenceFooterGroup({ className, children, ...props }: ReferenceFooterProps) {
+function ReferenceFooterGroup({ className, children, ...props }: ReferenceFooterGroupProps) {
   return (
     <div
       data-slot="reference-footer-group"
@@ -125,9 +156,9 @@ function ReferenceButton({ size = "icon-xs", className = "", children, ...props 
 }
 
 export {
-  Reference, ReferenceBadge, ReferenceButton, ReferenceContent, ReferenceFooter, ReferenceFooterGroup, ReferenceLabel, ReferenceOverlay
+  Reference, ReferenceBadge, ReferenceButton, ReferenceContent, ReferenceFooter, ReferenceFooterGroup, ReferenceHeader, ReferenceHeaderGroup, ReferenceLabel, ReferenceOverlay
 }
 export type {
-  ReferenceBadgeProps, ReferenceButtonProps, ReferenceContentProps, ReferenceFooterGroupProps, ReferenceFooterProps, ReferenceLabelProps, ReferenceOverlayProps, ReferenceProps
+  ReferenceBadgeProps, ReferenceButtonProps, ReferenceContentProps, ReferenceFooterGroupProps, ReferenceFooterProps, ReferenceHeaderGroupProps, ReferenceHeaderProps, ReferenceLabelProps, ReferenceOverlayProps, ReferenceProps
 }
 

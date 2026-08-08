@@ -4,7 +4,6 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
 import { Suspense } from "react";
 import Header, { HeaderContent } from "../components/header";
-import SidebarTrigger from "../components/header/sidebar-trigger";
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment";
 import Cover from "../components/preview/cover";
 import TagStats from "../components/tags-stats";
@@ -32,7 +31,6 @@ export default async function Page() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Header>
         <HeaderContent>
-          <SidebarTrigger />
         </HeaderContent>
         <TagStats queryKey="attachments" />
         <HeaderContent>

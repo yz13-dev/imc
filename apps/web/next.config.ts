@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    qualities: [25, 75],
+    qualities: [25, 75, 100],
     // Local dev serves attachments from https://localhost:8082, which resolves
     // to a loopback IP that Next's optimizer blocks by default (SSRF guard).
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",

@@ -1,5 +1,4 @@
 import Header, { HeaderContent } from "../components/header"
-import SidebarTrigger from "../components/header/sidebar-trigger"
 import { CollectionsSkeleton } from "./components/collections"
 import { InboxGridSkeleton } from "./components/inbox-grid"
 
@@ -10,7 +9,6 @@ export default function Loading() {
     <>
       <Header>
         <HeaderContent>
-          <SidebarTrigger />
         </HeaderContent>
         <HeaderContent>
         </HeaderContent>

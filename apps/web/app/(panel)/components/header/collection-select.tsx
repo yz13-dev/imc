@@ -1,7 +1,8 @@
 "use client"
 
-import { useGlobalStore } from "@/lib/stores/global-store"
+import { getCollections } from "@/lib/api/collections"
 import { useUser } from "@/lib/stores/user"
+import { useQuery } from "@tanstack/react-query"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { LockIcon, LockOpenIcon } from "lucide-react"
 import Link from "next/link"
@@ -16,7 +17,11 @@ export default function CollectionSelect({ defaultCollection }: CollectionSelect
 
   const user = useUser((state) => state.user)
   const [collectionId, setCollectionId] = useState<string | null>(defaultCollection || null)
-  const collections = useGlobalStore((state) => state.collections)
+  const { data } = useQuery({
+    queryKey: ["attachments", "collections"],
+    queryFn: () => getCollections(),
+  })
+  const collections = data || []
 
   const collection = collections.find(collection => collection.id === collectionId)
 

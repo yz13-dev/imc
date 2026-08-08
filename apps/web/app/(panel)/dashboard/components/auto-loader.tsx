@@ -61,6 +61,7 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   return (
     <>
       <CardGrid
+        collectionSelector
         attachments={allAttachments}
         scope="ref"
         withPreview

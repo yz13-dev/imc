@@ -21,6 +21,7 @@
     "axios": "^1.18.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "blurhash": "^2.0.5",
+    "critters": "^0.0.25",
     "lucide-react": "^1.18.0",
     "motion": "^12.40.0",
     "next": "16.2.6",

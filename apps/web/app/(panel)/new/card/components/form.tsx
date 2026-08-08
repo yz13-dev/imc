@@ -1,6 +1,5 @@
 "use client"
 import Header, { HeaderContent } from "@/app/(panel)/components/header"
-import SidebarTrigger from "@/app/(panel)/components/header/sidebar-trigger"
 import CollectionCard from "@/components/collection-card"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { createCard } from "@/lib/api/cards"
@@ -69,7 +68,6 @@ export default function Form() {
       }
       <Header>
         <HeaderContent>
-          <SidebarTrigger />
         </HeaderContent>
         <HeaderContent>
           <Button
