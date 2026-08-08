@@ -4,7 +4,7 @@ import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { resolveAssetImageUrl } from "@/lib/image-loader"
 import { getAssetsUrl } from "@/lib/url"
-import { withViewTransition } from "@/lib/view-transition"
+import { promoteViewTransitionGroup, withViewTransition } from "@/lib/view-transition"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { useQueryClient } from "@tanstack/react-query"
 import { Skeleton } from "@workspace/ui/components/skeleton"
@@ -108,7 +108,18 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
   }
   const openPreview = async () => {
     await preloadMedia()
-    withViewTransition(() => setActiveAttachmentId(id))
+    // Every card in the grid carries a view-transition-name (so any of them
+    // can be a future transition source), which means this specific card's
+    // group would otherwise stack in plain DOM order among all the others —
+    // visually underneath later siblings while its box still overlaps them.
+    // Force it to the front for just this transition.
+    const unpromote = promoteViewTransitionGroup(`attachment-${id}`)
+    const transition = withViewTransition(() => setActiveAttachmentId(id))
+    if (transition) {
+      transition.finished.finally(unpromote)
+    } else {
+      unpromote()
+    }
   }
 
 

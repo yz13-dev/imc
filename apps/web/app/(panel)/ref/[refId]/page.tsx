@@ -6,12 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/av
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { ButtonGroup, ButtonGroupSeparator } from "@workspace/ui/components/button-group"
-import { Select, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { Edit3Icon, ExternalLinkIcon, Link2Icon, PlusIcon, Trash2Icon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import RefContent from "../../components/ref-content"
+import CollectionsSelect from "./components/collections-select"
 import RefHeader from "./components/ref-header"
 import NewTags from "./components/tags/new-tags"
 import UpdateModal from "./components/update-modal"
@@ -93,11 +93,11 @@ export default async function Page({ params }: PageProps) {
                 </div>
               </div>
               <div className="flex gap-2 items-center">
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Коллекция" />
-                  </SelectTrigger>
-                </Select>
+                <CollectionsSelect
+                  attachmentId={attachment.id}
+                  collectionIds={attachment.collection_ids ?? []}
+                  className="w-full"
+                />
                 <UpdateModal attachment={attachment}>
                   <Button variant="outline">
                     <Edit3Icon />

@@ -16,6 +16,9 @@ export type Attachment = {
   created_at: Date
   user_id: string
   label: string
+  // Many-to-many (collections_attachments has no unique constraint on
+  // attachment_id) — an attachment can be in 0, 1, or several collections.
+  collection_ids: string[]
 }
 
 export type UpdateAttachment = {

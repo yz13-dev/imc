@@ -1,12 +1,14 @@
 "use client"
 import type { Collection } from "@/types/collections";
 import { Button } from "@workspace/ui/components/button";
-import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel } from "@workspace/ui/components/dropdown-menu";
+import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@workspace/ui/components/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
-import { LayoutGridIcon, LibrarySquareIcon } from "lucide-react";
+import { LayoutGridIcon, LibrarySquareIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { useSelectedLayoutSegments } from "next/navigation";
 import Group from "../group";
+import { useDockPanel } from "../panel-context";
+import NewCollectionMenu from "../panels/new-collection-menu";
 
 
 type CollectionsGroupProps = {
@@ -16,6 +18,7 @@ type CollectionsGroupProps = {
 
 export default function CollectionsGroup({ userId, data }: CollectionsGroupProps) {
   const segments = useSelectedLayoutSegments()
+  const { toggle } = useDockPanel()
 
   const collectionId = segments[1]
 
@@ -37,6 +40,11 @@ export default function CollectionsGroup({ userId, data }: CollectionsGroupProps
             })
           }
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => toggle("new-collection", <NewCollectionMenu />)}>
+          <PlusIcon />
+          <span>Новая коллекция</span>
+        </DropdownMenuItem>
       </>
     )
   }

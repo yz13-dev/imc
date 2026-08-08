@@ -1,49 +1,48 @@
 "use client"
 
-import { getCollections } from "@/lib/api/collections";
-import { useUser } from "@/lib/stores/user";
+import { useCollectionMultiSelect } from "@/hooks/use-collection-multi-select";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
-import { useQuery } from "@tanstack/react-query";
 import { ReferenceHeader, ReferenceHeaderGroup } from "@workspace/ui/components/reference";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import { cn } from "@workspace/ui/lib/utils";
 import { LockIcon, LockOpenIcon } from "lucide-react";
-import Link from "next/link";
 
 type CardHeaderProps = {
   attachment: AttachmentWithMaybeTagsAndSource;
   collectionSelector?: boolean
 }
 export default function CollectionCardHeader({ attachment, collectionSelector = false }: CardHeaderProps) {
-  const user = useUser(state => state.user)
-  const userId = user?.username || user?.id
-  const { data } = useQuery({
-    queryKey: ["attachments", "collections"],
-    queryFn: () => getCollections(),
-  })
+  const collectionIds = attachment.collection_ids ?? []
+  const { collections, onValueChange, isPending } = useCollectionMultiSelect(attachment.id, collectionIds)
   return (
     <ReferenceHeader>
       <ReferenceHeaderGroup>
         {
           collectionSelector &&
           <Select
+            multiple
+            value={collectionIds}
+            disabled={isPending}
+            onValueChange={onValueChange}
+            itemToStringLabel={item => collections.find(collection => collection.id === item)?.name || item}
           >
             <SelectTrigger
               className={cn(
                 "bg-foreground/50 tabular-nums px-2 border-foreground/25 text-xs text-background! [&_svg]:text-background h-6! backdrop-blur-3xl"
               )}
             >
-              <SelectValue placeholder="Коллекция" />
+              <SelectValue placeholder="Коллекция">
+                {(value: string[]) => value.length > 0 ? `Коллекции (${value.length})` : "Коллекция"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {
-                (data || [])
+                collections
                   .map(collection => {
                     return (
                       <SelectItem
                         key={collection.id}
                         value={collection.id}
-                        render={<Link href={`/${userId}/${collection.id}`} />}
                       >
                         {collection?.public ? <LockOpenIcon /> : <LockIcon />}
                         <span>{collection.name}</span>

@@ -1,5 +1,6 @@
 "use client"
-import { moveAttachmentToCollection, moveToTrashAttachment, permanentlyDeleteAttachment } from "@/lib/api/attachments"
+import { useMoveAttachmentToCollection } from "@/hooks/use-move-to-collection"
+import { moveToTrashAttachment, permanentlyDeleteAttachment } from "@/lib/api/attachments"
 import { getCollections } from "@/lib/api/collections"
 import { useKeyHold } from "@tanstack/react-hotkeys"
 import { useQuery } from "@tanstack/react-query"
@@ -37,8 +38,9 @@ export default function CardDropdownMenu({ readonly = false, className = "", chi
     queryFn: () => getCollections().then(data => data)
   })
 
-  const moveToCollection = async (collectionId: string) => {
-    await moveAttachmentToCollection(attachmentId, collectionId)
+  const moveMutation = useMoveAttachmentToCollection()
+  const moveToCollection = (collectionId: string) => {
+    moveMutation.mutate({ attachmentId, collectionId })
     setOpen(false)
   }
 

@@ -2,7 +2,7 @@
 import type { OverlayProps } from "@/components/overlay";
 import Overlay from "@/components/overlay";
 import useCover from "@/hooks/use-cover";
-import { withViewTransition } from "@/lib/view-transition";
+import { promoteViewTransitionGroup, withViewTransition } from "@/lib/view-transition";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { parseAsString, useQueryState } from "nuqs";
 import { useEffect } from "react";
@@ -23,15 +23,25 @@ export default function Cover({ children, coverKey = "id" }: CoverProps) {
     lock()
     return () => unlock()
   }, [id])
-  useHotkey("Escape", () => {
-    withViewTransition(() => setId(null))
-  }, { enabled: !!id })
+  const close = () => {
+    // Same DOM-order stacking gotcha as opening (see promoteViewTransitionGroup) —
+    // less visible on close since the shrinking box rarely overlaps other
+    // grid cards early on, but keep it consistent.
+    const unpromote = id ? promoteViewTransitionGroup(`attachment-${id}`) : undefined
+    const transition = withViewTransition(() => setId(null))
+    if (transition) {
+      transition.finished.finally(() => unpromote?.())
+    } else {
+      unpromote?.()
+    }
+  }
+  useHotkey("Escape", close, { enabled: !!id })
   if (!id) return null
   return (
     <Overlay
       onClick={e => {
         e.stopPropagation()
-        withViewTransition(() => setId(null))
+        close()
       }}
     >
       {children}

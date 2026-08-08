@@ -137,6 +137,7 @@ func main() {
 				r.Delete("/collections/{collectionID}", handlers.DeleteCollectionHandler)
 				// move attachment to collection ?
 				r.Post("/collections/{collectionID}/attachments", handlers.PostCollectionAttachments)
+				r.Delete("/collections/{collectionID}/attachments", handlers.DeleteCollectionAttachments)
 				// move card to collection ?
 				r.Post("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
 			})

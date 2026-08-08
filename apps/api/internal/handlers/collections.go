@@ -184,6 +184,57 @@ func PostCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeleteCollectionAttachments(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	userID := user.ID
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	collectionID := r.PathValue("collectionID")
+	if collectionID == "" {
+		http.Error(w, "collection ID is required", http.StatusBadRequest)
+		return
+	}
+	attachmentId, err := uuid.Parse(r.URL.Query().Get("attachmentID"))
+	if err != nil {
+		http.Error(w, "attachment ID is required", http.StatusBadRequest)
+		return
+	}
+
+	collection, err := services.GetCollection(collectionID, userID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := services.DeleteCollectionAttachment(collection.ID, attachmentId, db); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	hub := middleware.GetEventsHub(r.Context())
+	if hub != nil {
+		const CollectionEventKey = "collection:update"
+		hub.Publish(userID, events.Event{
+			Type: CollectionEventKey,
+			Data: models.EventData{
+				ID: collection.ID.String(),
+			},
+		})
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func DeleteCollectionHandler(w http.ResponseWriter, r *http.Request) {
 	collectionID := r.PathValue("collectionID")
 

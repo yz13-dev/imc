@@ -9,11 +9,6 @@ import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import CardGrid from "../../components/card-grid";
 
-export function AutoLoaderGrid() {
-
-  return <div />
-}
-
 export default function AutoLoader({ attachments = [] }: { attachments?: AttachmentWithMaybeTagsAndSource[] }) {
 
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
@@ -37,7 +32,11 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   })
 
   const ref = useRef(null)
-  const inView = useInView(ref)
+  // Extends the sentinel's detection zone downward past the actual viewport
+  // edge, so the next page starts loading while the user still has ~1
+  // screen's worth of content left to scroll through, instead of only once
+  // they hit the very bottom.
+  const inView = useInView(ref, { margin: "0px 0px 100% 0px" })
 
   const [disabled, setDisabled] = useState(true)
 

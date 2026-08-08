@@ -47,6 +47,13 @@ func CreateCollectionAttachment(collectionID uuid.UUID, attachmentID uuid.UUID, 
 	return attachment, nil
 }
 
+func DeleteCollectionAttachment(collectionID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) error {
+	if err := repositories.DeleteCollectionAttachment(collectionID, attachmentID, db); err != nil {
+		return err
+	}
+	return nil
+}
+
 func DeleteCollection(collectionID string, UserID string, db *gorm.DB) (*models.Collection, error) {
 	collection, err := repositories.DeleteCollection(collectionID, UserID, db)
 	if err != nil {

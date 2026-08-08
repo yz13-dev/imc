@@ -1,10 +1,9 @@
 "use client"
 import { getQueryClient } from "@/lib/query-client";
-import { useGlobalStore } from "@/lib/stores/global-store";
 import { getApiUrl } from "@/lib/url";
 import type { EventData } from "@/types/sse";
 import type { QueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 
 
 type ServerSideEventsProps = {
@@ -24,42 +23,27 @@ async function revalidate(q: QueryClient, key: string[]) {
 export default function ServerSideEvents({ }: ServerSideEventsProps) {
 
   const queryClient = getQueryClient()
-  const collections = useGlobalStore(state => state.collections);
-  const refreshInbox = useGlobalStore(state => state.refreshInbox);
-  const refreshCollection = useGlobalStore(state => state.refreshCollection);
-  const refreshCollections = useGlobalStore(state => state.refreshCollections);
-  const refreshTrash = useGlobalStore(state => state.refreshTrash);
-
-  const collectionsRef = useRef(collections)
-  useEffect(() => {
-    collectionsRef.current = collections
-  }, [collections])
 
   const subscriptions = useMemo<SSESubscription[]>(() => {
     const onInboxChange = () => {
-      refreshInbox()
       revalidate(queryClient, ["attachments", "inbox"])
     }
     const onCollectionsChange = () => {
-      refreshCollections()
       revalidate(queryClient, ["attachments", "collections"])
     }
     const onCollectionChange = (e: MessageEvent) => {
-      refreshCollections()
       const data = getEventData(e)
-      revalidate(queryClient, ["attachments", "collection", data.id])
+      revalidate(queryClient, ["attachments", "collections", data.id])
     }
-    const onTrashNew = async () => {
-      await refreshInbox()
-      await refreshCollections()
-      await refreshTrash()
-      for (const collection of collectionsRef.current) {
-        await refreshCollection(collection.id)
-      }
+    const onTrashNew = () => {
+      revalidate(queryClient, ["attachments", "inbox"])
+      // Prefix match: refetches the collections list *and* every
+      // individual collection's contents currently in the cache, since we
+      // don't reliably know client-side which collection(s) this affects.
+      revalidate(queryClient, ["attachments", "collections"])
       revalidate(queryClient, ["attachments", "trash"])
     }
     const onTrashRemove = () => {
-      refreshTrash()
       revalidate(queryClient, ["attachments", "trash"])
     }
 
@@ -75,7 +59,7 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
       ["trash:new", onTrashNew],
       ["trash:remove", onTrashRemove],
     ]
-  }, [queryClient, refreshInbox, refreshCollection, refreshCollections, refreshTrash])
+  }, [queryClient])
 
   useEffect(() => {
     const es = new EventSource(getApiUrl("/v1/my/events"), {

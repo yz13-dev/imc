@@ -81,6 +81,25 @@ export async function moveAttachmentToCollection(attachmentID: string, collectio
   }
 }
 
+export async function removeAttachmentFromCollection(attachmentID: string, collectionID: string): Promise<unknown> {
+  try {
+    const { data, error } = await fetch<unknown>({
+      url: getApiUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
+      method: "DELETE",
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null;
+  }
+}
+
 export async function getCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
   try {
     const { data, error } = await fetch<AttachmentWithTags[]>({

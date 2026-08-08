@@ -17,6 +17,37 @@ func GetAttachments(UserID string, db *gorm.DB) ([]models.Attachment, error) {
 	return attachments, nil
 }
 
+// attachCollectionIDs batch-fetches collections_attachments for the given
+// attachments (one query, not N+1) and fills in each Attachment.CollectionIDs.
+// Authenticated repo functions only — never call this from the Get*Public*
+// functions, since an attachment's collection_ids can include collections the
+// requester has no access to.
+func attachCollectionIDs(attachments []models.AttachmentWithTags, db *gorm.DB) error {
+	if len(attachments) == 0 {
+		return nil
+	}
+	ids := make([]uuid.UUID, len(attachments))
+	for i, attachment := range attachments {
+		ids[i] = attachment.ID
+	}
+	var links []models.CollectionAttachment
+	if err := db.Table("collections_attachments").Where("attachment_id IN ?", ids).Find(&links).Error; err != nil {
+		return err
+	}
+	byAttachment := make(map[uuid.UUID][]uuid.UUID, len(ids))
+	for _, link := range links {
+		byAttachment[link.AttachmentID] = append(byAttachment[link.AttachmentID], link.CollectionID)
+	}
+	for i := range attachments {
+		collectionIDs := byAttachment[attachments[i].ID]
+		if collectionIDs == nil {
+			collectionIDs = []uuid.UUID{}
+		}
+		attachments[i].CollectionIDs = collectionIDs
+	}
+	return nil
+}
+
 func GetAttachmentsWithTags(ids []uuid.UUID, UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	if err := db.
@@ -26,6 +57,9 @@ func GetAttachmentsWithTags(ids []uuid.UUID, UserID string, db *gorm.DB) ([]mode
 		Where("user_id = ? AND id IN ? AND is_deleted = false", UserID, ids).
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
 		Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+	if err := attachCollectionIDs(attachments, db); err != nil {
 		return nil, err
 	}
 	return attachments, nil
@@ -168,7 +202,11 @@ func GetAttachment(UserID string, attachmentID string, db *gorm.DB) (models.Atta
 		First(&attachment).Error; err != nil {
 		return models.AttachmentWithTags{}, err
 	}
-	return attachment, nil
+	wrapped := []models.AttachmentWithTags{attachment}
+	if err := attachCollectionIDs(wrapped, db); err != nil {
+		return models.AttachmentWithTags{}, err
+	}
+	return wrapped[0], nil
 }
 
 func GetPublicAttachment(attachmentID uuid.UUID, db *gorm.DB) (*models.AttachmentWithTags, error) {
@@ -200,6 +238,9 @@ func GetAllAttachments(UserID string, query ListQuery, db *gorm.DB) ([]models.At
 		Offset(query.Offset).
 		Limit(query.Limit).
 		Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+	if err := attachCollectionIDs(attachments, db); err != nil {
 		return nil, err
 	}
 	return attachments, nil
@@ -243,6 +284,9 @@ func GetTrashAttachments(UserID string, db *gorm.DB) ([]models.AttachmentWithTag
 		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND is_deleted = true", UserID).
 		Find(&attachments).Error; err != nil {
+		return nil, err
+	}
+	if err := attachCollectionIDs(attachments, db); err != nil {
 		return nil, err
 	}
 	return attachments, nil

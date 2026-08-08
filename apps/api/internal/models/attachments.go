@@ -21,6 +21,11 @@ type Attachment struct {
 	UserID     string    `json:"user_id"`
 	Label      string    `json:"label"`
 	IsDeleted  bool      `gorm:"default:false" json:"is_deleted"`
+	// Not a real column — populated after the fact from collections_attachments
+	// (many-to-many, see migrations/15_collections_attachments.up.sql). Only
+	// set on authenticated (/my/...) responses, never on public ones, since it
+	// can reveal collections the requester isn't authorized to know about.
+	CollectionIDs []uuid.UUID `gorm:"-" json:"collection_ids"`
 }
 
 type AttachmentWithTags struct {
