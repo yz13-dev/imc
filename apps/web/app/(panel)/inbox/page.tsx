@@ -4,7 +4,7 @@ import { getQueryClient } from "@/lib/query-client"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
-import Header, { HeaderContent } from "../components/header"
+import DefaultHeader from "../components/default-header"
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
 import Cover from "../components/preview/cover"
 import { InboxTagStats } from "../components/tags-stats"
@@ -36,11 +36,9 @@ export default async function Page() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Header>
+      <DefaultHeader>
         <InboxTagStats />
-        <HeaderContent>
-        </HeaderContent>
-      </Header>
+      </DefaultHeader>
       <AnimatePresence mode="popLayout">
         <Cover coverKey="attachment">
           <Suspense fallback={<AttachmentSkeleton />}>

@@ -1,5 +1,12 @@
 import type { NextConfig } from "next"
 
+function getAllowedDevOrigins(): string[] {
+  const { NODE_ENV } = process.env
+  if (NODE_ENV !== "development") return []
+  const parsed = process.env.ALLOWED_DEV_ORIGINS?.split(",") ?? []
+  return parsed
+}
+
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@workspace/ui"],
@@ -9,6 +16,7 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   enablePrerenderSourceMaps: false,
   cacheComponents: false,
+  allowedDevOrigins: getAllowedDevOrigins(),
   experimental: {
     inlineCss: true,
     optimizeCss: true,

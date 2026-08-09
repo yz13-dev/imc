@@ -2,9 +2,7 @@
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import { getQueryClient } from "@/lib/query-client"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
-import Header, { HeaderContent } from "../../components/header"
-import CollectionMenu from "../../components/header/collection-menu"
-import CollectionSelect from "../../components/header/collection-select"
+import DefaultHeader from "../../components/default-header"
 import TagStats from "../../components/tags-stats"
 import CollectionGrid from "./components/collection-grid"
 
@@ -40,15 +38,9 @@ export default async function Page({ params, searchParams }: PageProps) {
   const scope = `${user}/${collection}`
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Header>
-        <HeaderContent>
-          <CollectionSelect defaultCollection={collection} />
-        </HeaderContent>
+      <DefaultHeader>
         <TagStats queryKey={collection} />
-        <HeaderContent>
-          <CollectionMenu collectionId={collection} />
-        </HeaderContent>
-      </Header>
+      </DefaultHeader>
       {
         id &&
         <div className="absolute inset-0 w-full min-h-svh bg-background z-50"></div>
