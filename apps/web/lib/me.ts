@@ -22,3 +22,14 @@ export async function getMe(): Promise<User | null> {
     return null;
   }
 }
+
+export async function signOut() {
+  try {
+    await makeFetch({
+      method: "POST",
+      url: getAuthUrl("/api/auth/sign-out"),
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}

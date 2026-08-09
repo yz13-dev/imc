@@ -1,13 +1,22 @@
 "use client"
 
+import { signOut } from "@/lib/me"
 import { useUser } from "@/lib/stores/user"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { ChevronDown, LogOutIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function UserDropdown() {
   const user = useUser(state => state.user)
+  const router = useRouter()
+
+  const logOut = async () => {
+    await signOut()
+    router.refresh()
+  }
+
   if (!user) return <Button>Войти</Button>
   return (
     <DropdownMenu>
@@ -24,7 +33,7 @@ export default function UserDropdown() {
         }
       />
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={logOut}>
           <LogOutIcon />
           <span>Выйти</span>
         </DropdownMenuItem>
