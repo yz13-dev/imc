@@ -28,8 +28,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -v -a -installsuffix cgo -o api cmd/assets
 ######## Start a new stage from scratch #######
 FROM --platform=$TARGETPLATFORM alpine:latest
 
-RUN apk add --no-cache ffmpeg
-
 WORKDIR /code/
 
 # Copy the Pre-built binary file from the previous stage
