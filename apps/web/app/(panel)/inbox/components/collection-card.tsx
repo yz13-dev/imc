@@ -1,7 +1,7 @@
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import { useUser } from "@/lib/stores/user"
-import { Collection } from "@/types/collections"
+import type { Collection } from "@/types/collections"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
@@ -32,7 +32,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
 
   if (isLoading) return <CollectionCardSkeleton />
   return (
-    <div className="max-w-48 aspect-video w-full rounded-xl overflow-clip p-1 bg-muted relative">
+    <div className="size-48 rounded-xl overflow-clip p-1 bg-muted relative">
       {/*
         user &&
         <Link href={href} className="absolute z-10 inset-0" />

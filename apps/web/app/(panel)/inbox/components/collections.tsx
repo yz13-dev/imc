@@ -24,7 +24,7 @@ export default function Collections() {
 
   if (isLoading) return <CollectionsSkeleton />
   return (
-    <div className="flex items-center gap-3 overflow-x-auto">
+    <div className="flex items-center gap-3 [&_div]:shrink-0 overflow-x-auto">
       {
         (data || []).map(item => (
           <CollectionCard key={item.id} collection={item} />
