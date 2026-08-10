@@ -5,6 +5,9 @@ import { getRefSrc } from "@/lib/ref-src";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@workspace/ui/components/badge";
+import { ReferenceBadge, ReferenceButton } from "@workspace/ui/components/reference";
+import { ArrowUpRightIcon } from "lucide-react";
+import Link from "next/link";
 import { parseAsString, useQueryState } from "nuqs";
 import RefContent from "../ref-content";
 
@@ -50,21 +53,35 @@ export default function Attachment() {
   return (
     <OptionalVideoProvider duration={attachment?.duration_ms || 0}>
       <div className="max-w-4xl w-full h-full overflow-y-auto">
-        {
-          attachment &&
-          <AttachmentContent
-            {...data}
-            attachmentId={attachmentId}
-            src={getRefSrc(attachment.src) || attachment.src}
-          />
-        }
+        <div className="w-full h-fit">
+          {
+            attachment &&
+            <AttachmentContent
+              {...data}
+              attachmentId={attachmentId}
+              src={getRefSrc(attachment.src) || attachment.src}
+            />
+          }
+        </div>
       </div>
-      <div className="max-w-4xl w-full flex items-center pt-6 justify-center gap-1">
-        {
-          tags.map(tag => {
-            return <Badge key={tag.id} variant="secondary" className="text-base py-1 uppercase h-fit">{tag.name}</Badge>
-          })
-        }
+      <div className="w-full flex lg:flex-row flex-col lg:items-center lg:justify-between gap-6 pt-6 px-6">
+        <div className="lg:w-1/2 w-full flex items-center gap-1">
+          <ReferenceBadge className="text-sm">{attachment?.label || attachment?.id}</ReferenceBadge>
+          <ReferenceButton
+            onClick={e => e.stopPropagation()}
+            nativeButton={false}
+            render={<Link href={`/ref/${attachment?.id}`} />}
+          >
+            <ArrowUpRightIcon />
+          </ReferenceButton>
+        </div>
+        <div className="lg:w-1/2 w-full flex items-center lg:justify-end justify-start gap-1">
+          {
+            tags.map(tag => {
+              return <Badge key={tag.id} variant="secondary" className="text-base py-1 uppercase h-fit">{tag.name}</Badge>
+            })
+          }
+        </div>
       </div>
     </OptionalVideoProvider>
   )
