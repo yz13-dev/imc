@@ -7,11 +7,11 @@ import { useForm } from "@tanstack/react-form-nextjs"
 import { Button } from "@workspace/ui/components/button"
 import { Field, FieldError } from "@workspace/ui/components/field"
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@workspace/ui/components/input-group"
-import { toast } from "@workspace/ui/components/sonner"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { EyeClosedIcon, EyeIcon, KeyIcon, MailIcon, UserCircle2Icon } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 import z from "zod"
 
 

@@ -4,60 +4,12 @@ import QueryProvider from "@/providers/query";
 import { Toaster } from "@workspace/ui/components/sonner";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import "@workspace/ui/globals.css";
+import { mono, pixel, sans, serif } from "@workspace/ui/lib/fonts";
 import { cn } from "@workspace/ui/lib/utils";
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import "./view-transitions.css";
-
-
-const sans = localFont({
-  src: [
-    { path: "./fonts/golos-text-regular.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/golos-text-500.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/golos-text-600.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/golos-text-700.woff2", weight: "700", style: "normal" },
-    // { path: "./fonts/google-sans-regular.woff2", weight: "400", style: "normal" },
-    // { path: "./fonts/google-sans-500.woff2", weight: "500", style: "normal" },
-  ],
-  variable: "--font-sans",
-  display: "swap",
-  preload: true,
-  fallback: ["system-ui", "Inter", "sans-serif"],
-});
-
-const pixel = localFont({
-  src: "./fonts/geist-pixel-square.woff2",
-  variable: "--font-pixel",
-  display: "optional",
-  preload: false,
-  fallback: ["system-ui"],
-});
-const mono = localFont({
-  src: [
-    { path: "./fonts/jetbrains-mono-regular.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/jetbrains-mono-500.woff2", weight: "500", style: "normal" },
-  ],
-  variable: "--font-mono",
-  display: "optional",
-  preload: false,
-  fallback: ["mono"],
-});
-const serif = localFont({
-  src: [
-    { path: "./fonts/playfair-display-regular.woff2", weight: "400", style: "normal" },
-    { path: "./fonts/playfair-display-italic.woff2", weight: "400", style: "italic" },
-    { path: "./fonts/playfair-display-500.woff2", weight: "500", style: "normal" },
-    { path: "./fonts/playfair-display-500-italic.woff2", weight: "500", style: "italic" },
-    { path: "./fonts/playfair-display-600.woff2", weight: "600", style: "normal" },
-    { path: "./fonts/playfair-display-600-italic.woff2", weight: "600", style: "italic" },
-  ],
-  variable: "--font-serif",
-  display: "optional",
-  preload: false,
-  fallback: ["serif"],
-});
 
 export const metadata: Metadata = {
   title: "IMC | Хранилище ваших вдохновлений",
