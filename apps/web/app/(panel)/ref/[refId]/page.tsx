@@ -40,7 +40,7 @@ export default async function Page({ params }: PageProps) {
       {
         attachment.blurhash &&
         <div
-          className="absolute inset-0 -z-20 size-full overflow-clip -left-(--sidebar-width) w-[calc(100%+var(--sidebar-width))]"
+          className="absolute inset-0 -z-20 size-full overflow-clip"
         >
           <div
             style={{
