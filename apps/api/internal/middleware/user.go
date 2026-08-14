@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/thecodearcher/limen"
 	apiAuth "github.com/yz13-dev/imc/api/internal/auth"
 	"github.com/yz13-dev/imc/api/internal/models"
 )
@@ -16,15 +15,14 @@ import (
 const userKey ctxKey = "user"
 
 // ШАГ 2: Пишем саму middleware
-func UserInstance(auth *limen.Limen) func(http.Handler) http.Handler {
+func UserInstance() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			user, err := apiAuth.GetUser(r.Context(), r.Cookies())
+			user, err := apiAuth.GetUser(r.Context(), r.Cookies(), r.Header.Get("Authorization"))
 
 			log.Println("user", user, err)
 
-			// user, err := auth.GetSession(r)
 			var ctx context.Context
 			if err != nil {
 				ctx = context.WithValue(r.Context(), userKey, nil)

@@ -12,9 +12,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
-	"github.com/thecodearcher/limen"
-	gormadapter "github.com/thecodearcher/limen/adapters/gorm"
-	config "github.com/yz13-dev/imc/api"
 	"github.com/yz13-dev/imc/api/internal/events"
 	"github.com/yz13-dev/imc/api/internal/handlers"
 	internalMiddleware "github.com/yz13-dev/imc/api/internal/middleware"
@@ -29,8 +26,11 @@ type HealthResponse struct {
 }
 
 // POSTGRES_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+//
+// See cmd/api/main.go's GetDSN for why search_path=imc is required here too —
+// this binary opens its own separate connection to the same monolithic DB.
 func GetDSN() string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
+	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?options=-c%%20search_path%%3Dimc",
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST"),
@@ -50,19 +50,11 @@ func main() {
 		log.Fatalf("Failed to open database: %v", err)
 	}
 
-	adapter := gormadapter.New(gormdb)
-
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	auth, err := limen.New(config.NewAuthConfig(adapter))
-	if err != nil {
-		log.Fatalf("Failed to create limen: %v", err)
-	}
-
-	handler := auth.Handler()
 	r.Use(cors.Handler(cors.Options{
 		Debug: true,
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -88,12 +80,11 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
-	r.Handle("/auth/*", handler)
 
 	r.Group(func(r chi.Router) {
 		hub := events.NewHub()
 		r.Use(internalMiddleware.DBInstance(gormdb))
-		r.Use(internalMiddleware.UserInstance(auth))
+		r.Use(internalMiddleware.UserInstance())
 		r.Use(internalMiddleware.EventsHubMiddleware(hub))
 
 		r.Route("/v1", func(r chi.Router) {

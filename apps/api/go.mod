@@ -5,9 +5,6 @@ go 1.26.4
 require (
 	github.com/go-chi/chi/v5 v5.3.0
 	github.com/joho/godotenv v1.5.1
-	github.com/thecodearcher/limen v0.1.1
-	github.com/thecodearcher/limen/adapters/gorm v0.1.0
-	github.com/thecodearcher/limen/plugins/credential-password v0.1.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
 )

@@ -15,7 +15,13 @@ type GetUserResponse struct {
 	Session models.Session `json:"session"`
 }
 
-func GetUser(ctx context.Context, cookies []*http.Cookie) (*GetUserResponse, error) {
+// GetUser resolves the caller's identity against the central auth service's
+// get-session endpoint. It forwards both cookies (the web app's path, via
+// crossSubDomainCookies) and the Authorization header (the browser
+// extension's path, via better-auth's bearer plugin) — the extension has no
+// cookie jar for the auth service's origin, so cookie-only forwarding left
+// its requests silently unauthenticated.
+func GetUser(ctx context.Context, cookies []*http.Cookie, authorization string) (*GetUserResponse, error) {
 
 	isProd := os.Getenv("APP_ENV") == "production"
 
@@ -39,6 +45,9 @@ func GetUser(ctx context.Context, cookies []*http.Cookie) (*GetUserResponse, err
 
 	for _, cookie := range cookies {
 		req.AddCookie(cookie)
+	}
+	if authorization != "" {
+		req.Header.Set("Authorization", authorization)
 	}
 
 	resp, err := http.DefaultClient.Do(req)
