@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/yz13-dev/imc/api/internal/models"
 )
@@ -22,13 +23,16 @@ type GetUserResponse struct {
 // cookie jar for the auth service's origin, so cookie-only forwarding left
 // its requests silently unauthenticated.
 //
-// apps/web now sends a *different* kind of bearer credential: an OAuth2
-// access token minted via @yz13/auth-sdk's authorization-code flow.
-// get-session only recognizes real session tokens (from bearer()/cookies)
-// and returns "200 null" -- not an error -- for anything else, so an OAuth
-// access token silently resolves to no user. When that happens and an
-// Authorization header was actually provided, fall back to /oauth2/userinfo,
-// which is the endpoint that validates OAuth access tokens.
+// Both apps/web (via @yz13/auth-sdk's OAuth access token) and the browser
+// extension (via a plain identity token minted at /api/auth/token) send a
+// *different* kind of bearer credential than a real session token.
+// get-session only recognizes actual session tokens (from bearer()/cookies)
+// and returns "200 null" -- not an error -- for anything else, so these
+// silently resolve to no user. Both are EdDSA JWTs signed by the same JWKS
+// central auth publishes, just carrying different claims, so they're
+// verified locally instead of via another round trip to auth. As a last
+// resort (e.g. an opaque, non-JWT access token), fall back to
+// /oauth2/userinfo, the endpoint that validates OAuth access tokens.
 func GetUser(ctx context.Context, cookies []*http.Cookie, authorization string) (*GetUserResponse, error) {
 
 	isProd := os.Getenv("APP_ENV") == "production"
@@ -47,6 +51,11 @@ func GetUser(ctx context.Context, cookies []*http.Cookie, authorization string) 
 	}
 	if authorization == "" {
 		return nil, fmt.Errorf("no session")
+	}
+
+	token := strings.TrimPrefix(authorization, "Bearer ")
+	if identity, err := verifyIdentityJWT(base, token); err == nil {
+		return identity, nil
 	}
 
 	return getUserInfo(ctx, base, authorization)
