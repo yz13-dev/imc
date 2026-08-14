@@ -129,7 +129,7 @@ export async function getPublicCollectionAttachments(collectionID: string): Prom
     const { data, error } = await fetch<AttachmentWithTags[]>({
       url: getApiProxyUrl(`/v1/collections/${collectionID}/attachments`),
     })
-    console.log(getApiProxyUrl(`/v1/collections/${collectionID}/attachments`))
+    // console.log(getApiProxyUrl(`/v1/collections/${collectionID}/attachments`))
 
     if (error) {
       throw error;

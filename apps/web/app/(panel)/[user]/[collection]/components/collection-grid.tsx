@@ -30,7 +30,7 @@ export default function CollectionGrid<T extends AttachmentWithTags[] | null>({ 
     queryFn: () => {
       if (queryFn) {
         const data = queryFn;
-        console.log("data")
+        // console.log("data")
         return data;
       }
       const data = getCollectionAttachments(collection, tags)
