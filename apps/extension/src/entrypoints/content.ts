@@ -2,11 +2,13 @@ import { getSourceData } from "@/utils/source";
 
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
+  "https://localhost:3000",
   "http://localhost:5173",
   "http://localhost:4444",
   "https://localhost:4444",
   "https://imc.yz13.dev",
   "https://auth.yz13.dev",
+  "https://preview.auth.yz13.dev",
   "https://yz13.dev"
 ];
 
@@ -39,8 +41,13 @@ export default defineContentScript({
     // если форма входа отправляется намного позже загрузки страницы).
     window.addEventListener(PING_EVENT, announceReady);
 
-    window.addEventListener(TOKEN_EVENT, (event: any) => {
-      const token = event.detail?.token;
+    // Токен приходит со страницы через postMessage — единственный механизм,
+    // который пересекает границу изолированного мира content-script'а (MV3).
+    // CustomEvent со страницы до изолированного мира не долетают.
+    window.addEventListener("message", (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== "IMC_AUTH_TOKEN") return;
+      const token = event.data?.token;
       if (token) {
         browser.runtime.sendMessage({ type: "AUTH_SUCCESS", token });
       }
