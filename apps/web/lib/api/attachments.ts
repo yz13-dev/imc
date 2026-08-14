@@ -1,6 +1,6 @@
 
 import { getFetchClient } from "@/lib/fetch";
-import { getApiUrl } from "@/lib/url";
+import { getApiProxyUrl } from "@/lib/url";
 import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags, UpdateAttachment } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
 
@@ -9,7 +9,7 @@ const fetch = getFetchClient()
 export async function updateAttachment(attachmentID: string, body: UpdateAttachment): Promise<AttachmentWithMaybeTagsAndSource | null> {
   try {
     const { data, error } = await fetch<AttachmentWithMaybeTagsAndSource | null>({
-      url: getApiUrl(`/v1/my/attachments/${attachmentID}`),
+      url: getApiProxyUrl(`/v1/my/attachments/${attachmentID}`),
       method: "PATCH",
       body: body
     })
@@ -29,7 +29,7 @@ export async function updateAttachment(attachmentID: string, body: UpdateAttachm
 export async function getInboxAttachments(): Promise<InboxItem[] | null> {
   try {
     const { data, error } = await fetch<InboxItem[]>({
-      url: getApiUrl("/v1/my/attachments/inbox")
+      url: getApiProxyUrl("/v1/my/attachments/inbox")
     })
 
     if (error) {
@@ -47,7 +47,7 @@ export async function getInboxAttachments(): Promise<InboxItem[] | null> {
 export async function getAttachment(attachmentID: string): Promise<AttachmentWithTags | null> {
   try {
     const { data, error } = await fetch<AttachmentWithTags>({
-      url: getApiUrl(`/v1/my/attachments/${attachmentID}`)
+      url: getApiProxyUrl(`/v1/my/attachments/${attachmentID}`)
     })
 
     if (error) {
@@ -65,7 +65,7 @@ export async function getAttachment(attachmentID: string): Promise<AttachmentWit
 export async function moveAttachmentToCollection(attachmentID: string, collectionID: string): Promise<unknown> {
   try {
     const { data, error } = await fetch<unknown>({
-      url: getApiUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
+      url: getApiProxyUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
       method: "POST",
     })
 
@@ -84,7 +84,7 @@ export async function moveAttachmentToCollection(attachmentID: string, collectio
 export async function removeAttachmentFromCollection(attachmentID: string, collectionID: string): Promise<unknown> {
   try {
     const { data, error } = await fetch<unknown>({
-      url: getApiUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
+      url: getApiProxyUrl(`/v1/my/collections/${collectionID}/attachments?attachmentID=${attachmentID}`),
       method: "DELETE",
     })
 
@@ -103,7 +103,7 @@ export async function removeAttachmentFromCollection(attachmentID: string, colle
 export async function getCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
   try {
     const { data, error } = await fetch<AttachmentWithTags[]>({
-      url: getApiUrl(`/v1/my/collections/${collectionID}/attachments`),
+      url: getApiProxyUrl(`/v1/my/collections/${collectionID}/attachments`),
     })
 
     if (error) {
@@ -121,9 +121,9 @@ export async function getCollectionAttachments(collectionID: string): Promise<At
 export async function getPublicCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
   try {
     const { data, error } = await fetch<AttachmentWithTags[]>({
-      url: getApiUrl(`/v1/collections/${collectionID}/attachments`),
+      url: getApiProxyUrl(`/v1/collections/${collectionID}/attachments`),
     })
-    console.log(getApiUrl(`/v1/collections/${collectionID}/attachments`))
+    console.log(getApiProxyUrl(`/v1/collections/${collectionID}/attachments`))
 
     if (error) {
       throw error;
@@ -143,7 +143,7 @@ type ListQuery = {
 }
 export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWithTags[] | null> {
   try {
-    const url = new URL("/v1/my/attachments", getApiUrl())
+    const url = new URL("/v1/my/attachments", getApiProxyUrl())
     if (query) {
       if (query.offset !== undefined) url.searchParams.set("offset", query.offset.toString())
       if (query.limit !== undefined) url.searchParams.set("limit", query.limit.toString())
@@ -167,7 +167,7 @@ export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWi
 export async function permanentlyDeleteAttachment(attachmentID: string): Promise<{ id: string } | null> {
   try {
     const { data, error } = await fetch<{ id: string } | null>({
-      url: getApiUrl(`/v1/my/attachments/${attachmentID}`),
+      url: getApiProxyUrl(`/v1/my/attachments/${attachmentID}`),
       method: "DELETE",
     })
 
@@ -186,7 +186,7 @@ export async function permanentlyDeleteAttachment(attachmentID: string): Promise
 export async function moveToTrashAttachment(attachmentID: string): Promise<{ id: string } | null> {
   try {
     const { data, error } = await fetch<{ id: string } | null>({
-      url: getApiUrl(`/v1/my/attachments/${attachmentID}/trash`),
+      url: getApiProxyUrl(`/v1/my/attachments/${attachmentID}/trash`),
       method: "POST",
     })
 
@@ -205,7 +205,7 @@ export async function moveToTrashAttachment(attachmentID: string): Promise<{ id:
 export async function getTrashAttachments(): Promise<AttachmentWithMaybeTagsAndSource[] | null> {
   try {
     const { data, error } = await fetch<AttachmentWithMaybeTagsAndSource[]>({
-      url: getApiUrl("/v1/my/attachments/trash")
+      url: getApiProxyUrl("/v1/my/attachments/trash")
     })
 
     if (error) {

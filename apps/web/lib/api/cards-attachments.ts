@@ -1,4 +1,4 @@
-import { getApiUrl } from "@/lib/url";
+import { getApiProxyUrl } from "@/lib/url";
 import type { CardsAttachment, NewCardsAttachment } from "@/types/cards-attachments";
 import { getFetchClient } from "../fetch";
 
@@ -7,7 +7,7 @@ const fetch = getFetchClient()
 export async function createCardsAttachments(attachmentId: string, body: NewCardsAttachment) {
   try {
     const { data, error } = await fetch<CardsAttachment>({
-      url: getApiUrl(`/v1/my/attachments/${attachmentId}/cards`),
+      url: getApiProxyUrl(`/v1/my/attachments/${attachmentId}/cards`),
       method: "POST",
       body
     })

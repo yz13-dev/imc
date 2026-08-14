@@ -3,7 +3,7 @@ import RefContent from "@/app/(panel)/components/ref-content"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { resolveAssetImageUrl } from "@/lib/image-loader"
-import { getAssetsUrl } from "@/lib/url"
+import { getAssetsProxyUrl } from "@/lib/url"
 import { promoteViewTransitionGroup, withViewTransition } from "@/lib/view-transition"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { useQueryClient } from "@tanstack/react-query"
@@ -94,7 +94,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
   // rather than a differently-sized/qualified variant of the same asset.
   const preloadMedia = async () => {
     if (isVideo || typeof window === "undefined") return
-    const rawUrl = getAssetsUrl(`/v1/attachments/${id}/file`)
+    const rawUrl = getAssetsProxyUrl(`/v1/attachments/${id}/file`)
     const img = new window.Image()
     img.src = isGif ? rawUrl : resolveAssetImageUrl(rawUrl, 100)
     try {

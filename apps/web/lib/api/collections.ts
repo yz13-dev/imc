@@ -1,4 +1,4 @@
-import { getApiUrl } from "@/lib/url";
+import { getApiProxyUrl } from "@/lib/url";
 import type { Collection } from "@/types/collections";
 import { getFetchClient } from "../fetch";
 
@@ -7,7 +7,7 @@ const fetch = getFetchClient()
 export async function getCollections(): Promise<Collection[] | null> {
   try {
     const { data, error } = await fetch<Collection[] | null>({
-      url: getApiUrl("/v1/my/collections")
+      url: getApiProxyUrl("/v1/my/collections")
     })
 
     if (error) {
@@ -26,7 +26,7 @@ export async function createCollection({ name, description, user_id }: { name: s
   try {
     const { data, error } = await fetch<Collection>({
       method: "POST",
-      url: getApiUrl("/v1/my/collections/new"),
+      url: getApiProxyUrl("/v1/my/collections/new"),
       body: { name, description, user_id }
     })
 
@@ -46,7 +46,7 @@ export async function deleteCollection(collectionID: string) {
   try {
     const { data, error } = await fetch<Collection | null>({
       method: "DELETE",
-      url: getApiUrl(`/v1/my/collections/${collectionID}`)
+      url: getApiProxyUrl(`/v1/my/collections/${collectionID}`)
     })
 
     if (error) {

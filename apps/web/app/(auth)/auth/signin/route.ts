@@ -1,8 +1,3 @@
-import { getAuthUrl, getSiteUrl } from "@/lib/url"
+import { auth } from "@/lib/auth";
 
-
-
-export function GET() {
-
-  return Response.redirect(new URL(`/auth/signin?next=${getSiteUrl("/")}`, getAuthUrl("/")))
-}
+export const GET = auth.handlers.signIn;
