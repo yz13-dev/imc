@@ -1,6 +1,6 @@
 "use client"
 import { getQueryClient } from "@/lib/query-client";
-import { getApiUrl } from "@/lib/url";
+import { getApiProxyUrl } from "@/lib/url";
 import type { EventData } from "@/types/sse";
 import type { QueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
@@ -62,7 +62,7 @@ export default function ServerSideEvents({ }: ServerSideEventsProps) {
   }, [queryClient])
 
   useEffect(() => {
-    const es = new EventSource(getApiUrl("/v1/my/events"), {
+    const es = new EventSource(getApiProxyUrl("/v1/my/events"), {
       withCredentials: true
     })
     es.onopen = () => {

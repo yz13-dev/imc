@@ -3,7 +3,7 @@ import { getApiProxyUrl } from "@/lib/url";
 import type { Card } from "@/types/cards";
 import { getFetchClient } from "../fetch";
 
-const fetch = getFetchClient()
+const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) => getFetchClient<T>()(...args)
 
 export async function getCollectionCards(collection: string) {
   try {

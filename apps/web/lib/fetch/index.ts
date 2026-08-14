@@ -1,17 +1,13 @@
-import { environmentManager } from "@tanstack/react-query"
 import { makeFetch } from "./fetch"
 import { makeClientFetch } from "./fetch-client"
 
-
-let fetchClient: typeof makeClientFetch | undefined = undefined
-
-export function getFetchClient() {
-  if (environmentManager.isServer()) {
-    return makeFetch
-  } else {
-    // Browser: reuse the same client fetch reference so we don't re-make a
-    // new one if React suspends during the initial render.
-    if (!fetchClient) fetchClient = makeClientFetch
-    return fetchClient
-  }
+// Resolves the environment on every call (not once at module load) --
+// callers used to cache `getFetchClient()`'s return value in a module-level
+// const, which could pin a file to the server-only "use server" fetcher
+// (makeFetch) forever, even when later invoked from the browser. That
+// surfaced as "Server Functions cannot be called during initial render"
+// once TanStack Query's experimental_prefetchInRender started invoking
+// queryFns during the client's first render.
+export function getFetchClient<T>(): typeof makeFetch<T> {
+  return (typeof window === "undefined" ? makeFetch : makeClientFetch) as typeof makeFetch<T>
 }

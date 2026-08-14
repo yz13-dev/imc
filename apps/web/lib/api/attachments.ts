@@ -4,7 +4,7 @@ import { getApiProxyUrl } from "@/lib/url";
 import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags, UpdateAttachment } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
 
-const fetch = getFetchClient()
+const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) => getFetchClient<T>()(...args)
 
 export async function updateAttachment(attachmentID: string, body: UpdateAttachment): Promise<AttachmentWithMaybeTagsAndSource | null> {
   try {

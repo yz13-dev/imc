@@ -2,7 +2,7 @@ import { getApiProxyUrl } from "@/lib/url";
 import type { CardsAttachment, NewCardsAttachment } from "@/types/cards-attachments";
 import { getFetchClient } from "../fetch";
 
-const fetch = getFetchClient()
+const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) => getFetchClient<T>()(...args)
 
 export async function createCardsAttachments(attachmentId: string, body: NewCardsAttachment) {
   try {

@@ -2,7 +2,7 @@
 import Video from "@/components/video"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { assetImageLoader } from "@/lib/image-loader"
-import { getAssetsUrl } from "@/lib/url"
+import { getAssetsProxyUrl } from "@/lib/url"
 import { Reference, ReferenceContent, ReferenceOverlay } from "@workspace/ui/components/reference"
 import Image from "next/image"
 
@@ -30,7 +30,7 @@ export default function RefContent({ quality = 75, id, blurhash, src, className 
   const isGif = mimeType.startsWith("image/gif")
 
   const resolvedId = id // getRefSrc(src) || src;
-  const refSrc = getAssetsUrl(`/v1/attachments/${resolvedId || src}/file`)
+  const refSrc = getAssetsProxyUrl(`/v1/attachments/${resolvedId || src}/file`)
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
   const mediaStyle: React.CSSProperties | undefined = viewTransitionName ? { viewTransitionName } : undefined
 
