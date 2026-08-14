@@ -1,5 +1,7 @@
 import QueryTheme from "@/components/query-theme";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AUTH_SESSION_COOKIE } from "@/lib/auth";
+import TokenBroadcaster from "@/lib/extension/token-broadcaster";
 import QueryProvider from "@/providers/query";
 import { Toaster } from "@workspace/ui/components/sonner";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
@@ -7,6 +9,7 @@ import "@workspace/ui/globals.css";
 import { mono, pixel, sans, serif } from "@workspace/ui/lib/fonts";
 import { cn } from "@workspace/ui/lib/utils";
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import "./view-transitions.css";
@@ -30,11 +33,12 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const token = (await cookies()).get(AUTH_SESSION_COOKIE)?.value
   return (
     <html
       lang="ru"
@@ -49,6 +53,7 @@ export default function RootLayout({
               <NuqsAdapter>
                 <QueryProvider>
                   <QueryTheme />
+                  <TokenBroadcaster token={token} />
                   {children}
                 </QueryProvider>
               </NuqsAdapter>
