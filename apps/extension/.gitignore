@@ -6,6 +6,10 @@ out
 dist
 *.tgz
 
+# WXT dev/build artifacts (generated, should not be committed)
+.output
+.wxt
+
 # code coverage
 coverage
 *.lcov
