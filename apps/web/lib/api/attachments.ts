@@ -26,10 +26,13 @@ export async function updateAttachment(attachmentID: string, body: UpdateAttachm
   }
 }
 
-export async function getInboxAttachments(): Promise<InboxItem[] | null> {
+export async function getInboxAttachments(tags?: string[]): Promise<InboxItem[] | null> {
   try {
+    const url = new URL("/v1/my/attachments/inbox", getApiProxyUrl())
+    if (tags?.length) url.searchParams.set("tags", tags.join(","))
+
     const { data, error } = await fetch<InboxItem[]>({
-      url: getApiProxyUrl("/v1/my/attachments/inbox")
+      url: url.toString()
     })
 
     if (error) {
@@ -100,10 +103,13 @@ export async function removeAttachmentFromCollection(attachmentID: string, colle
   }
 }
 
-export async function getCollectionAttachments(collectionID: string): Promise<AttachmentWithTags[] | null> {
+export async function getCollectionAttachments(collectionID: string, tags?: string[]): Promise<AttachmentWithTags[] | null> {
   try {
+    const url = new URL(`/v1/my/collections/${collectionID}/attachments`, getApiProxyUrl())
+    if (tags?.length) url.searchParams.set("tags", tags.join(","))
+
     const { data, error } = await fetch<AttachmentWithTags[]>({
-      url: getApiProxyUrl(`/v1/my/collections/${collectionID}/attachments`),
+      url: url.toString(),
     })
 
     if (error) {
@@ -140,6 +146,7 @@ export async function getPublicCollectionAttachments(collectionID: string): Prom
 type ListQuery = {
   offset?: number;
   limit?: number;
+  tags?: string[];
 }
 export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWithTags[] | null> {
   try {
@@ -147,6 +154,7 @@ export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWi
     if (query) {
       if (query.offset !== undefined) url.searchParams.set("offset", query.offset.toString())
       if (query.limit !== undefined) url.searchParams.set("limit", query.limit.toString())
+      if (query.tags?.length) url.searchParams.set("tags", query.tags.join(","))
     }
     const { data, error } = await fetch<AttachmentWithTags[]>({
       url: url.toString(),

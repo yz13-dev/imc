@@ -17,3 +17,8 @@ type NewTag struct {
 	Name   string `json:"name"`
 	UserID string `json:"user_id"`
 }
+
+type TagWithCount struct {
+	Tag
+	Count int64 `json:"count"`
+}

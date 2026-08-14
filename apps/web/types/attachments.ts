@@ -32,6 +32,8 @@ export type Tag = {
   created_at: Date
 }
 
+export type TagWithCount = Tag & { count: number }
+
 export type AttachmentTag = {
   id: string
   attachment_id: string

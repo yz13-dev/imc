@@ -1,5 +1,6 @@
 
 import { getCollectionAttachments } from "@/lib/api/attachments"
+import { getTagsWithCounts } from "@/lib/api/tags"
 import { getQueryClient } from "@/lib/query-client"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import DefaultHeader from "../../components/default-header"
@@ -23,22 +24,17 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   await queryClient
     .prefetchQuery({
-      queryKey: ["attachments", "collections", collection],
+      queryKey: ["attachments", "collections", collection, []],
       queryFn: () => {
-        const data = getCollectionAttachments(collection)
+        const data = getCollectionAttachments(collection, [])
         return data
       }
     })
 
   await queryClient.prefetchQuery({
     queryKey: ["tags", collection],
-    queryFn: async () => (await getCollectionAttachments(collection)) || []
+    queryFn: async () => (await getTagsWithCounts(collection)) || []
   })
-
-  // const attachments = await getCollectionAttachments(collection)
-
-  // const tags = [] // (attachments || [])?.flatMap(inbox => inbox.tags)
-  // const tagStats = getTagsStats(tags)
 
   const scope = `${user}/${collection}`
   return (

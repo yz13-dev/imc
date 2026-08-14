@@ -25,6 +25,26 @@ func SearchTags(query string, UserID string, db *gorm.DB) ([]models.Tag, error) 
 	return tags, nil
 }
 
+// GetTagsWithCounts returns every tag the user has actually used (INNER
+// JOINs, so a tag with zero matching attachments is excluded), along with
+// how many non-deleted attachments carry it. When collectionID is set, the
+// count is scoped to just that collection's attachments.
+func GetTagsWithCounts(userID string, collectionID *uuid.UUID, db *gorm.DB) ([]models.TagWithCount, error) {
+	q := db.Table("tags").
+		Select("tags.*, COUNT(DISTINCT attachments_tags.attachment_id) AS count").
+		Joins("JOIN attachments_tags ON attachments_tags.tag_id = tags.id").
+		Joins("JOIN attachments ON attachments.id = attachments_tags.attachment_id AND attachments.is_deleted = false").
+		Where("tags.user_id = ?", userID)
+	if collectionID != nil {
+		q = q.Joins("JOIN collections_attachments ON collections_attachments.attachment_id = attachments.id AND collections_attachments.collection_id = ?", *collectionID)
+	}
+	var results []models.TagWithCount
+	if err := q.Group("tags.id").Order("tags.name ASC").Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
 func ConnectTagToAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) error {
 	var attachmentTag models.NewAttachmentTag = models.NewAttachmentTag{
 		AttachmentID: attachmentID,

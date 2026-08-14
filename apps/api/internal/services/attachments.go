@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetInboxAttachments(UserID string, db *gorm.DB) ([]models.InboxItem, error) {
-	attachments, err := repositories.GetInboxAttachments(UserID, db)
+func GetInboxAttachments(UserID string, tagNames []string, db *gorm.DB) ([]models.InboxItem, error) {
+	attachments, err := repositories.GetInboxAttachments(UserID, tagNames, db)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +55,8 @@ func PostInInbox(UserID string, db *gorm.DB, attachmentID uuid.UUID) error {
 	return nil
 }
 
-func GetCollectionAttachments(collectionID uuid.UUID, UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
-	attachments, err := repositories.GetCollectionAttachments(collectionID, UserID, db)
+func GetCollectionAttachments(collectionID uuid.UUID, UserID string, tagNames []string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetCollectionAttachments(collectionID, UserID, tagNames, db)
 	if err != nil {
 		return nil, err
 	}

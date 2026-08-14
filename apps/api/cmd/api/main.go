@@ -103,6 +103,7 @@ func main() {
 			r.Route("/my", func(r chi.Router) {
 				r.Get("/events", handlers.EventsHandler(hub))
 				// tags
+				r.Get("/tags", handlers.GetMyTags)
 				r.Get("/tags/search", handlers.GetTagsSearch)
 				r.Post("/tags/new", handlers.PostNewTag)
 				// attachments

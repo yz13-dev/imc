@@ -48,6 +48,43 @@ func GetTagsSearch(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetMyTags(w http.ResponseWriter, r *http.Request) {
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	var collectionID *uuid.UUID
+	if raw := r.URL.Query().Get("collectionID"); raw != "" {
+		id, err := uuid.Parse(raw)
+		if err != nil {
+			http.Error(w, "invalid collectionID", http.StatusBadRequest)
+			return
+		}
+		collectionID = &id
+	}
+
+	tags, err := services.GetTagsWithCounts(user.ID, collectionID, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(tags); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func PostNewTag(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var tag struct {

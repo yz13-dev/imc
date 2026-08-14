@@ -36,3 +36,11 @@ func SearchTags(query string, UserID string, db *gorm.DB) ([]models.Tag, error) 
 	}
 	return tags, nil
 }
+
+func GetTagsWithCounts(userID string, collectionID *uuid.UUID, db *gorm.DB) ([]models.TagWithCount, error) {
+	tags, err := repositories.GetTagsWithCounts(userID, collectionID, db)
+	if err != nil {
+		return nil, err
+	}
+	return tags, nil
+}

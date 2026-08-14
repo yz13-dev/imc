@@ -16,8 +16,8 @@ export default async function Page() {
   const queryClient = getQueryClient()
 
   await queryClient.prefetchQuery({
-    queryKey: ["attachments", "inbox"],
-    queryFn: () => getInboxAttachments()
+    queryKey: ["attachments", "inbox", []],
+    queryFn: () => getInboxAttachments([])
   })
 
   const collections = await queryClient.fetchQuery({

@@ -30,6 +30,22 @@ import (
 	"github.com/yz13-dev/imc/api/internal/utils"
 )
 
+// parseTagsQuery reads a comma-separated ?tags=a,b,c query param and returns
+// the non-empty tag names, or nil when the param is absent/empty.
+func parseTagsQuery(r *http.Request) []string {
+	raw := r.URL.Query().Get("tags")
+	if raw == "" {
+		return nil
+	}
+	var tags []string
+	for _, tag := range strings.Split(raw, ",") {
+		if tag = strings.TrimSpace(tag); tag != "" {
+			tags = append(tags, tag)
+		}
+	}
+	return tags
+}
+
 func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {
@@ -45,7 +61,7 @@ func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetInboxAttachments(userID, db)
+	attachments, err := services.GetInboxAttachments(userID, parseTagsQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -562,7 +578,7 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetCollectionAttachments(collectionID, userID, db)
+	attachments, err := services.GetCollectionAttachments(collectionID, userID, parseTagsQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -632,7 +648,7 @@ func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetAllAttachments(userID, repositories.ListQuery{Offset: Offset, Limit: Limit}, db)
+	attachments, err := services.GetAllAttachments(userID, repositories.ListQuery{Offset: Offset, Limit: Limit, Tags: parseTagsQuery(r)}, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

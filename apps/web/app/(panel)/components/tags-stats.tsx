@@ -1,91 +1,63 @@
 "use client"
-import { getAllAttachments, getCollectionAttachments, getInboxAttachments } from "@/lib/api/attachments";
-import { getTagsStats, type TagStats } from "@/lib/tags";
-import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
-import type { InboxItem } from "@/types/inbox";
-import type { InfiniteData } from "@tanstack/react-query";
+import { getTagsWithCounts } from "@/lib/api/tags";
+import type { TagWithCount } from "@/types/attachments";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 
-function getTagsFromData(data: any): AttachmentWithMaybeTagsAndSource[] {
-  if (Array.isArray(data)) {
-    return (data || []) as AttachmentWithMaybeTagsAndSource[]
-  }
-  if (typeof data === "object") {
-    return (data as InfiniteData<AttachmentWithMaybeTagsAndSource[]>).pages.flat()
-  }
-  return (data || []) as AttachmentWithMaybeTagsAndSource[]
-}
-
-function Tags({ tags = {} }: { tags?: TagStats }) {
+function Tags({ tags = [] }: { tags?: TagWithCount[] }) {
 
   const [tagQuery, setTagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
 
-  return Object.entries(tags)
-    .toSorted(([a], [b]) => a.localeCompare(b))
-    .map(([tagName, stat]) => {
-      const isActive = tagQuery?.includes(tagName)
+  return tags
+    .toSorted((a, b) => a.name.localeCompare(b.name))
+    .map((tag) => {
+      const isActive = tagQuery?.includes(tag.name)
       return (
         <Button
-          key={tagName}
+          key={tag.id}
           variant={isActive ? "default" : "outline"}
           onClick={() => setTagQuery(prev => {
-            if (prev?.includes(tagName)) {
-              return prev.filter(t => t !== tagName)
+            if (prev?.includes(tag.name)) {
+              return prev.filter(t => t !== tag.name)
             }
-            return [...(prev || []), tagName]
+            return [...(prev || []), tag.name]
           })}
         >
-          <span>{tagName}</span>
-          <span className="text-muted-foreground">{stat.count}</span>
+          <span>{tag.name}</span>
+          <span className="text-muted-foreground">{tag.count}</span>
         </Button>
       )
     })
 }
 
 type TagStatsProps = {
-  tags?: TagStats;
   collection?: string;
 }
 export default function TagStats({ collection }: TagStatsProps) {
 
-  const { data } = useSuspenseQuery<AttachmentWithMaybeTagsAndSource[]>({
+  const { data } = useSuspenseQuery<TagWithCount[]>({
     queryKey: collection ? ["tags", collection] : ["tags", "all"],
-    queryFn: async () => {
-      const data = collection
-        ? await getCollectionAttachments(collection)
-        : await getAllAttachments()
-      return (data || [])
-    }
+    queryFn: async () => (await getTagsWithCounts(collection)) || []
   })
-
-  const tags = getTagsFromData(data)?.flatMap(item => item.tags)
-
-  const tagStats = getTagsStats(tags)
 
   return (
     <div className="w-full px-4 flex items-center gap-2">
-      <Tags tags={tagStats} />
+      <Tags tags={data} />
     </div>
   )
 }
 
 export function InboxTagStats() {
 
-  const { data } = useQuery<InboxItem[]>({
-    queryKey: ["attachments", "inbox"], queryFn: async () => {
-      const data = await getInboxAttachments()
-      return (data || [])
-    }
+  const { data } = useQuery<TagWithCount[]>({
+    queryKey: ["tags", "all"],
+    queryFn: async () => (await getTagsWithCounts()) || []
   })
-
-  const tags = (data || [])?.map(item => item.attachment)?.flatMap(item => item.tags)
-  const tagStats = getTagsStats(tags)
 
   return (
     <div className="w-full flex items-center gap-2">
-      <Tags tags={tagStats} />
+      <Tags tags={data} />
     </div>
   )
 }

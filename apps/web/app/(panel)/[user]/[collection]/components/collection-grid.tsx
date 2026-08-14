@@ -5,6 +5,7 @@ import { CollectionCardSkeleton } from "@/components/collection-card"
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import type { Attachment, AttachmentWithTags } from "@/types/attachments"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 
 type CollectionGridProps<T> = {
@@ -20,16 +21,19 @@ export default function CollectionGrid<T extends AttachmentWithTags[] | null>({ 
 
   // const attachments = useCollectionAttachments({ collection, attachments: defaultAttachments })
 
+  const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
+  const tags = tagQuery ?? []
+
   const { data, isLoading } = useSuspenseQuery({
     initialData: defaultAttachments,
-    queryKey: queryKey || ["attachments", "collections", collection],
+    queryKey: queryKey || ["attachments", "collections", collection, tags],
     queryFn: () => {
       if (queryFn) {
         const data = queryFn;
         console.log("data")
         return data;
       }
-      const data = getCollectionAttachments(collection)
+      const data = getCollectionAttachments(collection, tags)
       return data
     }
   })

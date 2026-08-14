@@ -1,8 +1,29 @@
 import { getApiProxyUrl } from "@/lib/url";
-import type { Tag } from "@/types/attachments";
+import type { Tag, TagWithCount } from "@/types/attachments";
 import { getFetchClient } from "../fetch";
 
 const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) => getFetchClient<T>()(...args)
+
+export async function getTagsWithCounts(collectionID?: string): Promise<TagWithCount[] | null> {
+  try {
+    const url = new URL("/v1/my/tags", getApiProxyUrl())
+    if (collectionID) url.searchParams.set("collectionID", collectionID)
+
+    const { data, error } = await fetch<TagWithCount[]>({
+      url: url.toString()
+    })
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
 
 export async function getSearchTags(query: string): Promise<Tag[] | null> {
   try {

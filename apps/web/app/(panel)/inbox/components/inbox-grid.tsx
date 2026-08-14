@@ -2,6 +2,7 @@
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { getInboxAttachments } from "@/lib/api/attachments"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 import CardGrid from "../../components/card-grid"
 import CardGridWrapper from "../../components/card-grid-wrapper"
 
@@ -22,7 +23,13 @@ export function InboxGridSkeleton() {
 
 export default function InboxGrid() {
 
-  const { data, isLoading, isPending } = useSuspenseQuery({ queryKey: ["attachments", "inbox"], queryFn: getInboxAttachments })
+  const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
+  const tags = tagQuery ?? []
+
+  const { data, isLoading, isPending } = useSuspenseQuery({
+    queryKey: ["attachments", "inbox", tags],
+    queryFn: () => getInboxAttachments(tags)
+  })
   const attachments = (data || []).map(item => item.attachment)
 
   if (isLoading || isPending) return <InboxGridSkeleton />

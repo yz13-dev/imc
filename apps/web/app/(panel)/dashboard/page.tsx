@@ -1,4 +1,5 @@
 import { getAllAttachments } from "@/lib/api/attachments";
+import { getTagsWithCounts } from "@/lib/api/tags";
 import { getQueryClient } from "@/lib/query-client";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
@@ -18,21 +19,17 @@ export default async function Page() {
   // look ma, no await
   await queryClient.prefetchInfiniteQuery({
     initialPageParam: 0,
-    queryKey: ["attachments"],
+    queryKey: ["attachments", []],
     queryFn: async ({ pageParam }) => {
-      const data = await getAllAttachments({ offset: pageParam })
+      const data = await getAllAttachments({ offset: pageParam, tags: [] })
       return data || []
     }
   })
 
   await queryClient.prefetchQuery({
     queryKey: ["tags", "all"],
-    queryFn: async () => (await getAllAttachments()) || []
+    queryFn: async () => (await getTagsWithCounts()) || []
   })
-  // const attachments = await getAllAttachments()
-
-  // const tags = [] // (attachments || [])?.flatMap(inbox => inbox.tags)
-  // const tagStats = getTagsStats(tags)
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
