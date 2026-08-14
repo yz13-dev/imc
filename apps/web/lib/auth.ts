@@ -20,11 +20,9 @@ export type User = {
 }
 
 export const auth = createNextAuth({
-  // The SDK defaults to preview.auth.yz13.dev in dev (NODE_ENV based), but
-  // IMC's oauth_client is currently only registered in prod auth -- pinned
-  // explicitly so local dev matches what's actually registered. Revisit if
-  // a staging client gets registered too.
-  issuer: "https://auth.yz13.dev",
+  // No explicit issuer: the SDK defaults to preview.auth.yz13.dev in dev
+  // (NODE_ENV based) and auth.yz13.dev in prod. Requires IMC's oauth_client
+  // to be registered on both -- currently only registered on prod.
   clientId: process.env.YZ13_AUTH_CLIENT_ID!,
   clientSecret: process.env.YZ13_AUTH_CLIENT_SECRET,
   redirectUri: getSiteUrl("/auth/callback"),
