@@ -30,6 +30,11 @@ export default async function Page({ params, searchParams }: PageProps) {
       }
     })
 
+  await queryClient.prefetchQuery({
+    queryKey: ["tags", collection],
+    queryFn: async () => (await getCollectionAttachments(collection)) || []
+  })
+
   // const attachments = await getCollectionAttachments(collection)
 
   // const tags = [] // (attachments || [])?.flatMap(inbox => inbox.tags)
@@ -39,7 +44,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <DefaultHeader>
-        <TagStats queryKey={collection} />
+        <TagStats collection={collection} />
       </DefaultHeader>
       {
         id &&

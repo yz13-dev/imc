@@ -1,6 +1,7 @@
 import CollectionGrid from "@/app/(panel)/[user]/[collection]/components/collection-grid";
 import { getPublicCollectionAttachments } from "@/lib/api/attachments";
 import { getQueryClient } from "@/lib/query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 
 type PageProps = {
@@ -15,9 +16,11 @@ export default async function Page({ params }: PageProps) {
 
   const queryClient = getQueryClient()
 
+  const queryKey = ["public", "attachments", "collections", collection]
+
   await queryClient
     .prefetchQuery({
-      queryKey: ["attachments", "collections", collection],
+      queryKey,
       queryFn: () => {
         const data = getPublicCollectionAttachments(collection)
         return data
@@ -25,12 +28,14 @@ export default async function Page({ params }: PageProps) {
     })
 
   return (
-    <CollectionGrid
-      readonly
-      collection={collection}
-      defaultAttachments={[]}
-      queryKey={["public", "attachments", "collections", collection]}
-      queryFn={getPublicCollectionAttachments(collection)}
-    />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <CollectionGrid
+        readonly
+        collection={collection}
+        defaultAttachments={[]}
+        queryKey={queryKey}
+        queryFn={getPublicCollectionAttachments(collection)}
+      />
+    </HydrationBoundary>
   )
 }

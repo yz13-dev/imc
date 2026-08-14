@@ -1,6 +1,9 @@
+import { getCollections } from "@/lib/api/collections";
 import { getMe } from "@/lib/me";
+import { getQueryClient } from "@/lib/query-client";
 import { UserProvider } from "@/lib/stores/user";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
 import { Panel } from "./components/dock";
 import ServerSideEvents from "./components/sse-provider";
@@ -16,15 +19,24 @@ export default async function Layout({ children }: LayoutProps) {
 
   if (!user) return redirect("/")
 
+  const queryClient = getQueryClient()
+
+  await queryClient.prefetchQuery({
+    queryKey: ["attachments", "collections"],
+    queryFn: () => getCollections(),
+  })
+
   return (
     <UserProvider user={user}>
       <ServerSideEvents />
-      <SidebarProvider>
-        <div className="w-full container mx-auto">
-          {children}
-        </div>
-        <Panel />
-      </SidebarProvider>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <SidebarProvider>
+          <div className="w-full container mx-auto">
+            {children}
+          </div>
+          <Panel />
+        </SidebarProvider>
+      </HydrationBoundary>
     </UserProvider>
   )
 }

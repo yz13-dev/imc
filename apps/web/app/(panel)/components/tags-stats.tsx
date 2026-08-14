@@ -1,5 +1,5 @@
 "use client"
-import { getAllAttachments, getInboxAttachments } from "@/lib/api/attachments";
+import { getAllAttachments, getCollectionAttachments, getInboxAttachments } from "@/lib/api/attachments";
 import { getTagsStats, type TagStats } from "@/lib/tags";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
@@ -46,14 +46,16 @@ function Tags({ tags = {} }: { tags?: TagStats }) {
 
 type TagStatsProps = {
   tags?: TagStats;
-  queryKey?: string;
+  collection?: string;
 }
-export default function TagStats({ queryKey }: TagStatsProps) {
+export default function TagStats({ collection }: TagStatsProps) {
 
   const { data } = useSuspenseQuery<AttachmentWithMaybeTagsAndSource[]>({
-    queryKey: queryKey ? [queryKey] : ["attachments"],
+    queryKey: collection ? ["tags", collection] : ["tags", "all"],
     queryFn: async () => {
-      const data = await getAllAttachments()
+      const data = collection
+        ? await getCollectionAttachments(collection)
+        : await getAllAttachments()
       return (data || [])
     }
   })
