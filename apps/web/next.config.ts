@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
   cacheComponents: false,
   allowedDevOrigins: getAllowedDevOrigins(),
   experimental: {
+    useTypeScriptCli: true,
     inlineCss: true,
     optimizeCss: true,
     serverSourceMaps: false,
