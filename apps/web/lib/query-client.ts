@@ -1,4 +1,6 @@
 import {
+  defaultShouldDehydrateQuery,
+  dehydrate,
   environmentManager,
   QueryClient
 } from '@tanstack/react-query'
@@ -37,4 +39,19 @@ export function getQueryClient() {
     if (!browserQueryClient) browserQueryClient = makeQueryClient()
     return browserQueryClient
   }
+}
+
+// lib/api/*.ts functions swallow request failures and resolve to `null`
+// instead of throwing, so a failed prefetch still leaves the query in a
+// "success" state -- just with null data. Dehydrating that as-is would ship
+// a fake-fresh empty result to the client, and with staleTime set above,
+// useSuspenseQuery would treat it as up to date and never actually re-fetch,
+// silently hiding the failure. Excluding null-data queries here means a
+// failed prefetch just isn't part of the hydrated state, so the client
+// fetches for real on mount instead of trusting a masked failure.
+export function dehydrateState(queryClient: QueryClient) {
+  return dehydrate(queryClient, {
+    shouldDehydrateQuery: query =>
+      defaultShouldDehydrateQuery(query) && query.state.data !== null,
+  })
 }

@@ -1,7 +1,7 @@
 import { getCollectionAttachments, getInboxAttachments } from "@/lib/api/attachments"
 import { getCollections } from "@/lib/api/collections"
-import { getQueryClient } from "@/lib/query-client"
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
+import { dehydrateState, getQueryClient } from "@/lib/query-client"
+import { HydrationBoundary } from "@tanstack/react-query"
 import { AnimatePresence } from "motion/react"
 import { Suspense } from "react"
 import DefaultHeader from "../components/default-header"
@@ -35,7 +35,7 @@ export default async function Page() {
   )
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrationBoundary state={dehydrateState(queryClient)}>
       <DefaultHeader>
         <InboxTagStats />
       </DefaultHeader>

@@ -1,7 +1,7 @@
 import CollectionGrid from "@/app/(panel)/[user]/[collection]/components/collection-grid";
 import { getPublicCollectionAttachments } from "@/lib/api/attachments";
-import { getQueryClient } from "@/lib/query-client";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { dehydrateState, getQueryClient } from "@/lib/query-client";
+import { HydrationBoundary } from "@tanstack/react-query";
 
 
 type PageProps = {
@@ -28,7 +28,7 @@ export default async function Page({ params }: PageProps) {
     })
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrationBoundary state={dehydrateState(queryClient)}>
       <CollectionGrid
         readonly
         collection={collection}

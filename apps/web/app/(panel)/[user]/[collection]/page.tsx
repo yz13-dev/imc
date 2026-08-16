@@ -1,8 +1,8 @@
 
 import { getCollectionAttachments } from "@/lib/api/attachments"
 import { getTagsWithCounts } from "@/lib/api/tags"
-import { getQueryClient } from "@/lib/query-client"
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
+import { dehydrateState, getQueryClient } from "@/lib/query-client"
+import { HydrationBoundary } from "@tanstack/react-query"
 import DefaultHeader from "../../components/default-header"
 import TagStats from "../../components/tags-stats"
 import CollectionGrid from "./components/collection-grid"
@@ -38,7 +38,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const scope = `${user}/${collection}`
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrationBoundary state={dehydrateState(queryClient)}>
       <DefaultHeader>
         <TagStats collection={collection} />
       </DefaultHeader>
