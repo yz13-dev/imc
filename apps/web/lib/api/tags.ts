@@ -6,7 +6,7 @@ const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) =>
 
 export async function getTagsWithCounts(collectionID?: string): Promise<TagWithCount[] | null> {
   try {
-    const url = new URL("/v1/my/tags", getApiProxyUrl())
+    const url = new URL(getApiProxyUrl("/v1/my/tags"))
     if (collectionID) url.searchParams.set("collectionID", collectionID)
 
     const { data, error } = await fetch<TagWithCount[]>({

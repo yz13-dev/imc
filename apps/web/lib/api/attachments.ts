@@ -28,7 +28,7 @@ export async function updateAttachment(attachmentID: string, body: UpdateAttachm
 
 export async function getInboxAttachments(tags?: string[]): Promise<InboxItem[] | null> {
   try {
-    const url = new URL("/v1/my/attachments/inbox", getApiProxyUrl())
+    const url = new URL(getApiProxyUrl("/v1/my/attachments/inbox"))
     if (tags?.length) url.searchParams.set("tags", tags.join(","))
 
     const { data, error } = await fetch<InboxItem[]>({
@@ -105,7 +105,7 @@ export async function removeAttachmentFromCollection(attachmentID: string, colle
 
 export async function getCollectionAttachments(collectionID: string, tags?: string[]): Promise<AttachmentWithTags[] | null> {
   try {
-    const url = new URL(`/v1/my/collections/${collectionID}/attachments`, getApiProxyUrl())
+    const url = new URL(getApiProxyUrl(`/v1/my/collections/${collectionID}/attachments`))
     if (tags?.length) url.searchParams.set("tags", tags.join(","))
 
     const { data, error } = await fetch<AttachmentWithTags[]>({
@@ -150,7 +150,7 @@ type ListQuery = {
 }
 export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWithTags[] | null> {
   try {
-    const url = new URL("/v1/my/attachments", getApiProxyUrl())
+    const url = new URL(getApiProxyUrl("/v1/my/attachments"))
     if (query) {
       if (query.offset !== undefined) url.searchParams.set("offset", query.offset.toString())
       if (query.limit !== undefined) url.searchParams.set("limit", query.limit.toString())
