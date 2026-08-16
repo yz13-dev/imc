@@ -1,5 +1,4 @@
 import {
-  defaultShouldDehydrateQuery,
   dehydrate,
   environmentManager,
   QueryClient
@@ -45,13 +44,29 @@ export function getQueryClient() {
 // instead of throwing, so a failed prefetch still leaves the query in a
 // "success" state -- just with null data. Dehydrating that as-is would ship
 // a fake-fresh empty result to the client, and with staleTime set above,
-// useSuspenseQuery would treat it as up to date and never actually re-fetch,
-// silently hiding the failure. Excluding null-data queries here means a
-// failed prefetch just isn't part of the hydrated state, so the client
-// fetches for real on mount instead of trusting a masked failure.
+// useSuspenseQuery would treat it as up to date and never actually
+// re-fetch, silently hiding the failure.
+//
+// The fix isn't to drop these queries from the dehydrated state, though --
+// useSuspenseQuery only invokes queryFn synchronously during render
+// (Suspense's fetchOptimistic path) when there's no cached data at all. On
+// the SSR pass that renders these client components server-side, queryFn
+// still resolves to the "use server" fetcher (lib/fetch/fetch.ts), and
+// Next.js forbids calling that mid-render ("Server Functions cannot be
+// called during initial render") -- so omitting the data here previously
+// turned a silently-empty grid into a hard crash instead.
+//
+// Keep the data, but stamp it as already-expired (dataUpdatedAt: 0) so
+// useSuspenseQuery still finds cached data during the SSR render (no
+// fetchOptimistic, no crash), while React Query's normal refetch-on-mount
+// behavior -- which runs in an effect *after* mount, safely client-side --
+// kicks off a real refetch instead of trusting the masked failure for the
+// next staleTime window.
 export function dehydrateState(queryClient: QueryClient) {
-  return dehydrate(queryClient, {
-    shouldDehydrateQuery: query =>
-      defaultShouldDehydrateQuery(query) && query.state.data !== null,
-  })
+  for (const query of queryClient.getQueryCache().getAll()) {
+    if (query.state.data === null) {
+      queryClient.setQueryData(query.queryKey, null, { updatedAt: 0 })
+    }
+  }
+  return dehydrate(queryClient)
 }
