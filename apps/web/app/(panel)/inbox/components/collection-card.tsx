@@ -3,8 +3,7 @@ import { getCollectionAttachments } from "@/lib/api/attachments"
 import { useUser } from "@/lib/stores/user"
 import type { Collection } from "@/types/collections"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import { ReferenceBadge, ReferenceButton } from "@workspace/ui/components/reference"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { ArrowUpRightIcon } from "lucide-react"
@@ -69,19 +68,16 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
       </div>
       <div className="absolute bottom-4 left-0 px-4 z-10 w-full flex items-center justify-between gap-1">
         <div className="flex items-center gap-1">
-          <Badge className="h-6 bg-foreground/50 border-foreground/50 text-background backdrop-blur-3xl">
-            {collection.name}
-          </Badge>
+          <ReferenceBadge>{collection.name}</ReferenceBadge>
         </div>
         <div className="flex items-center gap-1">
-          <Badge className="h-6 bg-foreground/50 border-foreground/50 text-background backdrop-blur-3xl">
-            {attachments.length}
-          </Badge>
+
+          <ReferenceBadge>{attachments.length}</ReferenceBadge>
           {
             user &&
-            <Button size="icon-xs" className="bg-foreground/50 border-foreground/50 text-background backdrop-blur-md" nativeButton={false} render={<Link href={href} />}>
+            <ReferenceButton size="icon-xs" nativeButton={false} render={<Link href={href} />}>
               <ArrowUpRightIcon />
-            </Button>
+            </ReferenceButton>
           }
         </div>
       </div>

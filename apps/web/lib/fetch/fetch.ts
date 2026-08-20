@@ -3,12 +3,22 @@
 import { cookies } from "next/headers";
 import { parseResponse } from "./parse-response";
 
+
+
 type MakeFetchProps = {
   url: string
   body?: any
 } & Omit<RequestInit, "body">
-export async function makeFetch<T>({ url, headers, body, ...props }: MakeFetchProps): Promise<{ data: T | null, error: string | null }> {
+export async function makeFetch<T>({ url, headers, body, ...props }: MakeFetchProps): Promise<{ data: T | null, status: number, error: string | null }> {
   try {
+
+    const getBody = (body: any) => {
+      if (body === undefined) return undefined
+      if (body instanceof FormData) {
+        return body
+      }
+      return JSON.stringify(body)
+    }
 
     const cookieStore = await cookies();
 
@@ -19,7 +29,7 @@ export async function makeFetch<T>({ url, headers, body, ...props }: MakeFetchPr
 
     const response = await fetch(url, {
       ...props,
-      body: body ? JSON.stringify(body) : undefined,
+      body: getBody(body),
       headers: prepared,
       credentials: "include"
     })
@@ -27,6 +37,6 @@ export async function makeFetch<T>({ url, headers, body, ...props }: MakeFetchPr
     return await parseResponse<T>(response)
 
   } catch (error) {
-    return { data: null, error: error instanceof Error ? error.message : String(error) }
+    return { data: null, status: 500, error: error instanceof Error ? error.message : String(error) }
   }
 }

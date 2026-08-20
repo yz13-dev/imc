@@ -6,12 +6,13 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
-import { InboxIcon, MenuIcon, PlusSquareIcon, Trash2Icon } from "lucide-react";
+import { InboxIcon, MenuIcon, Trash2Icon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import CollectionsGroup from "./groups/collections";
-import CommandMenu from "./panels/command-menu";
+import NewGroup from "./groups/new";
 import { DockPanelProvider, useDockPanel } from "./panel-context";
+import CommandMenu from "./panels/command-menu";
 
 
 export default function Panel() {
@@ -67,16 +68,10 @@ function PanelContent() {
           "sm:[&_a]:size-10.5 [&_a]:size-16 sm:[&_a]:rounded-lg [&_a]:rounded-2xl",
         )}
       >
-        <Tooltip>
-          <TooltipTrigger render={
-            <Button size="icon" variant="default" nativeButton={false} render={<Link href="/new/card" />}>
-              <PlusSquareIcon className="sm:size-5 size-8" />
-            </Button>
-          }
-          />
-          <TooltipContent>Новая карточка</TooltipContent>
-        </Tooltip>
-
+        {
+          userId &&
+          <NewGroup />
+        }
         <Tooltip>
           <TooltipTrigger render={
             <Button size="icon" variant="ghost" nativeButton={false} render={<Link href="/inbox" />}>

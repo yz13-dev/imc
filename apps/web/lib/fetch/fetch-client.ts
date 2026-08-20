@@ -1,5 +1,13 @@
 import { parseResponse } from "./parse-response";
 
+const getBody = (body: any) => {
+  if (body === undefined) return undefined
+  if (body instanceof FormData) {
+    return body
+  }
+  return JSON.stringify(body)
+}
+
 type MakeFetchProps = {
   url: string
   body?: any
@@ -9,7 +17,7 @@ export async function makeClientFetch<T>({ url, headers, body, ...props }: MakeF
 
     const response = await fetch(url, {
       ...props,
-      body: body ? JSON.stringify(body) : undefined,
+      body: getBody(body),
       headers,
       credentials: "include"
     })

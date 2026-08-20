@@ -1,4 +1,4 @@
-export async function parseResponse<T>(response: Response): Promise<{ data: T | null, error: string | null }> {
+export async function parseResponse<T>(response: Response): Promise<{ data: T | null, status: number, error: string | null }> {
   const text = await response.text()
 
   // The Go API returns plain-text bodies (http.Error) for most error
@@ -20,8 +20,8 @@ export async function parseResponse<T>(response: Response): Promise<{ data: T | 
     const message = json && typeof json === "object" && "message" in json
       ? String((json as { message: unknown }).message)
       : text || response.statusText || `Request failed with status ${response.status}`
-    return { data: null, error: message }
+    return { data: null, status: response.status, error: message }
   }
 
-  return { data: json as T, error: null }
+  return { data: json as T, status: response.status, error: null }
 }

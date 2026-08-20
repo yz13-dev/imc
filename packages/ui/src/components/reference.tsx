@@ -101,7 +101,7 @@ function ReferenceFooterGroup({ className, children, ...props }: ReferenceFooter
       data-slot="reference-footer-group"
       className={cn(
         "flex items-center gap-1",
-        "*:data-[slot=avatar]:size-5 *:data-[slot=avatar]:rounded-full *:data-[slot=avatar]:overflow-clip *:data-[slot=avatar]:*:rounded-full *:data-[slot=avatar]:after:rounded-full",
+        "*:data-[slot=avatar]:size-6 *:data-[slot=avatar]:rounded-full *:data-[slot=avatar]:overflow-clip *:data-[slot=avatar]:*:rounded-full *:data-[slot=avatar]:after:rounded-full",
         className
       )}
       {...props}
@@ -118,7 +118,7 @@ function ReferenceLabel({ className = "", children, ...props }: ReferenceLabelPr
       data-slot="reference-label"
       render={<figcaption />}
       className={cn(
-        "h-6 bg-foreground/50 tabular-nums border-foreground/25 text-background max-w-full line-clamp-1! backdrop-blur-3xl",
+        "tabular-nums max-w-full line-clamp-1!",
         className
       )}
       {...props}
@@ -133,7 +133,7 @@ function ReferenceBadge({ className = "", children, ...props }: ReferenceBadgePr
   return (
     <Badge
       className={cn(
-        "h-6 bg-foreground/50 tabular-nums border-foreground/25 text-background max-w-full backdrop-blur-3xl",
+        "tabular-nums max-w-full inline-flex items-center h-6",
         className
       )}
       {...props}
@@ -147,7 +147,7 @@ function ReferenceButton({ size = "icon-xs", className = "", children, ...props 
   return (
     <Button
       size={size}
-      className={cn("bg-foreground/50 border-foreground/50 text-background backdrop-blur-md", className)}
+      className={cn("", className)}
       {...props}
     >
       {children}

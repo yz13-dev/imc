@@ -1,7 +1,7 @@
 
 import { getFetchClient } from "@/lib/fetch";
 import { getApiProxyUrl } from "@/lib/url";
-import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags, UpdateAttachment } from "@/types/attachments";
+import type { Attachment, AttachmentWithMaybeTagsAndSource, AttachmentWithTags, UpdateAttachment } from "@/types/attachments";
 import type { InboxItem } from "@/types/inbox";
 
 const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) => getFetchClient<T>()(...args)
@@ -222,6 +222,43 @@ export async function getTrashAttachments(): Promise<AttachmentWithMaybeTagsAndS
 
     return data;
 
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+export async function uploadAttachment(file: Blob): Promise<Attachment | null> {
+  try {
+    const formData = new FormData()
+
+    formData.append("file", file)
+
+    const { data, error } = await fetch<Attachment | null>({
+      url: getApiProxyUrl("/v1/my/attachments/new"),
+      method: "POST",
+      body: formData,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+export async function inboxAttachment(id: string) {
+  try {
+    const { status } = await fetch<null>({
+      url: getApiProxyUrl(`/v1/my/attachments/inbox?attachmentID=${id}`),
+      method: "POST",
+    });
+    return { status };
   } catch (error) {
     console.error(error)
     return null
