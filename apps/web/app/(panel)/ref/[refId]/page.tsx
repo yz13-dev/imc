@@ -163,7 +163,7 @@ export default async function Page({ params }: PageProps) {
                 </div>
               </div>
               <div className="flex items-center justify-end gap-2">
-                <Button variant="destructive" className="sm:w-fit w-full">
+                <Button variant="error" className="sm:w-fit w-full">
                   <Trash2Icon />
                   <span>Удалить</span>
                 </Button>

@@ -58,7 +58,7 @@ func main() {
 	r.Use(cors.Handler(cors.Options{
 		Debug: true,
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		// AllowedOrigins: []string{"https://imc.yz13.dev", "http://localhost:3000", "http://localhost:5173"},
+		// AllowedOrigins: []string{"https://imc.yz13.dev", "http://localhost:5173"},
 		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			log.Println("origin:", origin)
 			// 1. Разрешаем пустой Origin (нужно для GET-запросов из background скрипта)

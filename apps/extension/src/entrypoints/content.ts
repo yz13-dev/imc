@@ -34,19 +34,19 @@ export default defineContentScript({
     if (!ALLOWED_ORIGINS.includes(window.location.origin)) return;
 
     const announceReady = () => {
-      window.dispatchEvent(new CustomEvent(READY_EVENT));
+      window.postMessage({ type: READY_EVENT }, window.location.origin);
     };
 
-    // Страница может запросить повторное подтверждение готовности (например,
-    // если форма входа отправляется намного позже загрузки страницы).
-    window.addEventListener(PING_EVENT, announceReady);
-
-    // Токен приходит со страницы через postMessage — единственный механизм,
-    // который пересекает границу изолированного мира content-script'а (MV3).
-    // CustomEvent со страницы до изолированного мира не долетают.
     window.addEventListener("message", (event) => {
       if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== "IMC_AUTH_TOKEN") return;
+      if (event.source !== window) return;
+
+      if (event.data?.type === PING_EVENT) {
+        announceReady();
+        return;
+      }
+
+      if (event.data?.type !== TOKEN_EVENT) return;
       const token = event.data?.token;
       if (token) {
         browser.runtime.sendMessage({ type: "AUTH_SUCCESS", token });

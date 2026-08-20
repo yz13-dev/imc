@@ -20,7 +20,22 @@ type TokenBroadcasterProps = {
 export default function TokenBroadcaster({ token }: TokenBroadcasterProps) {
   useEffect(() => {
     if (!token) return
-    window.postMessage({ type: "IMC_AUTH_TOKEN", token }, window.location.origin)
+
+    const sendToken = () => {
+      window.postMessage({ type: "IMC_AUTH_TOKEN", token }, window.location.origin)
+    }
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return
+      if (event.source !== window) return
+      if (event.data?.type === "IMC_EXTENSION_READY") sendToken()
+    }
+
+    window.addEventListener("message", onMessage)
+    window.postMessage({ type: "IMC_EXTENSION_PING" }, window.location.origin)
+    sendToken()
+
+    return () => window.removeEventListener("message", onMessage)
   }, [token])
 
   return null

@@ -4,7 +4,7 @@ import BackButton from "@/app/(panel)/components/header/back-button";
 
 export default function RefHeader() {
   return (
-    <header className="h-14 bg-background//90 backdrop/-blur-md sticky top-0 py-2 px-6 z-20 flex items-center justify-between">
+    <header className="h-14 bg-background//90 backdrop/-blur-md sticky top-0 py-2 md:px-12 px-4 z-20 flex items-center justify-between">
       <HeaderContent>
         <BackButton />
       </HeaderContent>

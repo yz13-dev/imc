@@ -2,8 +2,8 @@ import { getCollections } from "@/lib/api/collections";
 import { getMe } from "@/lib/me";
 import { dehydrateState, getQueryClient } from "@/lib/query-client";
 import { UserProvider } from "@/lib/stores/user";
-import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { HydrationBoundary } from "@tanstack/react-query";
+import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { redirect } from "next/navigation";
 import { Panel } from "./components/dock";
 import ServerSideEvents from "./components/sse-provider";
@@ -31,7 +31,7 @@ export default async function Layout({ children }: LayoutProps) {
       <ServerSideEvents />
       <HydrationBoundary state={dehydrateState(queryClient)}>
         <SidebarProvider>
-          <div className="w-full container mx-auto">
+          <div className="w-full">
             {children}
           </div>
           <Panel />
