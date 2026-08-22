@@ -33,19 +33,19 @@ export default function CommandMenu() {
       <CommandList>
         <CommandEmpty>Ничего не найдено</CommandEmpty>
         <CommandGroup heading="Навигация">
-          <CommandItem onSelect={() => go("/dashboard")}>
+          <CommandItem value="dashboard" onSelect={() => go("/dashboard")}>
             <LayoutDashboardIcon />
             <span>Доска</span>
           </CommandItem>
-          <CommandItem onSelect={() => go("/inbox")}>
+          <CommandItem value="inbox" onSelect={() => go("/inbox")}>
             <InboxIcon />
             <span>Входящие</span>
           </CommandItem>
-          <CommandItem onSelect={() => go("/trash")}>
+          <CommandItem value="trash" onSelect={() => go("/trash")}>
             <Trash2Icon />
             <span>Корзина</span>
           </CommandItem>
-          <CommandItem onSelect={() => go("/new/card")}>
+          <CommandItem value="new-card" onSelect={() => go("/new/card")}>
             <PlusSquareIcon />
             <span>Новая карточка</span>
           </CommandItem>
@@ -55,13 +55,13 @@ export default function CommandMenu() {
           <>
             <CommandSeparator />
             <CommandGroup heading="Коллекции">
-              <CommandItem onSelect={() => toggle("new-collection", <NewCollectionMenu />)}>
+              <CommandItem value="new-collection" onSelect={() => toggle("new-collection", <NewCollectionMenu />)}>
                 <PlusIcon />
                 <span>Новая коллекция</span>
               </CommandItem>
               {
                 (collections || []).map(collection => (
-                  <CommandItem key={collection.id} onSelect={() => go(`/${userId}/${collection.id}`)}>
+                  <CommandItem key={collection.id} value={collection.id} onSelect={() => go(`/${userId}/${collection.id}`)}>
                     <LibrarySquareIcon />
                     <span>{collection.name}</span>
                   </CommandItem>
