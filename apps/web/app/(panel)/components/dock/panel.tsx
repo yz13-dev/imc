@@ -49,23 +49,25 @@ function PanelContent() {
       <AnimatePresence>
         {
           panel &&
-          <motion.div
-            key={panel.id}
-            initial={{ opacity: 0, y: 8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="max-w-md w-full p-2"
-          >
-            {panel.content}
-          </motion.div>
+          <>
+            <motion.div
+              key={panel.id}
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              className="max-w-md w-full p-2"
+            >
+              {panel.content}
+            </motion.div>
+          </>
         }
       </AnimatePresence>
       <aside
         className={cn(
-          "size-fit flex items-center p-1 dark:bg-muted/50 bg-muted/80 backdrop-blur-xs sm:rounded-xl rounded-2xl border",
-          "sm:[&_button]:size-10.5 [&_button]:size-16 sm:[&_button]:rounded-lg [&_button]:rounded-2xl",
-          "sm:[&_a]:size-10.5 [&_a]:size-16 sm:[&_a]:rounded-lg [&_a]:rounded-2xl",
+          "size-fit flex items-center p-1 dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-xl border",
+          "[&_button]:size-10.5 [&_button]:rounded-lg",
+          "[&_a]:size-10.5 [&_a]:rounded-lg",
         )}
       >
         {
@@ -75,7 +77,7 @@ function PanelContent() {
         <Tooltip>
           <TooltipTrigger render={
             <Button size="icon" variant="ghost" nativeButton={false} render={<Link href="/inbox" />}>
-              <InboxIcon className="sm:size-5 size-8" />
+              <InboxIcon className="size-5" />
             </Button>
           }
           />
@@ -88,7 +90,7 @@ function PanelContent() {
         <Tooltip>
           <TooltipTrigger render={
             <Button size="icon" variant="ghost" nativeButton={false} render={<Link href="/trash" />}>
-              <Trash2Icon className="sm:size-5 size-8" />
+              <Trash2Icon className="size-5" />
             </Button>
           }
           />
@@ -101,7 +103,7 @@ function PanelContent() {
               variant={panel?.id === "command" ? "default" : "ghost"}
               onClick={() => toggle("command", <CommandMenu />)}
             >
-              <MenuIcon className="sm:size-5 size-8" />
+              <MenuIcon className="size-5" />
             </Button>
           }
           />

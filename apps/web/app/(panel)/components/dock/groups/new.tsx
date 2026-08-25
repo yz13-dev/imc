@@ -36,7 +36,7 @@ export default function NewGroup({ }: NewGroupProps) {
       <Tooltip>
         <TooltipTrigger render={
           <Button size="icon" variant="ghost" onClick={() => toggle("new-attachment", <NewAttachmentPanel />)}>
-            <ImagePlusIcon className="sm:size-5 size-8" />
+            <ImagePlusIcon className="size-5" />
           </Button>
         }
         />

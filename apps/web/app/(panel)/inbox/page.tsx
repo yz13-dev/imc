@@ -7,6 +7,7 @@ import { Suspense } from "react"
 import DefaultHeader from "../components/default-header"
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
 import Cover from "../components/preview/cover"
+import TagPicker from "../components/tag-picker"
 import { InboxTagStats } from "../components/tags-stats"
 import Collections, { CollectionsSkeleton } from "./components/collections"
 import InboxGrid, { InboxGridSkeleton } from "./components/inbox-grid"
@@ -36,9 +37,10 @@ export default async function Page() {
 
   return (
     <HydrationBoundary state={dehydrateState(queryClient)}>
-      <DefaultHeader>
+      <DefaultHeader />
+      <TagPicker className="top-14 sticky">
         <InboxTagStats />
-      </DefaultHeader>
+      </TagPicker>
       <AnimatePresence mode="popLayout">
         <Cover coverKey="attachment">
           <Suspense fallback={<AttachmentSkeleton />}>

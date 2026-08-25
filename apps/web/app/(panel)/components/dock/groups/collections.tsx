@@ -59,7 +59,7 @@ export default function CollectionsGroup({ userId, data }: CollectionsGroupProps
           <Tooltip>
             <TooltipTrigger render={
               <Button size="icon" variant="ghost" nativeButton={false} render={<Link href={`/${userId}/${collection.id}`} />}>
-                <LibrarySquareIcon className="sm:size-5 size-8" />
+                <LibrarySquareIcon className="size-5" />
               </Button>
             }
             />
@@ -69,7 +69,7 @@ export default function CollectionsGroup({ userId, data }: CollectionsGroupProps
           <Tooltip>
             <TooltipTrigger render={
               <Button size="icon" variant="ghost" nativeButton={false} render={<Link href="/dashboard" />}>
-                <LayoutGridIcon className="sm:size-5 size-8" />
+                <LayoutGridIcon className="size-5" />
               </Button>
             }
             />

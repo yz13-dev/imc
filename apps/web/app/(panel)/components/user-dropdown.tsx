@@ -22,12 +22,12 @@ export default function UserDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" className="pl-0 w-full">
+          <Button variant="ghost" className="px-0 w-full">
             <Avatar>
               <AvatarImage src={user.image || undefined} alt={user.username || user.name || user.displayUsername || ""} />
               <AvatarFallback className="uppercase">{user.username?.slice(0, 2)}</AvatarFallback>
             </Avatar>
-            <span className="text-lg font-medium">{user.displayUsername || user.username || user.name || ""}</span>
+            <span className="text-lg md:inline hidden font-medium">{user.displayUsername || user.username || user.name || ""}</span>
             <ChevronDown className="ml-auto" />
           </Button>
         }

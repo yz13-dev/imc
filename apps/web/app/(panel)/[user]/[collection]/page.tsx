@@ -4,6 +4,7 @@ import { getTagsWithCounts } from "@/lib/api/tags"
 import { dehydrateState, getQueryClient } from "@/lib/query-client"
 import { HydrationBoundary } from "@tanstack/react-query"
 import DefaultHeader from "../../components/default-header"
+import TagPicker from "../../components/tag-picker"
 import TagStats from "../../components/tags-stats"
 import CollectionGrid from "./components/collection-grid"
 
@@ -39,9 +40,10 @@ export default async function Page({ params, searchParams }: PageProps) {
   const scope = `${user}/${collection}`
   return (
     <HydrationBoundary state={dehydrateState(queryClient)}>
-      <DefaultHeader>
-        <TagStats collection={collection} />
-      </DefaultHeader>
+      <DefaultHeader />
+      <TagPicker className="top-14 sticky">
+        <TagStats />
+      </TagPicker>
       {
         id &&
         <div className="absolute inset-0 w-full min-h-svh bg-background z-50"></div>

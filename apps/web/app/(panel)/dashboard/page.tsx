@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import DefaultHeader from "../components/default-header";
 import Attachment, { AttachmentSkeleton } from "../components/preview/attachment";
 import Cover from "../components/preview/cover";
+import TagPicker from "../components/tag-picker";
 import TagStats from "../components/tags-stats";
 import AutoLoader from "./components/auto-loader";
 
@@ -33,9 +34,10 @@ export default async function Page() {
 
   return (
     <HydrationBoundary state={dehydrateState(queryClient)}>
-      <DefaultHeader>
+      <DefaultHeader />
+      <TagPicker className="top-14 sticky">
         <TagStats />
-      </DefaultHeader>
+      </TagPicker>
       <AnimatePresence mode="popLayout">
         <Cover coverKey="attachment">
           <Suspense fallback={<AttachmentSkeleton />}>

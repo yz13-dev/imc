@@ -72,7 +72,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
         </div>
         <div className="flex items-center gap-1">
 
-          <ReferenceBadge>{attachments.length}</ReferenceBadge>
+          <ReferenceBadge className="min-w-6 tabular-nums">{attachments.length}</ReferenceBadge>
           {
             user &&
             <ReferenceButton size="icon-xs" nativeButton={false} render={<Link href={href} />}>
@@ -81,7 +81,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
           }
         </div>
       </div>
-      <div className="py-2 hidden w-full flex flex-col gap-y-1">
+      <div className="py-2 hidden w-full flex-col gap-y-1">
         <span className="text-sm">{collection.name}</span>
         <span className="text-xs text-muted-foreground">
           {attachments.length} файл{attachments.length !== 1 ? 'а' : ''}
