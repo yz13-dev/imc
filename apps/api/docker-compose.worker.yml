@@ -1,0 +1,8 @@
+services:
+  worker:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile.worker
+    env_file:
+      - .env
+    restart: unless-stopped

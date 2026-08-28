@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func CreateNewTag(data models.NewTag, db *gorm.DB) (*models.Tag, error) {
@@ -12,6 +13,18 @@ func CreateNewTag(data models.NewTag, db *gorm.DB) (*models.Tag, error) {
 		Name:   data.Name,
 	}
 	if err := db.Create(&tag).Error; err != nil {
+		return nil, err
+	}
+	return &tag, nil
+}
+
+// FindOrCreateTag returns the user's existing tag with this name, creating
+// it first if needed. Safe to call repeatedly for the same (userID, name)
+// pair — e.g. from the AI worker, where generated tags routinely repeat
+// across attachments.
+func FindOrCreateTag(name string, userID string, db *gorm.DB) (*models.Tag, error) {
+	tag := models.Tag{UserID: userID, Name: name}
+	if err := db.Where(models.Tag{UserID: userID, Name: name}).FirstOrCreate(&tag).Error; err != nil {
 		return nil, err
 	}
 	return &tag, nil
@@ -50,7 +63,12 @@ func ConnectTagToAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB
 		AttachmentID: attachmentID,
 		TagID:        tagID,
 	}
-	if err := db.Table("attachments_tags").Create(&attachmentTag).Error; err != nil {
+	// DoNothing on conflict: the (attachment_id, tag_id) pair may already be
+	// linked (e.g. the AI worker retrying a previously partially-processed
+	// attachment) — that's not an error, just a no-op.
+	if err := db.Table("attachments_tags").
+		Clauses(clause.OnConflict{DoNothing: true}).
+		Create(&attachmentTag).Error; err != nil {
 		return err
 	}
 	return nil

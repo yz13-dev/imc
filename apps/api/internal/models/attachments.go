@@ -21,6 +21,11 @@ type Attachment struct {
 	UserID     string    `json:"user_id"`
 	Label      string    `json:"label"`
 	IsDeleted  bool      `gorm:"default:false" json:"is_deleted"`
+
+	Description   *string    `json:"description"`
+	AIStatus      string     `gorm:"column:ai_status;default:pending" json:"ai_status"`
+	AIProcessedAt *time.Time `gorm:"column:ai_processed_at" json:"ai_processed_at"`
+	AIAttempts    int        `gorm:"column:ai_attempts;default:0" json:"ai_attempts"`
 	// Not a real column — populated after the fact from collections_attachments
 	// (many-to-many, see migrations/15_collections_attachments.up.sql). Only
 	// set on authenticated (/my/...) responses, never on public ones, since it

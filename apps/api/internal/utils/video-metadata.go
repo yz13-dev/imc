@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -63,4 +64,38 @@ func ProbeVideo(path string) (VideoMetadata, error) {
 		Height:     height,
 		DurationMs: int64(math.Round(seconds * 1000)),
 	}, nil
+}
+
+// ExtractKeyframe grabs a single JPEG frame from the middle of the video at
+// `path` (by `durationMs`, as already computed via ProbeVideo) and returns
+// it as encoded JPEG bytes, streamed straight from ffmpeg's stdout without
+// touching disk for the output frame.
+func ExtractKeyframe(path string, durationMs int64) ([]byte, error) {
+	seekSeconds := float64(durationMs) / 2 / 1000
+	if seekSeconds < 0 {
+		seekSeconds = 0
+	}
+
+	cmd := exec.Command(
+		"ffmpeg",
+		"-ss", strconv.FormatFloat(seekSeconds, 'f', 3, 64),
+		"-i", path,
+		"-frames:v", "1",
+		"-f", "image2pipe",
+		"-vcodec", "mjpeg",
+		"-",
+	)
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("ffmpeg keyframe extraction failed: %w: %s", err, stderr.String())
+	}
+	if stdout.Len() == 0 {
+		return nil, fmt.Errorf("ffmpeg produced no keyframe output")
+	}
+
+	return stdout.Bytes(), nil
 }

@@ -22,3 +22,24 @@ func SaveToTempFile(file multipart.File) (string, error) {
 	tmp.Close()
 	return tmp.Name(), nil
 }
+
+// SaveBytesToTempFile is the []byte counterpart of SaveToTempFile, for
+// callers that already hold the file in memory (e.g. after downloading it
+// from S3) instead of a multipart.File. Same cleanup contract: on success
+// the caller owns removing the returned path.
+func SaveBytesToTempFile(data []byte) (string, error) {
+	tmp, err := os.CreateTemp("", "download-*")
+	if err != nil {
+		return "", err
+	}
+
+	_, err = tmp.Write(data)
+	if err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return "", err
+	}
+
+	tmp.Close()
+	return tmp.Name(), nil
+}
