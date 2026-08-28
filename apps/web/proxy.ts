@@ -9,6 +9,7 @@ export const config = {
     "/trash/:path*",
     "/new/:path*",
     "/ref/:path*",
-    "/:user((?!auth$)[^/]+)/:path+",
+    "/:user/:collection",
+    "/:user/:collection/:item",
   ],
 };
