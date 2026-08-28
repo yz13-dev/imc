@@ -21,15 +21,15 @@ export function getSiteUrl(path?: string) {
 // Browser-facing callers (client-side fetch, EventSource, <img src>) can't
 // attach a custom Authorization header or read apps/web's httpOnly session
 // cookie themselves -- they go through this app's own same-origin proxy
-// (app/proxy/{api,assets}/[...path]/route.ts, shared via lib/proxy.ts)
+// (app/api/[...path]/route.ts, shared via lib/proxy.ts)
 // instead of the real backend directly. Server-side code can still use
 // getApiUrl/getAssetsUrl to call the real backend directly.
 export function getApiProxyUrl(path?: string) {
   const suffix = path ? (path.startsWith("/") ? path : `/${path}`) : ""
-  return getSiteUrl(`/proxy/api${suffix}`)
+  return getSiteUrl(`/api${suffix}`)
 }
 
 export function getAssetsProxyUrl(path?: string) {
   const suffix = path ? (path.startsWith("/") ? path : `/${path}`) : ""
-  return getSiteUrl(`/proxy/assets${suffix}`)
+  return getSiteUrl(`/api/assets${suffix}`)
 }

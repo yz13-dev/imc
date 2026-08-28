@@ -94,7 +94,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
   // rather than a differently-sized/qualified variant of the same asset.
   const preloadMedia = async () => {
     if (isVideo || typeof window === "undefined") return
-    const rawUrl = getAssetsProxyUrl(`/v1/attachments/${id}/file`)
+    const rawUrl = getAssetsProxyUrl(`/${id}`)
     const img = new window.Image()
     img.src = isGif ? rawUrl : resolveAssetImageUrl(rawUrl, 100)
     try {

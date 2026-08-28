@@ -40,7 +40,7 @@
         "@tanstack/react-query": "^5.101.1",
         "@tanstack/react-query-devtools": "^5.101.1",
         "@workspace/ui": "workspace:*",
-        "@yz13/auth-sdk": "^0.5.0",
+        "@yz13/auth-sdk": "^0.6.1",
         "axios": "^1.18.0",
         "babel-plugin-react-compiler": "^1.0.0",
         "blurhash": "^2.0.5",
@@ -693,7 +693,7 @@
 
     "@wxt-dev/storage": ["@wxt-dev/storage@1.2.8", "", { "dependencies": { "@wxt-dev/browser": "^0.1.37", "async-mutex": "^0.5.0", "dequal": "^2.0.3" } }, "sha512-GWCFKgF5+d7eslOxUDFC70ypA9njupmJb1nQM8uZoX0J3sWT2BO5xJLzb1sYahWAfID9p2BMtnUBN1lkWxPsbQ=="],
 
-    "@yz13/auth-sdk": ["@yz13/auth-sdk@0.5.0", "", { "dependencies": { "jose": "^6.2.3", "server-only": "^0.0.1" }, "peerDependencies": { "better-auth": "^1.6.20", "next": "^16.0.0" }, "optionalPeers": ["better-auth", "next"] }, "sha512-IkuxFPERTEzIWiFc+VC1OG5DZSp0r3ZCrO1PA/HBnT6HaKVfc8uKvG9r1LfDRzYkiY97hMkHd/No0aaX61IYJw=="],
+    "@yz13/auth-sdk": ["@yz13/auth-sdk@0.6.1", "", { "dependencies": { "jose": "^6.2.3", "server-only": "^0.0.1" }, "peerDependencies": { "better-auth": "^1.6.20", "next": "^16.0.0" }, "optionalPeers": ["better-auth", "next"] }, "sha512-JDH/1zjSO6k7CMVesScP3/8BHvliUOXpjYi8FgVqtaK5dENTgeJOAlnK4RwZvQnLFOr4FRK5MC6wUE6qU7zoUQ=="],
 
     "accepts": ["accepts@2.0.0", "", { "dependencies": { "mime-types": "^3.0.0", "negotiator": "^1.0.0" } }, "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng=="],
 

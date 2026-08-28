@@ -30,7 +30,7 @@ export default function RefContent({ quality = 75, id, blurhash, src, className 
   const isGif = mimeType.startsWith("image/gif")
 
   const resolvedId = id // getRefSrc(src) || src;
-  const refSrc = getAssetsProxyUrl(`/v1/attachments/${resolvedId || src}/file`)
+  const refSrc = getAssetsProxyUrl(`/${resolvedId || src}`)
   const hasBlurhash = blurhash !== undefined || blurhash !== ""
   const mediaStyle: React.CSSProperties | undefined = viewTransitionName ? { viewTransitionName } : undefined
 
