@@ -1,4 +1,3 @@
-import { getSiteUrl } from "@/lib/url";
 import { Button } from "@workspace/ui/components/button";
 import { ImcWithTextIcon } from "@workspace/ui/components/logo/imc";
 import { Separator } from "@workspace/ui/components/separator";
@@ -56,27 +55,8 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <Separator />
-        <div className="relative">
-          <div className="dark size-full absolute inset-0 bg-linear-to-b from-transparent from-20% via-background/75 to-90% to-background" />
-          <div className="container mx-auto p-6 bg-background dark border-x relative">
-            <div className="w-full aspect-video relative rounded-md overflow-clip">
-              <div className="size-full absolute inset-0 z-10 bg-linear-to-b from-transparent from-20% via-background/75 to-90% to-background" />
-              <iframe
-                src={getSiteUrl("/embeded/6a66def2-f4c1-4909-b2ec-6daffc26d25b")}
-                className="size-full"
-              />
-              {/*<ThemeImage
-                srcLight="/hero/demo-shot.png"
-                srcDark="/hero/demo-shot-dark.png"
-                fill
-                alt="Demo shot"
-              />*/}
-            </div>
-          </div>
-        </div>
       </main>
-      <footer className="dark bg-background relative">
+      <footer className="dark bg-background border-y relative">
         <Separator />
         <div className="flex">
           <div className="container shrink-0 mx-auto p-6 border-x">
