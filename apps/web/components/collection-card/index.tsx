@@ -180,7 +180,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
                 />
               }
               <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
-              <CardFooter duration_ms={duration_ms} href={href} source={source} tags={cardTags} label={label} />
+              <CardFooter duration_ms={duration_ms} href={href} source={source} label={label} />
             </RefContent>
           </AnimatePresence>
           <div className="p-2 hidden">

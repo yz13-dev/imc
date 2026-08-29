@@ -3,6 +3,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/api/Dockerfile.worker
+      network: host
     env_file:
       - .env
     restart: unless-stopped

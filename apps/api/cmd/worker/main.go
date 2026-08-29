@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -56,6 +57,8 @@ type Worker struct {
 	concurrency int
 	maxAttempts int
 }
+
+const globalTagVocabularyLimit = 200
 
 func (w *Worker) processBatch(ctx context.Context) {
 	attachments, err := repositories.ClaimPendingAttachments(w.batchSize, w.db)
@@ -123,10 +126,16 @@ func (w *Worker) processAttachmentInner(ctx context.Context, attachment models.A
 		mimeType = "image/png"
 	}
 
-	result, err := ai.AnalyzeImage(ctx, w.aiClient, imageBytes, mimeType)
+	existingTags, err := repositories.ListGlobalTagNames(globalTagVocabularyLimit, w.db)
+	if err != nil {
+		return fmt.Errorf("load existing tags: %w", err)
+	}
+
+	result, err := ai.AnalyzeImage(ctx, w.aiClient, imageBytes, mimeType, existingTags)
 	if err != nil {
 		return err
 	}
+	result.Tags = canonicalizeTags(result.Tags, existingTags)
 
 	return w.db.Transaction(func(tx *gorm.DB) error {
 		for _, tagName := range result.Tags {
@@ -140,6 +149,38 @@ func (w *Worker) processAttachmentInner(ctx context.Context, attachment models.A
 		}
 		return repositories.MarkAttachmentAIDone(attachment.ID, result.Name, result.Description, tx)
 	})
+}
+
+func canonicalizeTags(tags []string, existingTags []string) []string {
+	canonical := make(map[string]string, len(existingTags))
+	for _, tag := range existingTags {
+		key := strings.ToLower(strings.TrimSpace(tag))
+		if key != "" {
+			canonical[key] = tag
+		}
+	}
+
+	seen := make(map[string]struct{}, len(tags))
+	result := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		key := strings.ToLower(strings.TrimSpace(tag))
+		if existing, ok := canonical[key]; ok {
+			tag = existing
+		}
+		key = strings.ToLower(strings.TrimSpace(tag))
+		if key == "" {
+			continue
+		}
+		if _, ok := seen[key]; ok {
+			continue
+		}
+		seen[key] = struct{}{}
+		result = append(result, tag)
+		if len(result) == 8 {
+			break
+		}
+	}
+	return result
 }
 
 func extractVideoFrame(data []byte) (frame []byte, mimeType string, err error) {

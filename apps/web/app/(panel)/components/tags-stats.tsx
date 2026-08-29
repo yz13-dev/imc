@@ -10,7 +10,6 @@ function Tags({ tags = [] }: { tags?: TagWithCount[] }) {
   const [tagQuery, setTagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
 
   return tags
-    .toSorted((a, b) => a.name.localeCompare(b.name))
     .map((tag) => {
       const isActive = tagQuery?.includes(tag.name)
       return (

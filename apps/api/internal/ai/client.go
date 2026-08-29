@@ -17,7 +17,8 @@ const defaultModel = "dashscope/qwen3.5-flash"
 
 const systemPrompt = `You are an assistant that labels media for a personal media library.
 Given a single image, respond with ONLY a JSON object (no markdown, no commentary) shaped like:
-{"name": "short title, max 60 characters", "description": "one or two sentence description", "tags": ["lowercase", "single-word-or-short-phrase", "up to 8 tags"]}`
+{"name": "very short title, 2-4 words, max 40 characters", "description": "one or two sentence description", "tags": ["lowercase", "single-word-or-short-phrase", "only relevant tags"]}
+Use concise labels such as "space wallpaper" or "dark mode UI". Return only useful, distinct tags: usually 1-4 tags, and never more than 8. Do not fill the quota with generic or redundant tags.`
 
 // AIResult is the sanitized outcome of analyzing one image.
 type AIResult struct {
@@ -53,15 +54,23 @@ func modelName() string {
 
 // AnalyzeImage sends a single image to the configured vision model and
 // returns a sanitized name/description/tags result.
-func AnalyzeImage(ctx context.Context, client *openai.Client, imageBytes []byte, mimeType string) (AIResult, error) {
+func AnalyzeImage(ctx context.Context, client *openai.Client, imageBytes []byte, mimeType string, existingTags []string) (AIResult, error) {
 	dataURL := fmt.Sprintf("data:%s;base64,%s", mimeType, base64.StdEncoding.EncodeToString(imageBytes))
+	instruction := "Label this image."
+	if len(existingTags) > 0 {
+		tagList, err := json.Marshal(existingTags)
+		if err != nil {
+			return AIResult{}, fmt.Errorf("failed to encode existing tags: %w", err)
+		}
+		instruction = fmt.Sprintf("Label this image. Existing tag vocabulary: %s. Reuse a tag from this list only when it genuinely fits the image; otherwise create a new, specific tag. Use tag names from the list exactly when reusing them.", tagList)
+	}
 
 	resp, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 		Model: modelName(),
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage(systemPrompt),
 			openai.UserMessage([]openai.ChatCompletionContentPartUnionParam{
-				openai.TextContentPart("Label this image."),
+				openai.TextContentPart(instruction),
 				openai.ImageContentPart(openai.ChatCompletionContentPartImageImageURLParam{URL: dataURL}),
 			}),
 		},
@@ -88,10 +97,23 @@ func parseResult(content string) (AIResult, error) {
 	}
 
 	return AIResult{
-		Name:        strings.TrimSpace(truncate(raw.Name, 60)),
+		Name:        compactName(raw.Name),
 		Description: strings.TrimSpace(raw.Description),
 		Tags:        sanitizeTags(raw.Tags),
 	}, nil
+}
+
+func compactName(s string) string {
+	words := strings.Fields(strings.TrimSpace(s))
+	if len(words) > 4 {
+		words = words[:4]
+	}
+	s = strings.Join(words, " ")
+	runes := []rune(s)
+	if len(runes) > 40 {
+		s = string(runes[:40])
+	}
+	return strings.TrimSpace(s)
 }
 
 func sanitizeTags(tags []string) []string {
@@ -112,11 +134,4 @@ func sanitizeTags(tags []string) []string {
 		}
 	}
 	return out
-}
-
-func truncate(s string, max int) string {
-	if len(s) <= max {
-		return s
-	}
-	return s[:max]
 }

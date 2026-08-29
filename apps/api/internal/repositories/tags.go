@@ -38,6 +38,26 @@ func SearchTags(query string, UserID string, db *gorm.DB) ([]models.Tag, error) 
 	return tags, nil
 }
 
+// ListGlobalTagNames returns a bounded vocabulary of the most commonly used
+// tag names. Only names are returned — no user IDs, counts, or relationships.
+func ListGlobalTagNames(limit int, db *gorm.DB) ([]string, error) {
+	if limit <= 0 {
+		return []string{}, nil
+	}
+
+	var names []string
+	if err := db.Table("tags").
+		Select("name").
+		Group("name").
+		Order("COUNT(*) DESC").
+		Order("name ASC").
+		Limit(limit).
+		Pluck("name", &names).Error; err != nil {
+		return nil, err
+	}
+	return names, nil
+}
+
 // GetTagsWithCounts returns every tag the user has actually used (INNER
 // JOINs, so a tag with zero matching attachments is excluded), along with
 // how many non-deleted attachments carry it. When collectionID is set, the
@@ -52,7 +72,7 @@ func GetTagsWithCounts(userID string, collectionID *uuid.UUID, db *gorm.DB) ([]m
 		q = q.Joins("JOIN collections_attachments ON collections_attachments.attachment_id = attachments.id AND collections_attachments.collection_id = ?", *collectionID)
 	}
 	var results []models.TagWithCount
-	if err := q.Group("tags.id").Order("tags.name ASC").Scan(&results).Error; err != nil {
+	if err := q.Group("tags.id").Order("count DESC").Order("tags.name ASC").Scan(&results).Error; err != nil {
 		return nil, err
 	}
 	return results, nil
