@@ -43,3 +43,23 @@ func SaveBytesToTempFile(data []byte) (string, error) {
 	tmp.Close()
 	return tmp.Name(), nil
 }
+
+// SaveReaderToTempFile streams reader contents to a temporary file without
+// materializing the whole object in memory.
+func SaveReaderToTempFile(reader io.Reader) (string, error) {
+	tmp, err := os.CreateTemp("", "download-*")
+	if err != nil {
+		return "", err
+	}
+
+	if _, err := io.Copy(tmp, reader); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return "", err
+	}
+	if err := tmp.Close(); err != nil {
+		os.Remove(tmp.Name())
+		return "", err
+	}
+	return tmp.Name(), nil
+}

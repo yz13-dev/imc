@@ -111,22 +111,23 @@ func (w *Worker) processAttachmentInner(ctx context.Context, attachment models.A
 	}
 	defer obj.Body.Close()
 
-	data, err := io.ReadAll(obj.Body)
-	if err != nil {
-		return fmt.Errorf("read s3 object: %w", err)
-	}
-
-	imageBytes := data
+	var imageBytes []byte
 	mimeType := attachment.MimeType
 
 	switch {
 	case attachment.Type == "video":
-		imageBytes, mimeType, err = extractVideoFrame(data)
+		imageBytes, mimeType, err = extractVideoFrame(obj.Body)
 		if err != nil {
 			return err
 		}
-	case attachment.MimeType == "image/gif":
-		imageBytes, err = utils.FirstGifFrameAsPNG(data)
+	default:
+		imageBytes, err = io.ReadAll(obj.Body)
+		if err != nil {
+			return fmt.Errorf("read s3 object: %w", err)
+		}
+	}
+	if attachment.MimeType == "image/gif" {
+		imageBytes, err = utils.FirstGifFrameAsPNG(imageBytes)
 		if err != nil {
 			return fmt.Errorf("decode gif frame: %w", err)
 		}
@@ -185,8 +186,8 @@ func canonicalizeTags(tags []string, existingTags []string) []string {
 	return result
 }
 
-func extractVideoFrame(data []byte) (frame []byte, mimeType string, err error) {
-	path, err := utils.SaveBytesToTempFile(data)
+func extractVideoFrame(reader io.Reader) (frame []byte, mimeType string, err error) {
+	path, err := utils.SaveReaderToTempFile(reader)
 	if err != nil {
 		return nil, "", fmt.Errorf("save video to temp file: %w", err)
 	}
