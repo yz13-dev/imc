@@ -118,30 +118,24 @@ func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID string, db *gorm
 }
 
 func GetCollectionAttachments(collectionID uuid.UUID, UserID string, tagNames []string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
-	var collectionAttachments []models.CollectionAttachment
-	if err := db.
-		Table("collections_attachments").
-		Where("collection_id = ?", collectionID).
-		Find(&collectionAttachments).Error; err != nil {
+	var attachments []models.AttachmentWithTags
+	query := db.
+		Table("attachments").
+		Distinct("attachments.*").
+		Joins("JOIN collections_attachments ON collections_attachments.attachment_id = attachments.id").
+		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
+		Where("collections_attachments.collection_id = ? AND attachments.user_id = ? AND attachments.is_deleted = false", collectionID, UserID)
+	query = filterByTagNames(query, UserID, tagNames)
+	if err := query.
+		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).
+		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
-
-	if len(collectionAttachments) == 0 {
-		return []models.AttachmentWithTags{}, nil
-	}
-
-	ids := make([]uuid.UUID, len(collectionAttachments))
-	for i, attachment := range collectionAttachments {
-		ids[i] = attachment.AttachmentID
-	}
-
-	attachments, err := GetAttachmentsWithTags(ids, UserID, tagNames, db)
-	if err != nil {
+	if err := attachCollectionIDs(attachments, db); err != nil {
 		return nil, err
 	}
-
 	return attachments, nil
-
 }
 
 func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]models.AttachmentWithTags, error) {
@@ -155,28 +149,18 @@ func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]mode
 		return nil, err
 	}
 
-	var collectionAttachments []models.CollectionAttachment
+	var attachments []models.AttachmentWithTags
 	if err := db.
-		Table("collections_attachments").
-		Where("collection_id = ?", collectionID).
-		Find(&collectionAttachments).Error; err != nil {
+		Table("attachments").
+		Distinct("attachments.*").
+		Joins("JOIN collections_attachments ON collections_attachments.attachment_id = attachments.id").
+		Preload("AttachmentTags.Tag").
+		Preload("AttachmentSource.Source").
+		Where("collections_attachments.collection_id = ? AND attachments.is_deleted = false", collectionID).
+		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).
+		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
-
-	if len(collectionAttachments) == 0 {
-		return []models.AttachmentWithTags{}, nil
-	}
-
-	ids := make([]uuid.UUID, len(collectionAttachments))
-	for i, attachment := range collectionAttachments {
-		ids[i] = attachment.AttachmentID
-	}
-
-	attachments, err := GetPublicAttachmentsWithTags(ids, db)
-	if err != nil {
-		return nil, err
-	}
-
 	return attachments, nil
 
 }
@@ -249,6 +233,21 @@ func GetPublicAttachment(attachmentID uuid.UUID, db *gorm.DB) (*models.Attachmen
 		return nil, err
 	}
 	return &attachment, nil
+}
+
+// GetPublicAttachmentFile loads only the fields needed to authorize and serve
+// an asset. Asset requests can be far more frequent than detail-page reads, so
+// they must not preload tags or source metadata.
+func GetPublicAttachmentFile(attachmentID uuid.UUID, db *gorm.DB) (models.Attachment, error) {
+	var attachment models.Attachment
+	if err := db.
+		Table("attachments").
+		Where("attachments.id = ? AND attachments.is_deleted = false", attachmentID).
+		Where("(attachments.public = true OR EXISTS (SELECT 1 FROM collections_attachments ca JOIN collections c ON c.id = ca.collection_id WHERE ca.attachment_id = attachments.id AND c.public = true))").
+		First(&attachment).Error; err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
 }
 
 type ListQuery struct {

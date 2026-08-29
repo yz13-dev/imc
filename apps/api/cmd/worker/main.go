@@ -19,6 +19,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/openai/openai-go"
 	"github.com/yz13-dev/imc/api/internal/ai"
+	"github.com/yz13-dev/imc/api/internal/database"
 	"github.com/yz13-dev/imc/api/internal/models"
 	"github.com/yz13-dev/imc/api/internal/repositories"
 	"github.com/yz13-dev/imc/api/internal/storage"
@@ -232,6 +233,9 @@ func main() {
 	gormdb, err := gorm.Open(postgres.Open(GetDSN()), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("worker: failed to open database: %v", err)
+	}
+	if err := database.ConfigurePool(gormdb); err != nil {
+		log.Fatalf("worker: failed to configure database pool: %v", err)
 	}
 
 	s3Client, err := storage.NewS3Client()

@@ -32,7 +32,12 @@ func FindOrCreateTag(name string, userID string, db *gorm.DB) (*models.Tag, erro
 
 func SearchTags(query string, UserID string, db *gorm.DB) ([]models.Tag, error) {
 	var tags []models.Tag
-	if err := db.Table("tags").Where("user_id = ? AND name LIKE ?", UserID, "%"+query+"%").Find(&tags).Error; err != nil {
+	if err := db.
+		Table("tags").
+		Where("user_id = ? AND name LIKE ?", UserID, "%"+query+"%").
+		Order("name ASC").
+		Limit(50).
+		Find(&tags).Error; err != nil {
 		return nil, err
 	}
 	return tags, nil

@@ -3,13 +3,25 @@ package storage
 import (
 	"context"
 	"os"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
+var (
+	s3ClientMu sync.Mutex
+	s3Client   *s3.Client
+)
+
 func NewS3Client() (*s3.Client, error) {
+	s3ClientMu.Lock()
+	defer s3ClientMu.Unlock()
+
+	if s3Client != nil {
+		return s3Client, nil
+	}
 
 	// log.Println("S3_BUCKET_NAME", os.Getenv("S3_BUCKET_NAME"))
 	// log.Println("S3_REGION", os.Getenv("S3_REGION"))
@@ -33,12 +45,12 @@ func NewS3Client() (*s3.Client, error) {
 	}
 	endpoint := os.Getenv("S3_ENDPOINT_URL")
 
-	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+	s3Client = s3.NewFromConfig(cfg, func(o *s3.Options) {
 		o.BaseEndpoint = &endpoint
 		o.UsePathStyle = true
 	})
 
-	return client, nil
+	return s3Client, nil
 }
 
 func GetBucketName() string {

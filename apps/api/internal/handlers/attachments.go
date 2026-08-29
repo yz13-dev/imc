@@ -269,16 +269,12 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("ID", AttachmentID)
-
-	log.Println("ID", AttachmentID)
-
 	var attachment models.Attachment
 	isPublic := false
 
-	publicAttachment, publicErr := services.GetPublicAttachment(AttachmentID, db)
+	publicAttachment, publicErr := services.GetPublicAttachmentFile(AttachmentID, db)
 	if publicErr == nil {
-		attachment = publicAttachment.Attachment
+		attachment = publicAttachment
 		isPublic = true
 	} else {
 		collectionAttachment, err := services.GetAttachmentWithCollection(AttachmentID, db)
@@ -336,8 +332,6 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 	// 	userID,
 	// 	attachmentID,
 	// )
-	log.Println("key", key)
-
 	if attachment.Type == "image" {
 		serveImageAttachment(w, r, key, isPublic)
 		return
@@ -353,7 +347,6 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		Bucket: aws.String(storage.GetBucketName()),
 		Key:    aws.String(key),
 	})
-	log.Println("obj", err)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

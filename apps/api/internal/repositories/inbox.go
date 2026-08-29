@@ -18,43 +18,28 @@ func PostInInbox(UserID string, db *gorm.DB, attachmentID uuid.UUID) error {
 }
 
 func GetInboxAttachments(UserID string, tagNames []string, db *gorm.DB) ([]models.InboxItem, error) {
-	var inboxes []models.Inbox
-	if err := db.Table("inbox_items").Where("user_id = ?", UserID).Order("created_at DESC").Find(&inboxes).Error; err != nil {
+	var items []models.InboxItem
+	query := db.
+		Table("inbox_items").
+		Select("inbox_items.*").
+		Joins("JOIN attachments ON attachments.id = inbox_items.attachment_id").
+		Preload("Attachment.AttachmentTags.Tag").
+		Preload("Attachment.AttachmentSource.Source").
+		Where("inbox_items.user_id = ? AND attachments.user_id = ? AND attachments.is_deleted = false", UserID, UserID)
+	query = filterByTagNames(query, UserID, tagNames)
+	if err := query.Order("inbox_items.created_at DESC").Find(&items).Error; err != nil {
 		return nil, err
 	}
 
-	if len(inboxes) == 0 {
-		return []models.InboxItem{}, nil
+	attachments := make([]models.AttachmentWithTags, len(items))
+	for i := range items {
+		attachments[i] = items[i].Attachment
 	}
-
-	ids := make([]uuid.UUID, len(inboxes))
-	for i, inbox := range inboxes {
-		ids[i] = inbox.AttachmentID
-	}
-
-	attachments, err := GetAttachmentsWithTags(ids, UserID, tagNames, db)
-	if err != nil {
+	if err := attachCollectionIDs(attachments, db); err != nil {
 		return nil, err
 	}
-
-	attachmentsMap := make(map[uuid.UUID]models.AttachmentWithTags, len(attachments))
-	for _, attachment := range attachments {
-		attachmentsMap[attachment.ID] = attachment
-	}
-
-	items := make([]models.InboxItem, 0, len(inboxes))
-	for _, inbox := range inboxes {
-		attachment, ok := attachmentsMap[inbox.AttachmentID]
-		if !ok {
-			continue
-		}
-
-		items = append(items, models.InboxItem{
-			AttachmentID: inbox.AttachmentID,
-			UserID:       UserID,
-			Attachment:   attachment,
-			CreatedAt:    inbox.CreatedAt,
-		})
+	for i := range items {
+		items[i].Attachment = attachments[i]
 	}
 
 	return items, nil

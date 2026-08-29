@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/yz13-dev/imc/api/internal/database"
 	"github.com/yz13-dev/imc/api/internal/events"
 	"github.com/yz13-dev/imc/api/internal/handlers"
 	internalMiddleware "github.com/yz13-dev/imc/api/internal/middleware"
@@ -52,6 +53,9 @@ func main() {
 	gormdb, err := gorm.Open(postgres.Open(GetDSN()), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
+	}
+	if err := database.ConfigurePool(gormdb); err != nil {
+		log.Fatalf("Failed to configure database pool: %v", err)
 	}
 
 	r := chi.NewRouter()
