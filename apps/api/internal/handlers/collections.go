@@ -126,50 +126,22 @@ func PostCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection, err := services.GetCollection(collectionID, userID, db)
+	collectionUUID, err := uuid.Parse(collectionID)
+	if err != nil {
+		http.Error(w, "collection ID is required", http.StatusBadRequest)
+		return
+	}
+	collectionAttachment, removedFromInbox, err := services.MoveAttachmentToCollection(collectionUUID, attachmentId, userID, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	attachment, err := services.GetAttachmentWithInboxCheck(attachmentId, userID, db)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if attachment.Inbox != nil {
-		log.Println("Need to remove from inbox before move to collection")
-		if err := services.DeleteFromAttachmentInbox(attachmentId, userID, db); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+	if hub := middleware.GetEventsHub(r.Context()); hub != nil {
+		if removedFromInbox {
+			hub.Publish(userID, events.Event{Type: "inbox:remove", Data: models.EventData{ID: attachmentId.String()}})
 		}
-		hub := middleware.GetEventsHub(r.Context())
-		if hub == nil {
-			log.Println("events hub not found")
-			return
-		}
-
-		const InboxEventKey = "inbox:remove"
-		hub.Publish(userID, events.Event{
-			Type: InboxEventKey,
-			Data: models.EventData{
-				ID: attachmentId.String(),
-			},
-		})
-		const CollectionEventKey = "collection:update"
-		hub.Publish(userID, events.Event{
-			Type: CollectionEventKey,
-			Data: models.EventData{
-				ID: collection.ID.String(),
-			},
-		})
-	}
-
-	collectionAttachment, err := services.CreateCollectionAttachment(collection.ID, attachmentId, db)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		hub.Publish(userID, events.Event{Type: "collection:update", Data: models.EventData{ID: collectionUUID.String()}})
 	}
 
 	w.Header().Set("Content-Type", "application/json")
