@@ -32,7 +32,7 @@ type jwksResponse struct {
 }
 
 var (
-	jwksCache   = map[string]ed25519.PublicKey{}
+	jwksCache   = map[string]map[string]ed25519.PublicKey{}
 	jwksCacheMu sync.RWMutex
 	jwksFetched = map[string]time.Time{}
 	jwksTTL     = 10 * time.Minute
@@ -45,10 +45,10 @@ func fetchJWKS(base string) (map[string]ed25519.PublicKey, error) {
 	if ok && time.Since(fetchedAt) < jwksTTL {
 		jwksCacheMu.RLock()
 		defer jwksCacheMu.RUnlock()
-		return jwksCache, nil
+		return jwksCache[base], nil
 	}
 
-	resp, err := http.Get(fmt.Sprintf("%s/api/auth/jwks", base))
+	resp, err := authHTTPClient.Get(fmt.Sprintf("%s/api/auth/jwks", base))
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func fetchJWKS(base string) (map[string]ed25519.PublicKey, error) {
 	}
 
 	jwksCacheMu.Lock()
-	jwksCache = keys
+	jwksCache[base] = keys
 	jwksFetched[base] = time.Now()
 	jwksCacheMu.Unlock()
 

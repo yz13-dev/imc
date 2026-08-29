@@ -46,6 +46,28 @@ func parseTagsQuery(r *http.Request) []string {
 	return tags
 }
 
+const (
+	defaultListLimit = 25
+	maxListLimit     = 100
+)
+
+func parseAttachmentListQuery(r *http.Request) repositories.ListQuery {
+	offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
+	if err != nil || offset < 0 {
+		offset = 0
+	}
+
+	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+	if err != nil || limit <= 0 {
+		limit = defaultListLimit
+	}
+	if limit > maxListLimit {
+		limit = maxListLimit
+	}
+
+	return repositories.ListQuery{Offset: offset, Limit: limit, Tags: parseTagsQuery(r)}
+}
+
 func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {
@@ -663,19 +685,6 @@ func GetPublicCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
-
-	offset := r.URL.Query().Get("offset")
-	limit := r.URL.Query().Get("limit")
-
-	Offset, err := strconv.Atoi(offset)
-	if err != nil {
-		Offset = 0
-	}
-	Limit, err := strconv.Atoi(limit)
-	if err != nil {
-		Limit = 25
-	}
-
 	user, ok := middleware.GetUser(r.Context())
 	if !ok {
 		http.Error(w, "user not found", http.StatusUnauthorized)
@@ -690,7 +699,7 @@ func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetAllAttachments(userID, repositories.ListQuery{Offset: Offset, Limit: Limit, Tags: parseTagsQuery(r)}, db)
+	attachments, err := services.GetAllAttachments(userID, parseAttachmentListQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

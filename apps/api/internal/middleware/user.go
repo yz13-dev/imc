@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	apiAuth "github.com/yz13-dev/imc/api/internal/auth"
@@ -19,9 +18,7 @@ func UserInstance() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			user, err := apiAuth.GetUser(r.Context(), r.Cookies(), r.Header.Get("Authorization"))
-
-			log.Println("user", user, err)
+			user, _, err := apiAuth.ResolveUser(r.Context(), r.Cookies(), r.Header.Get("Authorization"))
 
 			var ctx context.Context
 			if err != nil {

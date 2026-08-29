@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
+	"time"
 
 	"github.com/yz13-dev/imc/api/internal/models"
 )
@@ -16,49 +18,125 @@ type GetUserResponse struct {
 	Session models.Session `json:"session"`
 }
 
-// GetUser resolves the caller's identity against the central auth service.
-// It forwards both cookies (the web app's old path, via crossSubDomainCookies)
-// and the Authorization header (the browser extension's path, via
-// better-auth's bearer plugin) to get-session first — the extension has no
-// cookie jar for the auth service's origin, so cookie-only forwarding left
-// its requests silently unauthenticated.
-//
-// Both apps/web (via @yz13/auth-sdk's OAuth access token) and the browser
-// extension (via a plain identity token minted at /api/auth/token) send a
-// *different* kind of bearer credential than a real session token.
-// get-session only recognizes actual session tokens (from bearer()/cookies)
-// and returns "200 null" -- not an error -- for anything else, so these
-// silently resolve to no user. Both are EdDSA JWTs signed by the same JWKS
-// central auth publishes, just carrying different claims, so they're
-// verified locally instead of via another round trip to auth. As a last
-// resort (e.g. an opaque, non-JWT access token), fall back to
-// /oauth2/userinfo, the endpoint that validates OAuth access tokens.
+type ResolutionSource string
+
+const (
+	ResolutionAnonymous   ResolutionSource = "anonymous"
+	ResolutionBearerJWT   ResolutionSource = "bearer_jwt"
+	ResolutionCookieCache ResolutionSource = "cookie_cache"
+	ResolutionAuthService ResolutionSource = "auth_service"
+	ResolutionUserInfo    ResolutionSource = "userinfo"
+	ResolutionFailed      ResolutionSource = "failed"
+)
+
+type ResolutionStats struct {
+	Anonymous   uint64
+	BearerJWT   uint64
+	CookieCache uint64
+	AuthService uint64
+	UserInfo    uint64
+	Failed      uint64
+}
+
+var (
+	authHTTPClient = &http.Client{Timeout: 2 * time.Second}
+	cookieSessions = newSessionCache(cookieSessionCacheTTL)
+	authBaseURL    string
+	authStats      struct {
+		anonymous   atomic.Uint64
+		bearerJWT   atomic.Uint64
+		cookieCache atomic.Uint64
+		authService atomic.Uint64
+		userInfo    atomic.Uint64
+		failed      atomic.Uint64
+	}
+)
+
+func AuthStats() ResolutionStats {
+	return ResolutionStats{
+		Anonymous:   authStats.anonymous.Load(),
+		BearerJWT:   authStats.bearerJWT.Load(),
+		CookieCache: authStats.cookieCache.Load(),
+		AuthService: authStats.authService.Load(),
+		UserInfo:    authStats.userInfo.Load(),
+		Failed:      authStats.failed.Load(),
+	}
+}
+
+// GetUser resolves the caller's identity against central auth. Signed bearer
+// JWTs are verified locally, successful cookie sessions are cached for a short
+// time, and opaque bearer tokens retain the auth-service fallback path.
 func GetUser(ctx context.Context, cookies []*http.Cookie, authorization string) (*GetUserResponse, error) {
+	user, _, err := ResolveUser(ctx, cookies, authorization)
+	return user, err
+}
 
-	isProd := os.Getenv("APP_ENV") == "production"
+func ResolveUser(ctx context.Context, cookies []*http.Cookie, authorization string) (*GetUserResponse, ResolutionSource, error) {
+	base := getAuthBaseURL()
 
-	base := "https://preview.auth.yz13.dev"
-	if isProd {
-		base = "https://auth.yz13.dev"
+	if token := bearerToken(authorization); looksLikeJWT(token) {
+		if identity, err := verifyIdentityJWT(base, token); err == nil {
+			authStats.bearerJWT.Add(1)
+			return identity, ResolutionBearerJWT, nil
+		}
 	}
 
-	session, err := getSession(ctx, base, cookies, authorization)
-	if err != nil {
-		return nil, err
+	cacheKey := ""
+	canUseCookieCache := len(cookies) > 0 && authorization == ""
+	if canUseCookieCache {
+		cacheKey = cookieSessionCacheKey(base, cookies)
+		if session, ok := cookieSessions.get(cacheKey); ok {
+			authStats.cookieCache.Add(1)
+			return session, ResolutionCookieCache, nil
+		}
 	}
-	if session != nil {
-		return session, nil
+
+	if len(cookies) > 0 || authorization != "" {
+		session, err := getSession(ctx, base, cookies, authorization)
+		if err != nil {
+			authStats.failed.Add(1)
+			return nil, ResolutionFailed, err
+		}
+		if session != nil {
+			if canUseCookieCache {
+				cookieSessions.set(cacheKey, session)
+			}
+			authStats.authService.Add(1)
+			return session, ResolutionAuthService, nil
+		}
 	}
+
 	if authorization == "" {
-		return nil, fmt.Errorf("no session")
+		authStats.anonymous.Add(1)
+		return nil, ResolutionAnonymous, fmt.Errorf("no session")
 	}
 
-	token := strings.TrimPrefix(authorization, "Bearer ")
-	if identity, err := verifyIdentityJWT(base, token); err == nil {
-		return identity, nil
+	user, err := getUserInfo(ctx, base, authorization)
+	if err != nil {
+		authStats.failed.Add(1)
+		return nil, ResolutionFailed, err
+	}
+	authStats.userInfo.Add(1)
+	return user, ResolutionUserInfo, nil
+}
+
+func getAuthBaseURL() string {
+	if authBaseURL != "" {
+		return authBaseURL
 	}
 
-	return getUserInfo(ctx, base, authorization)
+	if os.Getenv("APP_ENV") == "production" {
+		return "https://auth.yz13.dev"
+	}
+	return "https://preview.auth.yz13.dev"
+}
+
+func bearerToken(authorization string) string {
+	return strings.TrimSpace(strings.TrimPrefix(authorization, "Bearer "))
+}
+
+func looksLikeJWT(token string) bool {
+	return strings.Count(token, ".") == 2
 }
 
 func getSession(ctx context.Context, base string, cookies []*http.Cookie, authorization string) (*GetUserResponse, error) {
@@ -76,7 +154,7 @@ func getSession(ctx context.Context, base string, cookies []*http.Cookie, author
 		req.Header.Set("Authorization", authorization)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := authHTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +186,7 @@ func getUserInfo(ctx context.Context, base string, authorization string) (*GetUs
 	}
 	req.Header.Set("Authorization", authorization)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := authHTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

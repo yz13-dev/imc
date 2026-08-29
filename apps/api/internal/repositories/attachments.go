@@ -315,6 +315,7 @@ func GetTrashAttachments(UserID string, db *gorm.DB) ([]models.AttachmentWithTag
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND is_deleted = true", UserID).
+		Order("created_at DESC").
 		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
