@@ -60,3 +60,18 @@ export async function deleteCollection(collectionID: string) {
     return null
   }
 }
+
+export async function updateCollectionPublic(collectionID: string, publicValue: boolean) {
+  try {
+    const { data, error } = await fetch<Collection>({
+      method: "PATCH",
+      url: getApiProxyUrl(`/v1/my/collections/${collectionID}`),
+      body: { public: publicValue }
+    })
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}

@@ -30,6 +30,7 @@ export default function FileUploader({ onFiles, className = "", accept, children
 
   return (
     <div
+      data-file-uploader
       onClick={e => {
         e.stopPropagation()
         ref.current?.click()

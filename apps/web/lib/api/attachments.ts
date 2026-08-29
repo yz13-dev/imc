@@ -26,6 +26,10 @@ export async function updateAttachment(attachmentID: string, body: UpdateAttachm
   }
 }
 
+export async function publishAttachment(attachmentID: string) {
+  return updateAttachment(attachmentID, { public: true })
+}
+
 export async function getInboxAttachments(tags?: string[]): Promise<InboxItem[] | null> {
   try {
     const url = new URL(getApiProxyUrl("/v1/my/attachments/inbox"))

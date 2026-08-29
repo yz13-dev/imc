@@ -13,11 +13,10 @@ import NewCollectionMenu from "../panels/new-collection-menu";
 
 
 type CollectionsGroupProps = {
-  userId: string
   data: Collection[]
 }
 
-export default function CollectionsGroup({ userId, data }: CollectionsGroupProps) {
+export default function CollectionsGroup({ data }: CollectionsGroupProps) {
   const segments = useSelectedLayoutSegments()
   const { toggle } = useDockPanel()
 
@@ -53,30 +52,32 @@ export default function CollectionsGroup({ userId, data }: CollectionsGroupProps
   const collection = (data || []).find(item => item.id === collectionId)
 
   return (
-    <Group group={<Collections />}>
-      {
-        collection
-          ?
-          <Tooltip>
-            <TooltipTrigger render={
-              <Button size="icon" variant="ghost" nativeButton={false} render={<Link href={collectionPath(collection.id)} />}>
-                <LibrarySquareIcon className="size-5" />
-              </Button>
-            }
-            />
-            <TooltipContent>{collection.name}</TooltipContent>
-          </Tooltip>
-          :
-          <Tooltip>
-            <TooltipTrigger render={
-              <Button size="icon" variant="ghost" nativeButton={false} render={<Link href="/dashboard" />}>
-                <LayoutGridIcon className="size-5" />
-              </Button>
-            }
-            />
-            <TooltipContent>Доска</TooltipContent>
-          </Tooltip>
-      }
-    </Group>
+    <>
+      <Group group={<Collections />}>
+        {
+          collection
+            ?
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button size="icon" variant="ghost" nativeButton={false} render={<Link href={collectionPath(collection.id)} />}>
+                  <LibrarySquareIcon className="size-5" />
+                </Button>
+              }
+              />
+              <TooltipContent>{collection.name}</TooltipContent>
+            </Tooltip>
+            :
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button size="icon" variant="ghost" nativeButton={false} render={<Link href="/dashboard" />}>
+                  <LayoutGridIcon className="size-5" />
+                </Button>
+              }
+              />
+              <TooltipContent>Доска</TooltipContent>
+            </Tooltip>
+        }
+      </Group>
+    </>
   )
 }

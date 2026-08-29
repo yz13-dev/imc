@@ -254,13 +254,22 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 	var attachment models.Attachment
 	isPublic := false
 
-	collectionAttachment, err := services.GetAttachmentWithCollection(AttachmentID, db)
-	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
+	publicAttachment, publicErr := services.GetPublicAttachment(AttachmentID, db)
+	if publicErr == nil {
+		attachment = publicAttachment.Attachment
+		isPublic = true
+	} else {
+		collectionAttachment, err := services.GetAttachmentWithCollection(AttachmentID, db)
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
 
-	if collectionAttachment != nil {
+		if collectionAttachment == nil {
+			http.Error(w, "doesn't have access", http.StatusUnauthorized)
+			return
+		}
+
 		// Вложение принадлежит коллекции
 		if collectionAttachment.Collection == nil {
 			http.Error(w, "collection not found", http.StatusInternalServerError)
@@ -285,16 +294,6 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-	} else {
-		// Вложение не принадлежит коллекции — ищем публичное
-		publicAttachment, err := services.GetPublicAttachment(AttachmentID, db)
-		if err != nil {
-			http.Error(w, "doesn't have access", http.StatusUnauthorized)
-			return
-		}
-
-		attachment = publicAttachment.Attachment
-		isPublic = true
 	}
 
 	key := attachment.Src

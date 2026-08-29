@@ -31,6 +31,10 @@ func GetCollection(collectionID string, UserID string, db *gorm.DB) (*models.Col
 	return collection, nil
 }
 
+func UpdateCollectionPublic(collectionID string, userID string, public bool, db *gorm.DB) (*models.Collection, error) {
+	return repositories.UpdateCollectionPublic(collectionID, userID, public, db)
+}
+
 func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	attachments, err := repositories.GetPublicCollectionAttachments(collectionID, db)
 	if err != nil {

@@ -235,6 +235,41 @@ func DeleteCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func UpdateCollectionPublicHandler(w http.ResponseWriter, r *http.Request) {
+	collectionID := r.PathValue("collectionID")
+	if collectionID == "" {
+		http.Error(w, "collectionID is required", http.StatusBadRequest)
+		return
+	}
+	user, ok := middleware.GetUser(r.Context())
+	if !ok {
+		http.Error(w, "user not found", http.StatusUnauthorized)
+		return
+	}
+	var data struct {
+		Public bool `json:"public"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, "failed to decode request", http.StatusBadRequest)
+		return
+	}
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+	collection, err := services.UpdateCollectionPublic(collectionID, user.ID, data.Public, db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if hub := middleware.GetEventsHub(r.Context()); hub != nil {
+		hub.Publish(user.ID, events.Event{Type: "collections:update", Data: models.EventData{ID: collectionID}})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(collection)
+}
+
 func DeleteCollectionHandler(w http.ResponseWriter, r *http.Request) {
 	collectionID := r.PathValue("collectionID")
 

@@ -12,6 +12,7 @@ export type Attachment = {
   duration_ms: number
   file_size: number
   is_cover: boolean
+  public: boolean
   blurhash: string
   created_at: Date
   user_id: string
@@ -22,7 +23,8 @@ export type Attachment = {
 }
 
 export type UpdateAttachment = {
-  label: string
+  label?: string
+  public?: boolean
 }
 
 export type Tag = {

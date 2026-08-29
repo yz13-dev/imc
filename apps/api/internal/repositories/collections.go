@@ -45,6 +45,18 @@ func GetPublicCollection(collectionID uuid.UUID, db *gorm.DB) (*models.Collectio
 	return &collection, nil
 }
 
+func UpdateCollectionPublic(collectionID string, userID string, public bool, db *gorm.DB) (*models.Collection, error) {
+	var collection models.Collection
+	if err := db.Where("id = ? AND user_id = ?", collectionID, userID).First(&collection).Error; err != nil {
+		return nil, err
+	}
+	if err := db.Model(&collection).Update("public", public).Error; err != nil {
+		return nil, err
+	}
+	collection.Public = public
+	return &collection, nil
+}
+
 func NewCollectionAttachment(collectionID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) (*models.CollectionAttachment, error) {
 	var attachment models.CollectionAttachment = models.CollectionAttachment{
 		CollectionID: collectionID,

@@ -22,4 +22,5 @@ type NewCollection struct {
 type UpdateCollection struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
+	Public      *bool  `json:"public"`
 }

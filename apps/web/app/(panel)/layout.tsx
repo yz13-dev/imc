@@ -6,6 +6,7 @@ import { HydrationBoundary } from "@tanstack/react-query";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { redirect } from "next/navigation";
 import { Panel } from "./components/dock";
+import ShareDialogHost from "./components/share-dialog-host";
 import ServerSideEvents from "./components/sse-provider";
 
 
@@ -30,6 +31,7 @@ export default async function Layout({ children, modal }: LayoutProps) {
   return (
     <UserProvider user={user}>
       <ServerSideEvents />
+      <ShareDialogHost />
       <HydrationBoundary state={dehydrateState(queryClient)}>
         <SidebarProvider>
           <div className="w-full">

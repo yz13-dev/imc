@@ -21,6 +21,7 @@ type Attachment struct {
 	UserID     string    `json:"user_id"`
 	Label      string    `json:"label"`
 	IsDeleted  bool      `gorm:"default:false" json:"is_deleted"`
+	Public     bool      `gorm:"default:false" json:"public"`
 
 	Description   *string    `json:"description"`
 	AIStatus      string     `gorm:"column:ai_status;default:pending" json:"ai_status"`
@@ -55,7 +56,8 @@ type NewAttachment struct {
 }
 
 type UpdateAttachment struct {
-	Label string
+	Label  *string `json:"label"`
+	Public *bool   `json:"public"`
 }
 
 type AttachmentWithInbox struct {

@@ -5,7 +5,6 @@ import { getRefSrc } from "@/lib/ref-src"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { ButtonGroup, ButtonGroupSeparator } from "@workspace/ui/components/button-group"
 import { cn } from "@workspace/ui/lib/utils"
 import { ExternalLinkIcon, Link2Icon, PlusIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
@@ -79,10 +78,10 @@ export default async function Page({ params, searchParams }: PageProps) {
             </div>
           </OptionalVideoProvider>
           <div className="w-full md:p-12 p-4 space-y-6">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-start justify-between gap-3">
               {
                 hideTitle === "false" &&
-                <div className="flex flex-col gap-2">
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <h1 className="md:text-4xl text-xl font-medium line-clamp-1">
                     {title}
                   </h1>
@@ -91,23 +90,22 @@ export default async function Page({ params, searchParams }: PageProps) {
                   }
                   {
                     attachment.source &&
-                    <ButtonGroup className="shrink w-full">
-                      <Button className="justify-start w-full shrink overflow-hidden" variant="secondary">
+                    <div className="flex min-w-0 max-w-full items-center gap-2 overflow-hidden">
+                      <div className="flex min-w-0 max-w-full items-center gap-2 overflow-hidden">
                         <Avatar className="size-4">
                           <AvatarImage src={attachment.source.domain.favicon_url || undefined} />
                           <AvatarFallback>
                             <Link2Icon />
                           </AvatarFallback>
                         </Avatar>
-                        <span className="line-clamp-1">
+                        <span className="min-w-0 truncate">
                           {
                             attachment.source.domain.name
                               ? attachment.source.domain.name
                               : attachment.source?.domain + attachment.source.domain?.slug
                           }
                         </span>
-                      </Button>
-                      <ButtonGroupSeparator />
+                      </div>
                       <Button
                         variant="secondary"
                         size="icon"
@@ -116,11 +114,11 @@ export default async function Page({ params, searchParams }: PageProps) {
                       >
                         <ExternalLinkIcon />
                       </Button>
-                    </ButtonGroup>
+                    </div>
                   }
                 </div>
               }
-              <div className="flex gap-2 items-center">
+              <div className="flex shrink-0 gap-2 items-center">
                 <CollectionsSelect
                   attachmentId={attachment.id}
                   collectionIds={attachment.collection_ids ?? []}

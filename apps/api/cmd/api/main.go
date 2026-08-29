@@ -131,6 +131,7 @@ func main() {
 				r.Get("/collections/{collectionID}/cards", handlers.GetMyCollectionCards)
 				// r.Post("/collections/{collectionID}/cards", handlers.CreateCardAttachment)
 				r.Get("/collections/{collectionID}/attachments", handlers.GetCollectionAttachments)
+				r.Patch("/collections/{collectionID}", handlers.UpdateCollectionPublicHandler)
 				r.Delete("/collections/{collectionID}", handlers.DeleteCollectionHandler)
 				// move attachment to collection ?
 				r.Post("/collections/{collectionID}/attachments", handlers.PostCollectionAttachments)

@@ -90,7 +90,8 @@ func GetPublicAttachmentsWithTags(ids []uuid.UUID, db *gorm.DB) ([]models.Attach
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("id IN ? AND is_deleted = false", ids).
+		Where("attachments.id IN ? AND attachments.is_deleted = false", ids).
+		Where("(attachments.public = true OR EXISTS (SELECT 1 FROM collections_attachments ca JOIN collections c ON c.id = ca.collection_id WHERE ca.attachment_id = attachments.id AND c.public = true))").
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Name: "created_at"}}).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -202,13 +203,21 @@ func PostNewAttachment(UserID string, db *gorm.DB, data models.NewAttachment) (m
 }
 
 func PatchAttachment(AttachmentID uuid.UUID, UserID string, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
-	attachment := models.Attachment{
-		Label: data.Label,
+	updates := map[string]any{}
+	if data.Label != nil {
+		updates["label"] = *data.Label
 	}
-	if err := db.Table("attachments").Where("id = ? AND user_id = ?", AttachmentID, UserID).Updates(&attachment).Error; err != nil {
+	if data.Public != nil {
+		updates["public"] = *data.Public
+	}
+	if err := db.Table("attachments").Where("id = ? AND user_id = ?", AttachmentID, UserID).Updates(updates).Error; err != nil {
 		return models.Attachment{}, err
 	}
-	return attachment, nil
+	updated, err := GetAttachment(UserID, AttachmentID.String(), db)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return updated.Attachment, nil
 }
 
 func GetAttachment(UserID string, attachmentID string, db *gorm.DB) (models.AttachmentWithTags, error) {
@@ -234,7 +243,8 @@ func GetPublicAttachment(attachmentID uuid.UUID, db *gorm.DB) (*models.Attachmen
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("id = ? AND is_deleted = false", attachmentID).
+		Where("attachments.id = ? AND attachments.is_deleted = false", attachmentID).
+		Where("(attachments.public = true OR EXISTS (SELECT 1 FROM collections_attachments ca JOIN collections c ON c.id = ca.collection_id WHERE ca.attachment_id = attachments.id AND c.public = true))").
 		First(&attachment).Error; err != nil {
 		return nil, err
 	}

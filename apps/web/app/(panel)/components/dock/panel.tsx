@@ -4,12 +4,16 @@ import { useUser } from "@/lib/stores/user";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
+import { Separator } from "@workspace/ui/components/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
-import { InboxIcon, MenuIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftIcon, InboxIcon, MenuIcon, Trash2Icon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import CollectionMenu from "./collection-menu";
 import CollectionsGroup from "./groups/collections";
+import GlobalDropZone from "./global-drop-zone";
 import NewGroup from "./groups/new";
 import { DockPanelProvider, useDockPanel } from "./panel-context";
 import CommandMenu from "./panels/command-menu";
@@ -18,6 +22,7 @@ import CommandMenu from "./panels/command-menu";
 export default function Panel() {
   return (
     <DockPanelProvider>
+      <GlobalDropZone />
       <PanelContent />
     </DockPanelProvider>
   )
@@ -32,6 +37,15 @@ function PanelContent() {
   })
 
   const userId = user?.username || user?.id
+  const pathname = usePathname()
+  const router = useRouter()
+  const pathSegments = pathname.split("/").filter(Boolean)
+  const firstSegment = pathSegments[0]
+  const isAttachmentPage = !!firstSegment && !["dashboard", "inbox", "trash", "new", "collection"].includes(firstSegment)
+  const currentCollection = firstSegment === "collection"
+    ? data?.find(collection => collection.id === pathSegments[1])
+    : undefined
+  const hasDynamicActions = isAttachmentPage || !!currentCollection
 
   const { panel, toggle } = useDockPanel()
   useHotkey("Mod+K", (event) => {
@@ -70,6 +84,19 @@ function PanelContent() {
           "[&_a]:size-10.5 [&_a]:rounded-lg",
         )}
       >
+        {hasDynamicActions &&
+          <>
+            {isAttachmentPage && <Tooltip>
+              <TooltipTrigger render={<Button size="icon" variant="ghost" onClick={() => router.back()} />}>
+                <ArrowLeftIcon className="size-5" />
+                <span className="sr-only">Назад</span>
+              </TooltipTrigger>
+              <TooltipContent>Назад</TooltipContent>
+            </Tooltip>}
+            {currentCollection && <CollectionMenu collectionId={currentCollection.id} title={currentCollection.name} public={currentCollection.public} />}
+            <Separator orientation="vertical" className="mx-1 w-px h-8" />
+          </>
+        }
         {
           userId &&
           <NewGroup />
@@ -85,7 +112,7 @@ function PanelContent() {
         </Tooltip>
         {
           userId &&
-          <CollectionsGroup userId={userId} data={data || []} />
+          <CollectionsGroup data={data || []} />
         }
         <Tooltip>
           <TooltipTrigger render={

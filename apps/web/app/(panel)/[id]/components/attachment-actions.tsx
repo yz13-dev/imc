@@ -1,6 +1,7 @@
 "use client"
 
 import { moveToTrashAttachment } from "@/lib/api/attachments"
+import ShareAttachmentMenuItem from "@/components/share-attachment-menu-item"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
@@ -27,6 +28,7 @@ export default function AttachmentActions({ attachment }: { attachment: Attachme
           <span className="sr-only">Действия</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <ShareAttachmentMenuItem attachmentId={attachment.id} title={attachment.label} isPublic={attachment.public} />
           <DropdownMenuItem onClick={() => setEditOpen(true)}>
             <Edit3Icon />
             <span>Изменить</span>

@@ -2,9 +2,10 @@
 import RefContent from "@/app/(panel)/components/ref-content"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
+import { restoreAttachment } from "@/lib/api/attachments"
 import { getAssetsProxyUrl } from "@/lib/url"
 import { attachmentPath } from "@/lib/routes"
-import { restoreAttachment } from "@/lib/api/attachments"
+import ShareAttachmentMenuItem from "@/components/share-attachment-menu-item"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
@@ -160,6 +161,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
           />
           <DropdownMenuContent>
             {inTrash && <DropdownMenuItem onClick={restore}><RotateCcwIcon /><span>Восстановить</span></DropdownMenuItem>}
+            {!inTrash && <ShareAttachmentMenuItem attachmentId={id} title={label} isPublic={rest.public} />}
             <DropdownMenuItem onClick={downloadAttachment}><DownloadIcon /><span>Скачать файл</span></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
