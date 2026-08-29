@@ -254,6 +254,20 @@ func GetPublicAttachmentFile(attachmentID uuid.UUID, db *gorm.DB) (models.Attach
 	return attachment, nil
 }
 
+// GetPrivateAttachmentFile loads only the file metadata when the requester
+// owns either the attachment itself or a collection containing it.
+func GetPrivateAttachmentFile(attachmentID uuid.UUID, userID string, db *gorm.DB) (models.Attachment, error) {
+	var attachment models.Attachment
+	if err := db.
+		Table("attachments").
+		Where("attachments.id = ? AND attachments.is_deleted = false", attachmentID).
+		Where("attachments.user_id = ? OR EXISTS (SELECT 1 FROM collections_attachments ca JOIN collections c ON c.id = ca.collection_id WHERE ca.attachment_id = attachments.id AND c.user_id = ?)", userID, userID).
+		First(&attachment).Error; err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
 type ListQuery struct {
 	Offset int
 	Limit  int

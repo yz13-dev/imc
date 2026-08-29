@@ -277,53 +277,17 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		attachment = publicAttachment
 		isPublic = true
 	} else {
-		collectionAttachment, err := services.GetAttachmentWithCollection(AttachmentID, db)
-		if err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+		user, ok := middleware.GetUser(r.Context())
+		if !ok {
+			http.Error(w, "user not found", http.StatusUnauthorized)
 			return
 		}
-
-		if collectionAttachment == nil {
-			// Вложение может находиться только во входящих и ещё не быть
-			// добавленным в коллекцию. В этом случае проверяем владельца.
-			user, ok := middleware.GetUser(r.Context())
-			if !ok {
-				http.Error(w, "user not found", http.StatusUnauthorized)
-				return
-			}
-
-			ownedAttachment, err := services.GetAttachment(user.ID, attachmentID, db)
-			if err != nil {
-				http.Error(w, "doesn't have access", http.StatusUnauthorized)
-				return
-			}
-
-			attachment = ownedAttachment.Attachment
-			isPublic = false
-		} else {
-			// Вложение принадлежит коллекции
-			if collectionAttachment.Collection == nil {
-				http.Error(w, "collection not found", http.StatusInternalServerError)
-				return
-			}
-
-			attachment = collectionAttachment.Attachment
-			isPublic = collectionAttachment.Collection.Public
-
-			// Если коллекция приватная — проверяем владельца
-			if !collectionAttachment.Collection.Public {
-				user, ok := middleware.GetUser(r.Context())
-				if !ok {
-					http.Error(w, "user not found", http.StatusUnauthorized)
-					return
-				}
-
-				if collectionAttachment.Collection.UserID != user.ID {
-					http.Error(w, "doesn't have access", http.StatusUnauthorized)
-					return
-				}
-			}
+		privateAttachment, err := services.GetPrivateAttachmentFile(AttachmentID, user.ID, db)
+		if err != nil {
+			http.Error(w, "doesn't have access", http.StatusUnauthorized)
+			return
 		}
+		attachment = privateAttachment
 	}
 
 	key := attachment.Src

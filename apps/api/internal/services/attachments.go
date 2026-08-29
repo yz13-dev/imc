@@ -47,6 +47,14 @@ func GetPublicAttachmentFile(attachmentID uuid.UUID, db *gorm.DB) (models.Attach
 	return attachment, nil
 }
 
+func GetPrivateAttachmentFile(attachmentID uuid.UUID, userID string, db *gorm.DB) (models.Attachment, error) {
+	attachment, err := repositories.GetPrivateAttachmentFile(attachmentID, userID, db)
+	if err != nil {
+		return models.Attachment{}, err
+	}
+	return attachment, nil
+}
+
 func PatchAttachment(AttachmentID uuid.UUID, UserID string, data models.UpdateAttachment, db *gorm.DB) (models.Attachment, error) {
 	attachment, err := repositories.PatchAttachment(AttachmentID, UserID, data, db)
 	if err != nil {
