@@ -72,11 +72,17 @@ func (w *Worker) processBatch(ctx context.Context) {
 	}
 	log.Printf("worker: claimed %d attachment(s)", len(attachments))
 
+	existingTags, err := repositories.ListGlobalTagNames(globalTagVocabularyLimit, w.db)
+	if err != nil {
+		log.Printf("worker: failed to load global tag vocabulary: %v", err)
+		existingTags = nil
+	}
+
 	g, gctx := errgroup.WithContext(ctx)
 	g.SetLimit(w.concurrency)
 	for _, attachment := range attachments {
 		g.Go(func() error {
-			w.processAttachment(gctx, attachment)
+			w.processAttachment(gctx, attachment, existingTags)
 			return nil
 		})
 	}
@@ -86,8 +92,8 @@ func (w *Worker) processBatch(ctx context.Context) {
 // processAttachment never returns an error to the caller: a single failed
 // attachment must not cancel the rest of the in-flight batch. Failures are
 // recorded on the row itself via MarkAttachmentAIFailed instead.
-func (w *Worker) processAttachment(ctx context.Context, attachment models.Attachment) {
-	if err := w.processAttachmentInner(ctx, attachment); err != nil {
+func (w *Worker) processAttachment(ctx context.Context, attachment models.Attachment, existingTags []string) {
+	if err := w.processAttachmentInner(ctx, attachment, existingTags); err != nil {
 		log.Printf("worker: attachment %s failed: %v", attachment.ID, err)
 		if markErr := repositories.MarkAttachmentAIFailed(attachment.ID, w.maxAttempts, w.db); markErr != nil {
 			log.Printf("worker: failed to mark attachment %s as failed: %v", attachment.ID, markErr)
@@ -95,7 +101,7 @@ func (w *Worker) processAttachment(ctx context.Context, attachment models.Attach
 	}
 }
 
-func (w *Worker) processAttachmentInner(ctx context.Context, attachment models.Attachment) error {
+func (w *Worker) processAttachmentInner(ctx context.Context, attachment models.Attachment, existingTags []string) error {
 	obj, err := w.s3Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(storage.GetBucketName()),
 		Key:    aws.String(attachment.Src),
@@ -125,11 +131,6 @@ func (w *Worker) processAttachmentInner(ctx context.Context, attachment models.A
 			return fmt.Errorf("decode gif frame: %w", err)
 		}
 		mimeType = "image/png"
-	}
-
-	existingTags, err := repositories.ListGlobalTagNames(globalTagVocabularyLimit, w.db)
-	if err != nil {
-		return fmt.Errorf("load existing tags: %w", err)
 	}
 
 	result, err := ai.AnalyzeImage(ctx, w.aiClient, imageBytes, mimeType, existingTags)
