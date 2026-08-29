@@ -83,7 +83,7 @@ func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetInboxAttachments(userID, parseTagsQuery(r), db)
+	attachments, err := services.GetInboxAttachments(userID, parseAttachmentListQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -635,7 +635,7 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetCollectionAttachments(collectionID, userID, parseTagsQuery(r), db)
+	attachments, err := services.GetCollectionAttachments(collectionID, userID, parseAttachmentListQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -663,7 +663,7 @@ func GetPublicCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetPublicCollectionAttachments(collectionID, db)
+	attachments, err := services.GetPublicCollectionAttachments(collectionID, parseAttachmentListQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -880,7 +880,7 @@ func GetTrashAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetTrashAttachments(userID, db)
+	attachments, err := services.GetTrashAttachments(userID, parseAttachmentListQuery(r), db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

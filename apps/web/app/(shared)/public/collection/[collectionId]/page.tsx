@@ -7,20 +7,19 @@ type PageProps = { params: Promise<{ collectionId: string }> }
 
 export default async function Page({ params }: PageProps) {
   const { collectionId } = await params
-  const queryKey = ["public", "attachments", "collections", collectionId]
+  const queryKey = ["public", "attachments", "collections", collectionId, []]
   const queryClient = getQueryClient()
-  const queryFn = getPublicCollectionAttachments(collectionId)
-
-  await queryClient.prefetchQuery({ queryKey, queryFn: () => queryFn })
+  await queryClient.prefetchInfiniteQuery({
+    initialPageParam: 0,
+    queryKey,
+    queryFn: ({ pageParam }) => getPublicCollectionAttachments(collectionId, { offset: pageParam, limit: 25 }),
+  })
 
   return (
     <HydrationBoundary state={dehydrateState(queryClient)}>
       <CollectionGrid
         readonly
         collection={collectionId}
-        defaultAttachments={[]}
-        queryKey={queryKey}
-        queryFn={queryFn}
       />
     </HydrationBoundary>
   )

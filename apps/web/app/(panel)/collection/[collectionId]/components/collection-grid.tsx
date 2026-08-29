@@ -2,65 +2,49 @@
 import CardGrid from "@/app/(panel)/components/card-grid"
 import CardGridWrapper from "@/app/(panel)/components/card-grid-wrapper"
 import { CollectionCardSkeleton } from "@/components/collection-card"
-import { getCollectionAttachments } from "@/lib/api/attachments"
-import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags } from "@/types/attachments"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useDebounce } from "@/hooks/use-debounce"
+import { getCollectionAttachments, getPublicCollectionAttachments } from "@/lib/api/attachments"
+import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
+import type { InfiniteData, QueryKey } from "@tanstack/react-query"
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
+import { useInView } from "motion/react"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
+import { useEffect, useRef, useState } from "react"
 
+type CollectionGridProps = { collection: string; readonly?: boolean }
 
-type CollectionGridProps<T> = {
-  collection: string
-  defaultAttachments?: AttachmentWithMaybeTagsAndSource[]
-  readonly?: boolean
-  queryKey?: string[]
-  queryFn?: Promise<T>
-
-}
-
-export default function CollectionGrid<T extends AttachmentWithTags[] | null>({ defaultAttachments = [], collection, readonly = false, queryFn, queryKey }: CollectionGridProps<T>) {
-
-  // const attachments = useCollectionAttachments({ collection, attachments: defaultAttachments })
-
+export default function CollectionGrid({ collection, readonly = false }: CollectionGridProps) {
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
   const tags = tagQuery ?? []
-
-  const { data, isLoading } = useSuspenseQuery({
-    initialData: defaultAttachments,
-    queryKey: queryKey || ["attachments", "collections", collection, tags],
-    queryFn: () => {
-      if (queryFn) {
-        const data = queryFn;
-        // console.log("data")
-        return data;
-      }
-      const data = getCollectionAttachments(collection, tags)
-      return data
-    }
+  const queryKey = readonly
+    ? ["public", "attachments", "collections", collection, []]
+    : ["attachments", "collections", collection, tags]
+  const { data, fetchNextPage, hasNextPage, isLoading } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, QueryKey, number>({
+    initialPageParam: 0,
+    queryKey,
+    queryFn: async ({ pageParam }) => {
+      const query = { offset: pageParam, limit: 25, tags: readonly ? undefined : tags }
+      const attachments = readonly
+        ? await getPublicCollectionAttachments(collection, query)
+        : await getCollectionAttachments(collection, query)
+      return attachments || []
+    },
+    getNextPageParam: (lastPage, _allPages, lastPageParam) => lastPage.length === 25 ? lastPageParam + 25 : undefined,
   })
+  const attachments = data.pages.flat()
+  const ref = useRef(null)
+  const inView = useInView(ref, { margin: "0px 0px 100% 0px" })
+  const [disabled, setDisabled] = useState(true)
+  const debouncedInView = useDebounce(inView, 25)
 
-  const attachments = (data || []).toSorted((a, b) => {
-    const aDate = new Date(a.created_at)
-    const bDate = new Date(b.created_at)
-    return bDate.getTime() - aDate.getTime()
-  })
+  useEffect(() => { if (attachments.length) setDisabled(false) }, [attachments.length])
+  useEffect(() => {
+    if (!disabled && debouncedInView && hasNextPage) void fetchNextPage()
+  }, [debouncedInView, disabled, fetchNextPage, hasNextPage])
 
-  if (isLoading) return (
-    <CardGridWrapper>
-      {
-        [...Array(24)].map((_, i) => {
-          const everyFourth = i % 4 === 0
-          const everySecond = i % 2 === 0
-          const everyThird = i % 3 === 0
-          return <CollectionCardSkeleton key={i} className={everyFourth ? "aspect-square" : everyThird ? "aspect-9/16" : everySecond ? "aspect-video" : "aspect-square"} />
-        })
-      }
-    </CardGridWrapper>
-  )
-  return (
-    <CardGrid
-      attachments={attachments}
-      visibility={readonly ? "public" : "private"}
-      readonly={readonly}
-    />
-  )
+  if (isLoading) return <CardGridWrapper>{[...Array(24)].map((_, i) => <CollectionCardSkeleton key={i} className="aspect-square" />)}</CardGridWrapper>
+  return <>
+    <CardGrid attachments={attachments} visibility={readonly ? "public" : "private"} readonly={readonly} />
+    <div ref={ref} className="w-full py-6" />
+  </>
 }

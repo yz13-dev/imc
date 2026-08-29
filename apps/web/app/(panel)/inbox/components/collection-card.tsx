@@ -25,7 +25,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
   const user = useUser((state) => state.user)
   const { data, isLoading } = useSuspenseQuery({
     queryKey: ["attachments", "collections", collection.id],
-    queryFn: () => getCollectionAttachments(collection.id)
+    queryFn: () => getCollectionAttachments(collection.id, { limit: 3 })
   })
   const attachments = (data || []).slice(0, 3)
   const href = collectionPath(collection.id)

@@ -22,14 +22,11 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const queryClient = getQueryClient()
 
-  await queryClient
-    .prefetchQuery({
-      queryKey: ["attachments", "collections", collectionId, []],
-      queryFn: () => {
-        const data = getCollectionAttachments(collectionId, [])
-        return data
-      }
-    })
+  await queryClient.prefetchInfiniteQuery({
+    initialPageParam: 0,
+    queryKey: ["attachments", "collections", collectionId, []],
+    queryFn: ({ pageParam }) => getCollectionAttachments(collectionId, { offset: pageParam, limit: 25, tags: [] }),
+  })
 
   await queryClient.prefetchQuery({
     queryKey: ["tags", collectionId],
@@ -48,7 +45,6 @@ export default async function Page({ params, searchParams }: PageProps) {
       <div className="w-full px-6 pt-6">
         <CollectionGrid
           collection={collectionId}
-          defaultAttachments={[]}
         />
       </div>
       <footer className="p-6">

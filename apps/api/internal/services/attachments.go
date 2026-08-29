@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetInboxAttachments(UserID string, tagNames []string, db *gorm.DB) ([]models.InboxItem, error) {
-	attachments, err := repositories.GetInboxAttachments(UserID, tagNames, db)
+func GetInboxAttachments(UserID string, query repositories.ListQuery, db *gorm.DB) ([]models.InboxItem, error) {
+	attachments, err := repositories.GetInboxAttachments(UserID, query, db)
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +63,8 @@ func PostInInbox(UserID string, db *gorm.DB, attachmentID uuid.UUID) error {
 	return nil
 }
 
-func GetCollectionAttachments(collectionID uuid.UUID, UserID string, tagNames []string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
-	attachments, err := repositories.GetCollectionAttachments(collectionID, UserID, tagNames, db)
+func GetCollectionAttachments(collectionID uuid.UUID, UserID string, query repositories.ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetCollectionAttachments(collectionID, UserID, query, db)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +103,8 @@ func DeleteAttachment(UserID string, attachmentID string, db *gorm.DB) (models.A
 	return attachment, nil
 }
 
-func GetTrashAttachments(UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
-	attachments, err := repositories.GetTrashAttachments(UserID, db)
+func GetTrashAttachments(UserID string, query repositories.ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+	attachments, err := repositories.GetTrashAttachments(UserID, query, db)
 	if err != nil {
 		return nil, err
 	}

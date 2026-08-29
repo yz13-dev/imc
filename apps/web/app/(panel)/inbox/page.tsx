@@ -15,9 +15,10 @@ import InboxGrid, { InboxGridSkeleton } from "./components/inbox-grid"
 export default async function Page() {
   const queryClient = getQueryClient()
 
-  await queryClient.prefetchQuery({
+  await queryClient.prefetchInfiniteQuery({
+    initialPageParam: 0,
     queryKey: ["attachments", "inbox", []],
-    queryFn: () => getInboxAttachments([])
+    queryFn: ({ pageParam }) => getInboxAttachments({ offset: pageParam, limit: 25, tags: [] })
   })
 
   const collections = await queryClient.fetchQuery({
@@ -29,7 +30,7 @@ export default async function Page() {
     (collections || []).map(collection =>
       queryClient.prefetchQuery({
         queryKey: ["attachments", "collections", collection.id],
-        queryFn: () => getCollectionAttachments(collection.id)
+        queryFn: () => getCollectionAttachments(collection.id, { limit: 3 })
       })
     )
   )

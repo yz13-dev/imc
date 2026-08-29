@@ -17,7 +17,7 @@ func PostInInbox(UserID string, db *gorm.DB, attachmentID uuid.UUID) error {
 	return nil
 }
 
-func GetInboxAttachments(UserID string, tagNames []string, db *gorm.DB) ([]models.InboxItem, error) {
+func GetInboxAttachments(UserID string, listQuery ListQuery, db *gorm.DB) ([]models.InboxItem, error) {
 	var items []models.InboxItem
 	query := db.
 		Table("inbox_items").
@@ -26,8 +26,8 @@ func GetInboxAttachments(UserID string, tagNames []string, db *gorm.DB) ([]model
 		Preload("Attachment.AttachmentTags.Tag").
 		Preload("Attachment.AttachmentSource.Source").
 		Where("inbox_items.user_id = ? AND attachments.user_id = ? AND attachments.is_deleted = false", UserID, UserID)
-	query = filterByTagNames(query, UserID, tagNames)
-	if err := query.Order("inbox_items.created_at DESC").Find(&items).Error; err != nil {
+	q := filterByTagNames(query, UserID, listQuery.Tags)
+	if err := q.Order("inbox_items.created_at DESC").Offset(listQuery.Offset).Limit(listQuery.Limit).Find(&items).Error; err != nil {
 		return nil, err
 	}
 

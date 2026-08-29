@@ -117,7 +117,7 @@ func GetAttachmentWithInboxCheck(attachmentID uuid.UUID, UserID string, db *gorm
 	}, nil
 }
 
-func GetCollectionAttachments(collectionID uuid.UUID, UserID string, tagNames []string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetCollectionAttachments(collectionID uuid.UUID, UserID string, listQuery ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	query := db.
 		Table("attachments").
@@ -126,9 +126,11 @@ func GetCollectionAttachments(collectionID uuid.UUID, UserID string, tagNames []
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
 		Where("collections_attachments.collection_id = ? AND attachments.user_id = ? AND attachments.is_deleted = false", collectionID, UserID)
-	query = filterByTagNames(query, UserID, tagNames)
+	query = filterByTagNames(query, UserID, listQuery.Tags)
 	if err := query.
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).
+		Offset(listQuery.Offset).
+		Limit(listQuery.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
@@ -138,7 +140,7 @@ func GetCollectionAttachments(collectionID uuid.UUID, UserID string, tagNames []
 	return attachments, nil
 }
 
-func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetPublicCollectionAttachments(collectionID uuid.UUID, listQuery ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 
 	colleciton, err := GetPublicCollection(collectionID, db)
 	if err != nil {
@@ -158,6 +160,8 @@ func GetPublicCollectionAttachments(collectionID uuid.UUID, db *gorm.DB) ([]mode
 		Preload("AttachmentSource.Source").
 		Where("collections_attachments.collection_id = ? AND attachments.is_deleted = false", collectionID).
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).
+		Offset(listQuery.Offset).
+		Limit(listQuery.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
@@ -307,7 +311,7 @@ func DeleteAttachment(UserID string, attachmentID string, db *gorm.DB) (models.A
 	return attachment, nil
 }
 
-func GetTrashAttachments(UserID string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
+func GetTrashAttachments(UserID string, query ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	if err := db.
 		Table("attachments").
@@ -315,6 +319,8 @@ func GetTrashAttachments(UserID string, db *gorm.DB) ([]models.AttachmentWithTag
 		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND is_deleted = true", UserID).
 		Order("created_at DESC").
+		Offset(query.Offset).
+		Limit(query.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
 	}
