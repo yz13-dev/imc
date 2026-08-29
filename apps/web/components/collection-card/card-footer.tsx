@@ -3,8 +3,7 @@ import {
   ReferenceBadge,
   ReferenceButton,
   ReferenceFooter,
-  ReferenceFooterGroup,
-  ReferenceLabel,
+  ReferenceFooterGroup
 } from "@workspace/ui/components/reference";
 import { ArrowUpRightIcon, GlobeIcon } from "lucide-react";
 import Link from "next/link";
@@ -42,17 +41,14 @@ export default function CardFooter({
             </AvatarFallback>
           </Avatar>
         )}
-        {!!label.length && (
-          <ReferenceLabel className="min-w-0 max-w-full flex-1 h-6">
-            <span className="min-w-0 flex-1 truncate" title={label}>
-              {label}
-            </span>
-          </ReferenceLabel>
-        )}
       </ReferenceFooterGroup>
       <ReferenceFooterGroup className="min-w-0">
         {!!duration && <ReferenceBadge>{duration}</ReferenceBadge>}
-        <ReferenceButton nativeButton={false} render={<Link href={href} />}>
+        <ReferenceButton
+          nativeButton={false}
+          className="group-hover:flex group-focus:flex hidden"
+          render={<Link href={href} />}
+        >
           <ArrowUpRightIcon />
         </ReferenceButton>
       </ReferenceFooterGroup>

@@ -18,7 +18,7 @@ export default function CollectionCardHeader({ attachment, collectionSelector = 
   const firstTag = tags[0]?.tag?.name ?? ""
   const { collections, onValueChange, isPending } = useCollectionMultiSelect(attachment.id, collectionIds)
   return (
-    <ReferenceHeader>
+    <ReferenceHeader className="group-hover:flex group-focus:flex hidden">
       <ReferenceHeaderGroup className="min-w-0">
         {
           collectionSelector &&

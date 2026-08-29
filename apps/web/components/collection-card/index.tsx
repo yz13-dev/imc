@@ -124,70 +124,74 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
 
 
   return (
-
-    <CardContextMenu
-      attachmentId={id}
-      label={label}
-      readonly={readonly}
-      className={cn(
-        "w-full p-1 bg-muted rounded-lg relative group break-inside-avoid",
-        activeAttachmentId ? "-z-10" : "data-popup-open:z-50 z-auto",
-        containerClassName
-      )}
-    >
-      <div className="flex flex-col">
-        <div className="absolute inset-0 size-full rounded-lg overflow-clip">
-          <div
-            className="absolute inset-0 size-full rounded-lg blur-xs bg-no-repeat bg-cover bg-center"
-            style={{
-              backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
-            }}
-          />
-        </div>
-        <OptionalVideoProvider isVideo={isVideo} duration={duration_ms}>
-          <AnimatePresence>
-            <RefContent
-              id={id}
-              mimeType={mime_type}
-              src={src}
-              className={cn(
-                "outline-4 outline-transparent group/-hover:outline-foreground/10 bg/-foreground/10",
-                "group-hover:scale/-101",
-                className
-              )}
-              blurhash={blurhash}
-              style={style}
-              viewTransitionName={!isActive ? `attachment-${id}` : undefined}
-              // Mirrors the @sm..@7xl column counts in CardGridWrapper, offset
-              // by the fixed sidebar + page padding (~320px) so next/image
-              // doesn't fetch a full-viewport-wide image for a grid thumbnail.
-              sizes="(min-width: 1600px) calc((100vw - 320px) / 6), (min-width: 1344px) calc((100vw - 320px) / 5), (min-width: 1216px) calc((100vw - 320px) / 4), (min-width: 896px) calc((100vw - 320px) / 3), (min-width: 704px) calc((100vw - 320px) / 2), 100vw"
-            >
-              {
-                !noLink &&
-                <div
-                  className="absolute inset-0 z-10"
-                  onClick={preview ? (e) => {
-                    e.preventDefault()
-                    // CardContextMenu's DropdownMenuTrigger wraps this whole
-                    // card and reacts to this same click bubbling up to it
-                    // (calls preventBaseUIHandler()) — claim the click here
-                    // so it never reaches that handler.
-                    e.stopPropagation()
-                    seedPreviewCache()
-                    openPreview()
-                  } : undefined}
-                />
-              }
-              <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
-              <CardFooter duration_ms={duration_ms} href={href} source={source} label={label} />
-            </RefContent>
-          </AnimatePresence>
-          <div className="p-2 hidden">
-            <span className="text-sm text-muted-foreground">{label}</span>
+    <div className="flex flex-col group">
+      <CardContextMenu
+        attachmentId={id}
+        label={label}
+        readonly={readonly}
+        className={cn(
+          "w-full p-1 bg-muted rounded-lg relative break-inside-avoid",
+          activeAttachmentId ? "-z-10" : "data-popup-open:z-50 z-auto",
+          containerClassName
+        )}
+      >
+        <div className="flex flex-col">
+          <div className="absolute inset-0 size-full rounded-lg overflow-clip">
+            <div
+              className="absolute inset-0 size-full rounded-lg blur-xs bg-no-repeat bg-cover bg-center"
+              style={{
+                backgroundImage: blurhash ? `url(${toBlurDataURL(blurhash)})` : undefined
+              }}
+            />
           </div>
-        </OptionalVideoProvider>
+          <OptionalVideoProvider isVideo={isVideo} duration={duration_ms}>
+            <AnimatePresence>
+              <RefContent
+                id={id}
+                mimeType={mime_type}
+                src={src}
+                className={cn(
+                  "outline-4 outline-transparent group/-hover:outline-foreground/10 bg/-foreground/10",
+                  "group-hover:scale/-101",
+                  className
+                )}
+                blurhash={blurhash}
+                style={style}
+                viewTransitionName={!isActive ? `attachment-${id}` : undefined}
+                // Mirrors the @sm..@7xl column counts in CardGridWrapper, offset
+                // by the fixed sidebar + page padding (~320px) so next/image
+                // doesn't fetch a full-viewport-wide image for a grid thumbnail.
+                sizes="(min-width: 1600px) calc((100vw - 320px) / 6), (min-width: 1344px) calc((100vw - 320px) / 5), (min-width: 1216px) calc((100vw - 320px) / 4), (min-width: 896px) calc((100vw - 320px) / 3), (min-width: 704px) calc((100vw - 320px) / 2), 100vw"
+              >
+                {
+                  !noLink &&
+                  <div
+                    className="absolute inset-0 z-10"
+                    onClick={preview ? (e) => {
+                      e.preventDefault()
+                      // CardContextMenu's DropdownMenuTrigger wraps this whole
+                      // card and reacts to this same click bubbling up to it
+                      // (calls preventBaseUIHandler()) — claim the click here
+                      // so it never reaches that handler.
+                      e.stopPropagation()
+                      seedPreviewCache()
+                      openPreview()
+                    } : undefined}
+                  />
+                }
+                <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
+                <CardFooter duration_ms={duration_ms} href={href} source={source} label={label} />
+              </RefContent>
+            </AnimatePresence>
+            <div className="p-2 hidden">
+              <span className="text-sm text-muted-foreground">{label}</span>
+            </div>
+          </OptionalVideoProvider>
+        </div>
+      </CardContextMenu>
+      <div className="flex px-2 items-center py-1.5 gap-2">
+        <span className="text-sm line-clamp-1">{label}</span>
       </div>
-    </CardContextMenu>
+    </div>
   )
 }
