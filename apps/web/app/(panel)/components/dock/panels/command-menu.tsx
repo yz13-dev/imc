@@ -29,7 +29,7 @@ export default function CommandMenu() {
   useHotkey("Escape", close)
 
   return (
-    <Command className="dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-4xl border">
+    <Command className="dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-4xl border w-full max-w-md">
       <CommandInput autoFocus placeholder="Перейти..." />
       <CommandList>
         <CommandEmpty>Ничего не найдено</CommandEmpty>

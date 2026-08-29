@@ -12,10 +12,10 @@ type CardGridProps = {
   card?: Partial<CollectionCardProps>
   readonly?: boolean
   collectionSelector?: boolean
+  selectable?: boolean
 }
 
-export default function CardGrid({ readonly = false, card, attachments, visibility, inTrash = false, className = "", collectionSelector = false }: CardGridProps) {
-  console.log(attachments)
+export default function CardGrid({ readonly = false, card, attachments, visibility, inTrash = false, className = "", collectionSelector = false, selectable = false }: CardGridProps) {
   return (
     <CardGridWrapper className={className}>
       {
@@ -31,6 +31,7 @@ export default function CardGrid({ readonly = false, card, attachments, visibili
                 inTrash={inTrash}
                 readonly={readonly}
                 collectionSelector={collectionSelector}
+                selectable={selectable}
                 style={{
                   aspectRatio: `${item.width}/${item.height}`
                 }}

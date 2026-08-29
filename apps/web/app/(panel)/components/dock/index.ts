@@ -1,3 +1,4 @@
 import Panel from "./panel";
+import { DockPanelProvider } from "./panel-context";
 
-export { Panel };
+export { DockPanelProvider, Panel };

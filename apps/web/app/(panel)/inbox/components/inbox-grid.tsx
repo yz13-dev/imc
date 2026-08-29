@@ -2,6 +2,7 @@
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { useDebounce } from "@/hooks/use-debounce"
 import { getInboxAttachments } from "@/lib/api/attachments"
+import { useSelection } from "@/lib/stores/selection-store"
 import type { InfiniteData, QueryKey } from "@tanstack/react-query"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 import { useInView } from "motion/react"
@@ -9,6 +10,7 @@ import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 import { useEffect, useRef, useState } from "react"
 import CardGrid from "../../components/card-grid"
 import CardGridWrapper from "../../components/card-grid-wrapper"
+import { InboxSelectionDockSync } from "./bulk-actions"
 
 export function InboxGridSkeleton() {
   return <CardGridWrapper>{[...Array(24)].map((_, i) => <CollectionCardSkeleton key={i} className="aspect-square" />)}</CardGridWrapper>
@@ -39,8 +41,12 @@ export default function InboxGrid() {
     if (!disabled && debouncedInView && hasNextPage) void fetchNextPage()
   }, [debouncedInView, disabled, fetchNextPage, hasNextPage])
 
+  const clearSelection = useSelection(state => state.clear)
+  useEffect(() => () => clearSelection(), [clearSelection])
+
   return <>
-    <CardGrid attachments={attachments} visibility="private" />
+    <InboxSelectionDockSync />
+    <CardGrid attachments={attachments} visibility="private" selectable />
     <div ref={ref} className="w-full py-6" />
   </>
 }

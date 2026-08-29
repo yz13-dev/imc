@@ -88,7 +88,7 @@ export default function NewAttachmentPanel({ initialFiles = [] }: NewAttachmentP
 
 
   return (
-    <div className="dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-xl border p-2 flex flex-col gap-2">
+    <div className="dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-xl border p-2 flex flex-col gap-2 w-full max-w-md">
       <FileUploader
         accept="image/*,video/*"
         onFiles={(files) => {

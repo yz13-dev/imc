@@ -41,7 +41,7 @@ export default function NewCollectionMenu() {
   if (!user) return null
 
   return (
-    <div className="dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-xl border p-2 flex items-center gap-2">
+    <div className="dark:bg-muted/50 bg-muted/80 backdrop-blur-xs rounded-xl border p-2 flex items-center gap-2 w-full max-w-md">
       <InputGroup className="flex-1">
         <InputGroupAddon>
           <SquareLibraryIcon />

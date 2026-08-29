@@ -6,8 +6,10 @@ import { restoreAttachment } from "@/lib/api/attachments"
 import { getAssetsProxyUrl } from "@/lib/url"
 import { attachmentPath } from "@/lib/routes"
 import ShareAttachmentMenuItem from "@/components/share-attachment-menu-item"
+import { useSelection } from "@/lib/stores/selection-store"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
@@ -57,9 +59,10 @@ export type CollectionCardProps = {
   readonly?: boolean
   collectionSelector?: boolean
   inTrash?: boolean
+  selectable?: boolean
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, visibility = "private", className, blurhash, duration_ms, style = {}, label, source, noLink = false, containerClassName = "", collectionSelector = false, inTrash = false, ...rest }: CollectionCardProps) {
+export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, visibility = "private", className, blurhash, duration_ms, style = {}, label, source, noLink = false, containerClassName = "", collectionSelector = false, inTrash = false, selectable = false, ...rest }: CollectionCardProps) {
 
   const attachment: AttachmentWithMaybeTagsAndSource = { tags, id, src, mime_type, blurhash, duration_ms, label, source, ...rest }
   const href = attachmentPath(id, visibility)
@@ -68,6 +71,10 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
 
   const isVideo = mime_type.startsWith("video/")
   const router = useRouter()
+
+  const isSelected = useSelection(state => state.selectedIds.has(id))
+  const hasSelection = useSelection(state => state.selectedIds.size > 0)
+  const toggleSelected = useSelection(state => state.toggle)
 
   const downloadAttachment = async () => {
     try {
@@ -108,6 +115,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
         className={cn(
           "w-full p-1 bg-muted rounded-lg relative",
           "data-popup-open:z-50 z-auto",
+          isSelected && "ring-2 ring-brand ring-offset-2 ring-offset-background",
           containerClassName
         )}
       >
@@ -141,7 +149,29 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
               >
                 {
                   !noLink && !inTrash &&
-                  <Link href={href} className="absolute inset-0 z-10" onClick={event => event.stopPropagation()} />
+                  <Link
+                    href={href}
+                    className="absolute inset-0 z-10"
+                    onClick={event => {
+                      event.stopPropagation()
+                      if (selectable && hasSelection) {
+                        event.preventDefault()
+                        toggleSelected(id)
+                      }
+                    }}
+                  />
+                }
+                {
+                  selectable &&
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => toggleSelected(id)}
+                    onClick={event => event.stopPropagation()}
+                    className={cn(
+                      "absolute top-2 left-2 z-20 bg-background/80 backdrop-blur-xs",
+                      !isSelected && "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                    )}
+                  />
                 }
                 <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
                 <CardFooter duration_ms={duration_ms} href={inTrash ? undefined : href} source={source} label={label} />

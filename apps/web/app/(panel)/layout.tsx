@@ -2,10 +2,11 @@ import { getCollections } from "@/lib/api/collections";
 import { getMe } from "@/lib/me";
 import { dehydrateState, getQueryClient } from "@/lib/query-client";
 import { UserProvider } from "@/lib/stores/user";
+import { SelectionProvider } from "@/lib/stores/selection-store";
 import { HydrationBoundary } from "@tanstack/react-query";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { redirect } from "next/navigation";
-import { Panel } from "./components/dock";
+import { DockPanelProvider, Panel } from "./components/dock";
 import ShareDialogHost from "./components/share-dialog-host";
 import ServerSideEvents from "./components/sse-provider";
 
@@ -34,11 +35,15 @@ export default async function Layout({ children, modal }: LayoutProps) {
       <ShareDialogHost />
       <HydrationBoundary state={dehydrateState(queryClient)}>
         <SidebarProvider>
-          <div className="w-full">
-            {children}
-          </div>
-          {modal}
-          <Panel />
+          <SelectionProvider>
+            <DockPanelProvider>
+              <div className="w-full">
+                {children}
+              </div>
+              {modal}
+              <Panel />
+            </DockPanelProvider>
+          </SelectionProvider>
         </SidebarProvider>
       </HydrationBoundary>
     </UserProvider>

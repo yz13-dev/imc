@@ -15,16 +15,16 @@ import CollectionMenu from "./collection-menu";
 import CollectionsGroup from "./groups/collections";
 import GlobalDropZone from "./global-drop-zone";
 import NewGroup from "./groups/new";
-import { DockPanelProvider, useDockPanel } from "./panel-context";
+import { useDockPanel } from "./panel-context";
 import CommandMenu from "./panels/command-menu";
 
 
 export default function Panel() {
   return (
-    <DockPanelProvider>
+    <>
       <GlobalDropZone />
       <PanelContent />
-    </DockPanelProvider>
+    </>
   )
 }
 
@@ -70,7 +70,7 @@ function PanelContent() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.98 }}
               transition={{ duration: 0.15 }}
-              className="max-w-md w-full p-2"
+              className="w-fit max-w-[calc(100vw-1rem)] p-2"
             >
               {panel.content}
             </motion.div>
