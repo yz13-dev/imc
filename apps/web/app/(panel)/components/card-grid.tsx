@@ -15,6 +15,7 @@ type CardGridProps = {
 }
 
 export default function CardGrid({ readonly = false, card, attachments, visibility, inTrash = false, className = "", collectionSelector = false }: CardGridProps) {
+  console.log(attachments)
   return (
     <CardGridWrapper className={className}>
       {

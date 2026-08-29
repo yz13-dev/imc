@@ -27,7 +27,11 @@ func GetInboxAttachments(UserID string, listQuery ListQuery, db *gorm.DB) ([]mod
 		Preload("Attachment.AttachmentSource.Source").
 		Where("inbox_items.user_id = ? AND attachments.user_id = ? AND attachments.is_deleted = false", UserID, UserID)
 	q := filterByTagNames(query, UserID, listQuery.Tags)
-	if err := q.Order("inbox_items.created_at DESC").Offset(listQuery.Offset).Limit(listQuery.Limit).Find(&items).Error; err != nil {
+	q = applyCursor(q, listQuery.Cursor, "inbox_items", "attachment_id")
+	if err := q.
+		Order("inbox_items.created_at DESC, inbox_items.attachment_id DESC").
+		Limit(listQuery.Limit).
+		Find(&items).Error; err != nil {
 		return nil, err
 	}
 

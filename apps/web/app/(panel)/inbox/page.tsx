@@ -16,9 +16,15 @@ export default async function Page() {
   const queryClient = getQueryClient()
 
   await queryClient.prefetchInfiniteQuery({
-    initialPageParam: 0,
+    initialPageParam: null as string | null,
     queryKey: ["attachments", "inbox", []],
-    queryFn: ({ pageParam }) => getInboxAttachments({ offset: pageParam, limit: 25, tags: [] })
+    queryFn: async ({ pageParam }) => {
+      const page = await getInboxAttachments({ cursor: pageParam, limit: 25, tags: [] })
+      return {
+        items: (page?.items || []).map(item => item.attachment),
+        next_cursor: page?.next_cursor || "",
+      }
+    }
   })
 
   const collections = await queryClient.fetchQuery({

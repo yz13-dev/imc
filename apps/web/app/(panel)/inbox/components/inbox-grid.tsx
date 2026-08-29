@@ -2,7 +2,6 @@
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { useDebounce } from "@/hooks/use-debounce"
 import { getInboxAttachments } from "@/lib/api/attachments"
-import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import type { InfiniteData, QueryKey } from "@tanstack/react-query"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 import { useInView } from "motion/react"
@@ -18,13 +17,19 @@ export function InboxGridSkeleton() {
 export default function InboxGrid() {
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
   const tags = tagQuery ?? []
-  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, QueryKey, number>({
-    initialPageParam: 0,
+  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery({
+    initialPageParam: null as string | null,
     queryKey: ["attachments", "inbox", tags],
-    queryFn: async ({ pageParam }) => (await getInboxAttachments({ offset: pageParam, limit: 25, tags }))?.map(item => item.attachment) || [],
-    getNextPageParam: (lastPage, _allPages, lastPageParam) => lastPage.length === 25 ? lastPageParam + 25 : undefined,
+    queryFn: async ({ pageParam }) => {
+      const page = await getInboxAttachments({ cursor: pageParam, limit: 25, tags })
+      return {
+        items: (page?.items || []).map(item => item.attachment),
+        next_cursor: page?.next_cursor || "",
+      }
+    },
+    getNextPageParam: (lastPage) => lastPage.next_cursor || undefined,
   })
-  const attachments = data.pages.flat()
+  const attachments = data.pages.flatMap(page => page.items)
   const ref = useRef(null)
   const inView = useInView(ref, { margin: "0px 0px 100% 0px" })
   const [disabled, setDisabled] = useState(true)

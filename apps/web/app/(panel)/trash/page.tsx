@@ -7,9 +7,9 @@ import TrashAutoLoader from "./components/auto-loader"
 export default async function Page() {
   const queryClient = getQueryClient()
   await queryClient.prefetchInfiniteQuery({
-    initialPageParam: 0,
+    initialPageParam: null as string | null,
     queryKey: ["attachments", "trash"],
-    queryFn: ({ pageParam }) => getTrashAttachments({ offset: pageParam, limit: 25 }),
+    queryFn: ({ pageParam }) => getTrashAttachments({ cursor: pageParam, limit: 25 }),
   })
 
   return <HydrationBoundary state={dehydrateState(queryClient)}>

@@ -1,5 +1,5 @@
 "use client"
-import { getTrashAttachments } from "@/lib/api/attachments"
+import { getTrashAttachments, type Page } from "@/lib/api/attachments"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import type { InfiniteData, QueryKey } from "@tanstack/react-query"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
@@ -8,13 +8,13 @@ import { useEffect, useRef, useState } from "react"
 import CardGrid from "../../components/card-grid"
 
 export default function TrashAutoLoader() {
-  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, QueryKey, number>({
-    initialPageParam: 0,
+  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<Page<AttachmentWithMaybeTagsAndSource>, Error, InfiniteData<Page<AttachmentWithMaybeTagsAndSource>, string | null>, QueryKey, string | null>({
+    initialPageParam: null,
     queryKey: ["attachments", "trash"],
-    queryFn: async ({ pageParam }) => await getTrashAttachments({ offset: pageParam, limit: 25 }) || [],
-    getNextPageParam: (lastPage, _allPages, lastPageParam) => lastPage.length === 25 ? lastPageParam + 25 : undefined,
+    queryFn: async ({ pageParam }) => await getTrashAttachments({ cursor: pageParam, limit: 25 }) || { items: [], next_cursor: "" },
+    getNextPageParam: (lastPage) => lastPage.next_cursor || undefined,
   })
-  const attachments = data.pages.flat()
+  const attachments = data.pages.flatMap(page => page.items)
   const ref = useRef(null)
   const inView = useInView(ref, { margin: "0px 0px 100% 0px" })
   const [enabled, setEnabled] = useState(false)

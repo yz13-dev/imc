@@ -31,24 +31,29 @@ export async function publishAttachment(attachmentID: string) {
 }
 
 type ListQuery = {
-  offset?: number;
+  cursor?: string | null;
   limit?: number;
   tags?: string[];
 }
 
+export type Page<T> = {
+  items: T[];
+  next_cursor: string;
+}
+
 function applyListQuery(url: URL, query?: ListQuery) {
   if (!query) return
-  if (query.offset !== undefined) url.searchParams.set("offset", query.offset.toString())
+  if (query.cursor) url.searchParams.set("cursor", query.cursor)
   if (query.limit !== undefined) url.searchParams.set("limit", query.limit.toString())
   if (query.tags?.length) url.searchParams.set("tags", query.tags.join(","))
 }
 
-export async function getInboxAttachments(query?: ListQuery): Promise<InboxItem[] | null> {
+export async function getInboxAttachments(query?: ListQuery): Promise<Page<InboxItem> | null> {
   try {
     const url = new URL(getApiProxyUrl("/v1/my/attachments/inbox"))
     applyListQuery(url, query)
 
-    const { data, error } = await fetch<InboxItem[]>({
+    const { data, error } = await fetch<Page<InboxItem>>({
       url: url.toString()
     })
 
@@ -134,12 +139,12 @@ export async function removeAttachmentFromCollection(attachmentID: string, colle
   }
 }
 
-export async function getCollectionAttachments(collectionID: string, query?: ListQuery): Promise<AttachmentWithTags[] | null> {
+export async function getCollectionAttachments(collectionID: string, query?: ListQuery): Promise<Page<AttachmentWithTags> | null> {
   try {
     const url = new URL(getApiProxyUrl(`/v1/my/collections/${collectionID}/attachments`))
     applyListQuery(url, query)
 
-    const { data, error } = await fetch<AttachmentWithTags[]>({
+    const { data, error } = await fetch<Page<AttachmentWithTags>>({
       url: url.toString(),
     })
 
@@ -155,11 +160,11 @@ export async function getCollectionAttachments(collectionID: string, query?: Lis
   }
 }
 
-export async function getPublicCollectionAttachments(collectionID: string, query?: ListQuery): Promise<AttachmentWithTags[] | null> {
+export async function getPublicCollectionAttachments(collectionID: string, query?: ListQuery): Promise<Page<AttachmentWithTags> | null> {
   try {
     const url = new URL(getApiProxyUrl(`/v1/collections/${collectionID}/attachments`))
     applyListQuery(url, query)
-    const { data, error } = await fetch<AttachmentWithTags[]>({
+    const { data, error } = await fetch<Page<AttachmentWithTags>>({
       url: url.toString(),
     })
     // console.log(getApiProxyUrl(`/v1/collections/${collectionID}/attachments`))
@@ -176,11 +181,11 @@ export async function getPublicCollectionAttachments(collectionID: string, query
   }
 }
 
-export async function getAllAttachments(query?: ListQuery): Promise<AttachmentWithTags[] | null> {
+export async function getAllAttachments(query?: ListQuery): Promise<Page<AttachmentWithTags> | null> {
   try {
     const url = new URL(getApiProxyUrl("/v1/my/attachments"))
     applyListQuery(url, query)
-    const { data, error } = await fetch<AttachmentWithTags[]>({
+    const { data, error } = await fetch<Page<AttachmentWithTags>>({
       url: url.toString(),
     })
 
@@ -249,11 +254,11 @@ export async function restoreAttachment(attachmentID: string): Promise<{ id: str
   }
 }
 
-export async function getTrashAttachments(query?: ListQuery): Promise<AttachmentWithMaybeTagsAndSource[] | null> {
+export async function getTrashAttachments(query?: ListQuery): Promise<Page<AttachmentWithMaybeTagsAndSource> | null> {
   try {
     const url = new URL(getApiProxyUrl("/v1/my/attachments/trash"))
     applyListQuery(url, query)
-    const { data, error } = await fetch<AttachmentWithMaybeTagsAndSource[]>({
+    const { data, error } = await fetch<Page<AttachmentWithMaybeTagsAndSource>>({
       url: url.toString()
     })
 

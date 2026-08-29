@@ -3,7 +3,7 @@ import CardGrid from "@/app/(panel)/components/card-grid"
 import CardGridWrapper from "@/app/(panel)/components/card-grid-wrapper"
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { useDebounce } from "@/hooks/use-debounce"
-import { getCollectionAttachments, getPublicCollectionAttachments } from "@/lib/api/attachments"
+import { getCollectionAttachments, getPublicCollectionAttachments, type Page } from "@/lib/api/attachments"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import type { InfiniteData, QueryKey } from "@tanstack/react-query"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
@@ -19,19 +19,19 @@ export default function CollectionGrid({ collection, readonly = false }: Collect
   const queryKey = readonly
     ? ["public", "attachments", "collections", collection, []]
     : ["attachments", "collections", collection, tags]
-  const { data, fetchNextPage, hasNextPage, isLoading } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, QueryKey, number>({
-    initialPageParam: 0,
+  const { data, fetchNextPage, hasNextPage, isLoading } = useSuspenseInfiniteQuery<Page<AttachmentWithMaybeTagsAndSource>, Error, InfiniteData<Page<AttachmentWithMaybeTagsAndSource>, string | null>, QueryKey, string | null>({
+    initialPageParam: null,
     queryKey,
     queryFn: async ({ pageParam }) => {
-      const query = { offset: pageParam, limit: 25, tags: readonly ? undefined : tags }
+      const query = { cursor: pageParam, limit: 25, tags: readonly ? undefined : tags }
       const attachments = readonly
         ? await getPublicCollectionAttachments(collection, query)
         : await getCollectionAttachments(collection, query)
-      return attachments || []
+      return attachments || { items: [], next_cursor: "" }
     },
-    getNextPageParam: (lastPage, _allPages, lastPageParam) => lastPage.length === 25 ? lastPageParam + 25 : undefined,
+    getNextPageParam: (lastPage) => lastPage.next_cursor || undefined,
   })
-  const attachments = data.pages.flat()
+  const attachments = data.pages.flatMap(page => page.items)
   const ref = useRef(null)
   const inView = useInView(ref, { margin: "0px 0px 100% 0px" })
   const [disabled, setDisabled] = useState(true)

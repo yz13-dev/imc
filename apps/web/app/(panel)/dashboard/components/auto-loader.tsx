@@ -1,6 +1,6 @@
 "use client";
 import { useDebounce } from "@/hooks/use-debounce";
-import { getAllAttachments } from "@/lib/api/attachments";
+import { getAllAttachments, type Page } from "@/lib/api/attachments";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import type { InfiniteData, QueryKey } from "@tanstack/react-query";
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
@@ -14,20 +14,17 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
   const tags = tagQuery ?? []
 
-  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<AttachmentWithMaybeTagsAndSource[], Error, InfiniteData<AttachmentWithMaybeTagsAndSource[], number>, QueryKey, number>({
-    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-      if (!lastPage || lastPage.length === 0) return undefined
-      return lastPageParam + 25
-    },
-    initialPageParam: 0,
+  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<Page<AttachmentWithMaybeTagsAndSource>, Error, InfiniteData<Page<AttachmentWithMaybeTagsAndSource>, string | null>, QueryKey, string | null>({
+    getNextPageParam: (lastPage) => lastPage?.next_cursor || undefined,
+    initialPageParam: null,
     queryKey: ["attachments", tags],
     queryFn: async ({ pageParam }) => {
-      const data = await getAllAttachments({ offset: pageParam, tags })
-      return data || []
+      const data = await getAllAttachments({ cursor: pageParam, tags })
+      return data || { items: [], next_cursor: "" }
     }
   })
 
-  const allAttachments = data.pages.flat()
+  const allAttachments = data.pages.flatMap(page => page.items)
 
   const ref = useRef(null)
   // Extends the sentinel's detection zone downward past the actual viewport

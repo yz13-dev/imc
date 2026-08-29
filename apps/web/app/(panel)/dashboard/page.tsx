@@ -17,11 +17,11 @@ export default async function Page() {
 
   // look ma, no await
   await queryClient.prefetchInfiniteQuery({
-    initialPageParam: 0,
+    initialPageParam: null as string | null,
     queryKey: ["attachments", []],
     queryFn: async ({ pageParam }) => {
-      const data = await getAllAttachments({ offset: pageParam, tags: [] })
-      return data || []
+      const data = await getAllAttachments({ cursor: pageParam, tags: [] })
+      return data || { items: [], next_cursor: "" }
     }
   })
 

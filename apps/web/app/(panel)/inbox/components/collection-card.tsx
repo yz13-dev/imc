@@ -27,7 +27,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
     queryKey: ["attachments", "collections", collection.id],
     queryFn: () => getCollectionAttachments(collection.id, { limit: 3 })
   })
-  const attachments = (data || []).slice(0, 3)
+  const attachments = (data?.items || []).slice(0, 3)
   const href = collectionPath(collection.id)
 
   if (isLoading) return <CollectionCardSkeleton />

@@ -127,9 +127,10 @@ func GetCollectionAttachments(collectionID uuid.UUID, UserID string, listQuery L
 		Preload("AttachmentSource.Source").
 		Where("collections_attachments.collection_id = ? AND attachments.user_id = ? AND attachments.is_deleted = false", collectionID, UserID)
 	query = filterByTagNames(query, UserID, listQuery.Tags)
+	query = applyCursor(query, listQuery.Cursor, "attachments", "id")
 	if err := query.
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).
-		Offset(listQuery.Offset).
+		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "id"}}).
 		Limit(listQuery.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -152,15 +153,17 @@ func GetPublicCollectionAttachments(collectionID uuid.UUID, listQuery ListQuery,
 	}
 
 	var attachments []models.AttachmentWithTags
-	if err := db.
+	q := db.
 		Table("attachments").
 		Distinct("attachments.*").
 		Joins("JOIN collections_attachments ON collections_attachments.attachment_id = attachments.id").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("collections_attachments.collection_id = ? AND attachments.is_deleted = false", collectionID).
+		Where("collections_attachments.collection_id = ? AND attachments.is_deleted = false", collectionID)
+	q = applyCursor(q, listQuery.Cursor, "attachments", "id")
+	if err := q.
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).
-		Offset(listQuery.Offset).
+		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "id"}}).
 		Limit(listQuery.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -269,9 +272,26 @@ func GetPrivateAttachmentFile(attachmentID uuid.UUID, userID string, db *gorm.DB
 }
 
 type ListQuery struct {
-	Offset int
+	Cursor *Cursor
 	Limit  int
 	Tags   []string
+}
+
+// applyCursor restricts a query already ordered by created_at DESC, idColumn
+// DESC to rows strictly after the given cursor position. idColumn is the
+// tie-breaker column for rows sharing the same created_at value — usually
+// "id", but "attachment_id" for tables keyed that way (e.g. inbox_items).
+func applyCursor(db *gorm.DB, cursor *Cursor, table string, idColumn string) *gorm.DB {
+	if cursor == nil {
+		return db
+	}
+	createdAtCol := "created_at"
+	idCol := idColumn
+	if table != "" {
+		createdAtCol = table + ".created_at"
+		idCol = table + "." + idColumn
+	}
+	return db.Where("("+createdAtCol+", "+idCol+") < (?, ?)", cursor.CreatedAt, cursor.ID)
 }
 
 func GetAllAttachments(UserID string, query ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
@@ -282,9 +302,9 @@ func GetAllAttachments(UserID string, query ListQuery, db *gorm.DB) ([]models.At
 		Preload("AttachmentSource.Source").
 		Where("user_id = ? AND is_deleted = false", UserID)
 	q = filterByTagNames(q, UserID, query.Tags)
+	q = applyCursor(q, query.Cursor, "", "id")
 	if err := q.
-		Order("created_at DESC").
-		Offset(query.Offset).
+		Order("created_at DESC, id DESC").
 		Limit(query.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err
@@ -327,13 +347,14 @@ func DeleteAttachment(UserID string, attachmentID string, db *gorm.DB) (models.A
 
 func GetTrashAttachments(UserID string, query ListQuery, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
-	if err := db.
+	q := db.
 		Table("attachments").
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
-		Where("user_id = ? AND is_deleted = true", UserID).
-		Order("created_at DESC").
-		Offset(query.Offset).
+		Where("user_id = ? AND is_deleted = true", UserID)
+	q = applyCursor(q, query.Cursor, "", "id")
+	if err := q.
+		Order("created_at DESC, id DESC").
 		Limit(query.Limit).
 		Find(&attachments).Error; err != nil {
 		return nil, err

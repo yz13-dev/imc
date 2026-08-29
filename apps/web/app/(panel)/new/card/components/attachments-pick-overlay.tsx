@@ -12,7 +12,7 @@ export default function AttachmentsPickOverlay() {
       return await getAllAttachments()
     }
   })
-  const all = data || []
+  const all = data?.items || []
 
   const selected = useNewCardStore(state => state.attachments)
   const setSelected = useNewCardStore(state => state.setAttachments)

@@ -52,9 +52,9 @@ const (
 )
 
 func parseAttachmentListQuery(r *http.Request) repositories.ListQuery {
-	offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
-	if err != nil || offset < 0 {
-		offset = 0
+	cursor, err := repositories.DecodeCursor(r.URL.Query().Get("cursor"))
+	if err != nil {
+		cursor = nil
 	}
 
 	limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
@@ -65,7 +65,27 @@ func parseAttachmentListQuery(r *http.Request) repositories.ListQuery {
 		limit = maxListLimit
 	}
 
-	return repositories.ListQuery{Offset: offset, Limit: limit, Tags: parseTagsQuery(r)}
+	return repositories.ListQuery{Cursor: cursor, Limit: limit, Tags: parseTagsQuery(r)}
+}
+
+// attachmentsNextCursor returns the cursor for the page after the given
+// attachments, or "" when the page wasn't full (so there is no next page).
+func attachmentsNextCursor(attachments []models.AttachmentWithTags, limit int) string {
+	if len(attachments) < limit {
+		return ""
+	}
+	last := attachments[len(attachments)-1]
+	return repositories.EncodeCursor(last.CreatedAt, last.ID.String())
+}
+
+// inboxNextCursor is the InboxItem equivalent of attachmentsNextCursor —
+// inbox_items ties break on attachment_id, not id.
+func inboxNextCursor(items []models.InboxItem, limit int) string {
+	if len(items) < limit {
+		return ""
+	}
+	last := items[len(items)-1]
+	return repositories.EncodeCursor(last.CreatedAt, last.AttachmentID.String())
 }
 
 func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
@@ -83,16 +103,22 @@ func GetInboxAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetInboxAttachments(userID, parseAttachmentListQuery(r), db)
+	listQuery := parseAttachmentListQuery(r)
+	items, err := services.GetInboxAttachments(userID, listQuery, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	page := repositories.Page[models.InboxItem]{
+		Items:      items,
+		NextCursor: inboxNextCursor(items, listQuery.Limit),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+	if err := json.NewEncoder(w).Encode(page); err != nil {
 		http.Error(
 			w,
 			"failed to encode response",
@@ -599,16 +625,22 @@ func GetCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetCollectionAttachments(collectionID, userID, parseAttachmentListQuery(r), db)
+	listQuery := parseAttachmentListQuery(r)
+	attachments, err := services.GetCollectionAttachments(collectionID, userID, listQuery, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	page := repositories.Page[models.AttachmentWithTags]{
+		Items:      attachments,
+		NextCursor: attachmentsNextCursor(attachments, listQuery.Limit),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+	if err := json.NewEncoder(w).Encode(page); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }
@@ -627,16 +659,22 @@ func GetPublicCollectionAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetPublicCollectionAttachments(collectionID, parseAttachmentListQuery(r), db)
+	listQuery := parseAttachmentListQuery(r)
+	attachments, err := services.GetPublicCollectionAttachments(collectionID, listQuery, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	page := repositories.Page[models.AttachmentWithTags]{
+		Items:      attachments,
+		NextCursor: attachmentsNextCursor(attachments, listQuery.Limit),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+	if err := json.NewEncoder(w).Encode(page); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }
@@ -656,16 +694,22 @@ func GetAllAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetAllAttachments(userID, parseAttachmentListQuery(r), db)
+	listQuery := parseAttachmentListQuery(r)
+	attachments, err := services.GetAllAttachments(userID, listQuery, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	page := repositories.Page[models.AttachmentWithTags]{
+		Items:      attachments,
+		NextCursor: attachmentsNextCursor(attachments, listQuery.Limit),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+	if err := json.NewEncoder(w).Encode(page); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }
@@ -844,16 +888,22 @@ func GetTrashAttachments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	attachments, err := services.GetTrashAttachments(userID, parseAttachmentListQuery(r), db)
+	listQuery := parseAttachmentListQuery(r)
+	attachments, err := services.GetTrashAttachments(userID, listQuery, db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	page := repositories.Page[models.AttachmentWithTags]{
+		Items:      attachments,
+		NextCursor: attachmentsNextCursor(attachments, listQuery.Limit),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	if err := json.NewEncoder(w).Encode(attachments); err != nil {
+	if err := json.NewEncoder(w).Encode(page); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }

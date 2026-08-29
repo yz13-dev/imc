@@ -40,6 +40,14 @@ type AttachmentWithTags struct {
 	AttachmentSource *AttachmentSource `gorm:"foreignKey:AttachmentID;references:ID" json:"source"`
 }
 
+// TableName pins AttachmentWithTags to the "attachments" table. Without this,
+// GORM's default naming strategy derives "attachment_with_tags" for nested
+// preloads (e.g. InboxItem.Attachment.AttachmentTags.Tag), which doesn't
+// exist.
+func (AttachmentWithTags) TableName() string {
+	return "attachments"
+}
+
 type NewAttachment struct {
 	Type       string
 	MimeType   string

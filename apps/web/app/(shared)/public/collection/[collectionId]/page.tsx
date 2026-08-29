@@ -10,9 +10,9 @@ export default async function Page({ params }: PageProps) {
   const queryKey = ["public", "attachments", "collections", collectionId, []]
   const queryClient = getQueryClient()
   await queryClient.prefetchInfiniteQuery({
-    initialPageParam: 0,
+    initialPageParam: null as string | null,
     queryKey,
-    queryFn: ({ pageParam }) => getPublicCollectionAttachments(collectionId, { offset: pageParam, limit: 25 }),
+    queryFn: ({ pageParam }) => getPublicCollectionAttachments(collectionId, { cursor: pageParam, limit: 25 }),
   })
 
   return (
