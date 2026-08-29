@@ -66,19 +66,10 @@ func MarkAttachmentAIDone(id uuid.UUID, label string, description string, db *go
 // the attachment as 'pending' for a later retry or, once maxAttempts is
 // reached, gives up on it permanently by marking it 'failed'.
 func MarkAttachmentAIFailed(id uuid.UUID, maxAttempts int, db *gorm.DB) error {
-	var attachment models.Attachment
-	if err := db.Select("ai_attempts").First(&attachment, "id = ?", id).Error; err != nil {
-		return err
-	}
-	attempts := attachment.AIAttempts + 1
-	status := "pending"
-	if attempts >= maxAttempts {
-		status = "failed"
-	}
 	return db.Model(&models.Attachment{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
-			"ai_attempts": attempts,
-			"ai_status":   status,
+			"ai_attempts": gorm.Expr("ai_attempts + 1"),
+			"ai_status":   gorm.Expr("CASE WHEN ai_attempts + 1 >= ? THEN 'failed' ELSE 'pending' END", maxAttempts),
 		}).Error
 }
