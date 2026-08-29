@@ -224,6 +224,21 @@ export async function moveToTrashAttachment(attachmentID: string): Promise<{ id:
   }
 }
 
+export async function restoreAttachment(attachmentID: string): Promise<{ id: string } | null> {
+  try {
+    const { data, error } = await fetch<{ id: string } | null>({
+      url: getApiProxyUrl(`/v1/my/attachments/${attachmentID}/untrash`),
+      method: "POST",
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 export async function getTrashAttachments(): Promise<AttachmentWithMaybeTagsAndSource[] | null> {
   try {
     const { data, error } = await fetch<AttachmentWithMaybeTagsAndSource[]>({

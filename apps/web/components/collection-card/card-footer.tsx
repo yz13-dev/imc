@@ -13,7 +13,7 @@ import { useVideoStore } from "@/lib/stores/video-store";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 
 type CardFooterProps = {
-  href: string;
+  href?: string;
   duration_ms: AttachmentWithMaybeTagsAndSource["duration_ms"];
   source: AttachmentWithMaybeTagsAndSource["source"];
   label: AttachmentWithMaybeTagsAndSource["label"];
@@ -44,13 +44,13 @@ export default function CardFooter({
       </ReferenceFooterGroup>
       <ReferenceFooterGroup className="min-w-0">
         {!!duration && <ReferenceBadge>{duration}</ReferenceBadge>}
-        <ReferenceButton
+        {href && <ReferenceButton
           nativeButton={false}
           className="lg:group-hover:flex lg:group-focus:flex lg:hidden flex"
           render={<Link href={href} onClick={event => event.stopPropagation()} />}
         >
           <ArrowUpRightIcon />
-        </ReferenceButton>
+        </ReferenceButton>}
       </ReferenceFooterGroup>
     </ReferenceFooter>
   );

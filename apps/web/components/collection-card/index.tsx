@@ -4,14 +4,16 @@ import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { getAssetsProxyUrl } from "@/lib/url"
 import { attachmentPath } from "@/lib/routes"
+import { restoreAttachment } from "@/lib/api/attachments"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
 import { Button } from "@workspace/ui/components/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
-import { DownloadIcon, EllipsisIcon } from "lucide-react"
+import { DownloadIcon, EllipsisIcon, RotateCcwIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import CardContextMenu from "./card-context-menu"
 import CardFooter from "./card-footer"
 import CardHeader from "./card-header"
@@ -53,9 +55,10 @@ export type CollectionCardProps = {
   containerClassName?: string
   readonly?: boolean
   collectionSelector?: boolean
+  inTrash?: boolean
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, visibility = "private", className, blurhash, duration_ms, style = {}, label, source, noLink = false, containerClassName = "", collectionSelector = false, ...rest }: CollectionCardProps) {
+export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, visibility = "private", className, blurhash, duration_ms, style = {}, label, source, noLink = false, containerClassName = "", collectionSelector = false, inTrash = false, ...rest }: CollectionCardProps) {
 
   const attachment: AttachmentWithMaybeTagsAndSource = { tags, id, src, mime_type, blurhash, duration_ms, label, source, ...rest }
   const href = attachmentPath(id, visibility)
@@ -63,6 +66,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
   const cardTags = tags ?? []
 
   const isVideo = mime_type.startsWith("video/")
+  const router = useRouter()
 
   const downloadAttachment = async () => {
     try {
@@ -88,13 +92,18 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
     }
   }
 
+  const restore = async () => {
+    await restoreAttachment(id)
+    router.refresh()
+  }
+
 
   return (
     <div className="flex flex-col group break-inside-avoid">
       <CardContextMenu
         attachmentId={id}
         label={label}
-        readonly={readonly}
+        readonly={readonly || inTrash}
         className={cn(
           "w-full p-1 bg-muted rounded-lg relative",
           "data-popup-open:z-50 z-auto",
@@ -130,11 +139,11 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
                 sizes="(min-width: 1600px) calc((100vw - 320px) / 6), (min-width: 1344px) calc((100vw - 320px) / 5), (min-width: 1216px) calc((100vw - 320px) / 4), (min-width: 896px) calc((100vw - 320px) / 3), (min-width: 704px) calc((100vw - 320px) / 2), 100vw"
               >
                 {
-                  !noLink &&
+                  !noLink && !inTrash &&
                   <Link href={href} className="absolute inset-0 z-10" onClick={event => event.stopPropagation()} />
                 }
                 <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
-                <CardFooter duration_ms={duration_ms} href={href} source={source} label={label} />
+                <CardFooter duration_ms={duration_ms} href={inTrash ? undefined : href} source={source} label={label} />
               </RefContent>
             </AnimatePresence>
             <div className="p-2 hidden">
@@ -150,10 +159,8 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
             render={<Button size="icon-xs" variant="ghost"><EllipsisIcon /></Button>}
           />
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={downloadAttachment}>
-              <DownloadIcon />
-              <span>Скачать файл</span>
-            </DropdownMenuItem>
+            {inTrash && <DropdownMenuItem onClick={restore}><RotateCcwIcon /><span>Восстановить</span></DropdownMenuItem>}
+            <DropdownMenuItem onClick={downloadAttachment}><DownloadIcon /><span>Скачать файл</span></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

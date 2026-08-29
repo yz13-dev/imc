@@ -11,13 +11,17 @@ import { useState } from "react";
 
 
 type UpdateModalProps = {
-  children: React.ReactElement<typeof Button>;
+  children?: React.ReactElement<typeof Button>;
   attachment: AttachmentWithMaybeTagsAndSource;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
-export default function UpdateModal({ attachment, children }: UpdateModalProps) {
+export default function UpdateModal({ attachment, children, open: controlledOpen, onOpenChange }: UpdateModalProps) {
 
   const router = useRouter()
-  const [open, setOpen] = useState<boolean>(false)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState<boolean>(false)
+  const open = controlledOpen ?? uncontrolledOpen
+  const setOpen = onOpenChange ?? setUncontrolledOpen
 
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -36,7 +40,7 @@ export default function UpdateModal({ attachment, children }: UpdateModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={children} />
+      {children && <DialogTrigger render={children} />}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Редактирование</DialogTitle>

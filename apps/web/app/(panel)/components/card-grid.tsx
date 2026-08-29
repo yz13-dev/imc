@@ -6,6 +6,7 @@ import CardGridWrapper from "./card-grid-wrapper";
 
 type CardGridProps = {
   visibility?: "private" | "public"
+  inTrash?: boolean
   attachments: AttachmentWithMaybeTagsAndSource[]
   className?: string
   card?: Partial<CollectionCardProps>
@@ -13,7 +14,7 @@ type CardGridProps = {
   collectionSelector?: boolean
 }
 
-export default function CardGrid({ readonly = false, card, attachments, visibility, className = "", collectionSelector = false }: CardGridProps) {
+export default function CardGrid({ readonly = false, card, attachments, visibility, inTrash = false, className = "", collectionSelector = false }: CardGridProps) {
   return (
     <CardGridWrapper className={className}>
       {
@@ -26,6 +27,7 @@ export default function CardGrid({ readonly = false, card, attachments, visibili
                 {...item}
                 {...(card ?? {})}
                 visibility={visibility}
+                inTrash={inTrash}
                 readonly={readonly}
                 collectionSelector={collectionSelector}
                 style={{

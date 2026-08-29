@@ -6,24 +6,29 @@ import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/av
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import { ButtonGroup, ButtonGroupSeparator } from "@workspace/ui/components/button-group"
-import { Edit3Icon, ExternalLinkIcon, Link2Icon, PlusIcon, Trash2Icon } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
+import { ExternalLinkIcon, Link2Icon, PlusIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import RefContent from "../components/ref-content"
+import AttachmentActions from "./components/attachment-actions"
 import CollectionsSelect from "./components/collections-select"
-import RefHeader from "./components/ref-header"
 import NewTags from "./components/tags/new-tags"
-import UpdateModal from "./components/update-modal"
 
 
 type PageProps = {
   params: Promise<{
     id: string
   }>
+  searchParams: Promise<{
+    hideTitle?: string
+    fill?: string
+  }>
 }
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params, searchParams }: PageProps) {
   const { id } = await params
+  const { hideTitle = "false", fill = "false" } = await searchParams
 
   const attachment = await getAttachment(id)
   if (!attachment) return notFound()
@@ -52,11 +57,11 @@ export default async function Page({ params }: PageProps) {
           <div className="absolute inset-0 size-full bg-linear-to-bl from-transparent to-background" />
         </div>
       }
-      <RefHeader />
-      <div className="w-full min-h-svh">
-        <div className="size-full flex @max-xl:flex-col flex-row">
+      {/*<RefHeader />*/}
+      <div className={cn("w-full", fill === "false" && "container mx-auto")}>
+        <div className="size-full flex flex-col">
           <OptionalVideoProvider duration={attachment.duration_ms}>
-            <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
+            <div className="h-fit w-full md:px-12 px-4 flex items-center justify-center">
               <AnimatePresence>
                 <RefContent
                   id={attachment.id}
@@ -68,66 +73,19 @@ export default async function Page({ params }: PageProps) {
                   style={{
                     aspectRatio: `${attachment.width}/${attachment.height}`
                   }}
-                  // Matches the xl:w-2/3 lg:w-1/2 w-full wrapper above.
-                  sizes="(min-width: 1280px) 67vw, (min-width: 1024px) 50vw, 100vw"
+                  sizes="100vw"
                 />
               </AnimatePresence>
             </div>
           </OptionalVideoProvider>
-          <div className="h-full xl:w-1/3 lg:w-1/2 w-full sticky lg:top-14 bottom-0 md:p-12 p-4 lg:bg-transparent bg-background/70 backdrop-blur-xs">
-            <div className="w-full space-y-4 max-w-xl mx-auto">
-              <div className="flex flex-col gap-2">
-                <div className="inline-flex gap-2">
+          <div className="w-full md:p-12 p-4 space-y-6">
+            <div className="flex items-start justify-between gap-3">
+              {
+                hideTitle === "false" &&
+                <div className="flex flex-col gap-2">
                   <h1 className="md:text-4xl text-xl font-medium line-clamp-1">
                     {title}
                   </h1>
-                </div>
-
-                <div className="hidden text-base items-center gap-2">
-                  <span className="text-muted-foreground">
-                    Автор
-                  </span>
-                  <span className="font-medium">
-                    yz13
-                  </span>
-                </div>
-              </div>
-              <div className="flex gap-2 items-center">
-                <CollectionsSelect
-                  attachmentId={attachment.id}
-                  collectionIds={attachment.collection_ids ?? []}
-                  className="w-full"
-                />
-                <UpdateModal attachment={attachment}>
-                  <Button variant="outline">
-                    <Edit3Icon />
-                    <span>Изменить</span>
-                  </Button>
-                </UpdateModal>
-              </div>
-              <div className="w-full bg-card border rounded-2xl py-3 space-y-3">
-                <div className="px-3 flex flex-col gap-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="capitalize text-base text-muted-foreground">
-                      Тэги
-                    </span>
-                    <NewTags attachmentId={id} initialTags={tags}>
-                      <Button variant="secondary" size="xs"><span>Добавить</span><PlusIcon /></Button>
-                    </NewTags>
-                  </div>
-                  <div className="flex items-start gap-1 flex-wrap">
-                    {tags.length === 0 && <span className="text-muted-foreground h-8">—</span>}
-                    {
-                      tags.map(tag => {
-                        return <Badge key={tag.id} variant="outline" className="text-base py-1 uppercase h-fit">{tag.name}</Badge>
-                      })
-                    }
-                  </div>
-                </div>
-                <div className="px-3 flex flex-col gap-1.5">
-                  <span className="capitalize text-base text-muted-foreground">
-                    Источник
-                  </span>
                   {
                     !attachment.source && <span className="text-muted-foreground">—</span>
                   }
@@ -161,13 +119,29 @@ export default async function Page({ params }: PageProps) {
                     </ButtonGroup>
                   }
                 </div>
+              }
+              <div className="flex gap-2 items-center">
+                <CollectionsSelect
+                  attachmentId={attachment.id}
+                  collectionIds={attachment.collection_ids ?? []}
+                  className="w-full"
+                />
+                <AttachmentActions attachment={attachment} />
               </div>
-              <div className="flex items-center justify-end gap-2">
-                <Button variant="error" className="sm:w-fit w-full">
-                  <Trash2Icon />
-                  <span>Удалить</span>
+            </div>
+            <div className="flex items-start gap-1 flex-wrap">
+              <NewTags attachmentId={id} initialTags={tags}>
+                <Button variant="outline" size="icon-lg" className="size-[34px] rounded-md">
+                  <span className="sr-only">Добавить тэг</span>
+                  <PlusIcon />
                 </Button>
-              </div>
+              </NewTags>
+              {tags.length === 0 && <span className="text-muted-foreground h-8">—</span>}
+              {
+                tags.map(tag => {
+                  return <Badge key={tag.id} variant="outline" className="text-base py-1 bg-background uppercase h-fit">{tag.name}</Badge>
+                })
+              }
             </div>
           </div>
         </div>

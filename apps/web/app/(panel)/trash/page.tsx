@@ -17,7 +17,7 @@ export default async function Page() {
             <span className="text-muted-foreground">Нет входящих</span>
           </div>
         }
-        <CardGrid attachments={attachments || []} visibility="private" />
+        <CardGrid attachments={attachments || []} visibility="private" inTrash />
       </div>
     </>
   )
