@@ -65,6 +65,20 @@ export async function getAttachment(attachmentID: string): Promise<AttachmentWit
   }
 }
 
+export async function getPublicAttachment(attachmentID: string): Promise<AttachmentWithTags | null> {
+  try {
+    const { data, error } = await fetch<AttachmentWithTags>({
+      url: getApiProxyUrl(`/v1/attachments/${attachmentID}`)
+    })
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 export async function moveAttachmentToCollection(attachmentID: string, collectionID: string): Promise<unknown> {
   try {
     const { data, error } = await fetch<unknown>({

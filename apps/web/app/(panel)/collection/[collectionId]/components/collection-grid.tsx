@@ -3,14 +3,14 @@ import CardGrid from "@/app/(panel)/components/card-grid"
 import CardGridWrapper from "@/app/(panel)/components/card-grid-wrapper"
 import { CollectionCardSkeleton } from "@/components/collection-card"
 import { getCollectionAttachments } from "@/lib/api/attachments"
-import type { Attachment, AttachmentWithTags } from "@/types/attachments"
+import type { AttachmentWithMaybeTagsAndSource, AttachmentWithTags } from "@/types/attachments"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 
 type CollectionGridProps<T> = {
   collection: string
-  defaultAttachments?: Attachment[]
+  defaultAttachments?: AttachmentWithMaybeTagsAndSource[]
   readonly?: boolean
   queryKey?: string[]
   queryFn?: Promise<T>
@@ -59,7 +59,7 @@ export default function CollectionGrid<T extends AttachmentWithTags[] | null>({ 
   return (
     <CardGrid
       attachments={attachments}
-      scope="ref"
+      visibility={readonly ? "public" : "private"}
       readonly={readonly}
     />
   )

@@ -102,8 +102,7 @@ export default function Form() {
                             <CollectionCard
                               {...item}
                               label={label}
-                              scope="ref"
-                              preview={false}
+                              visibility="private"
                               className="size-full"
                               style={{
                                 aspectRatio: `${item.width}/${item.height}`

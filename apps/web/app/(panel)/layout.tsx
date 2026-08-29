@@ -11,9 +11,10 @@ import ServerSideEvents from "./components/sse-provider";
 
 type LayoutProps = {
   children: React.ReactNode
+  modal: React.ReactNode
 }
 
-export default async function Layout({ children }: LayoutProps) {
+export default async function Layout({ children, modal }: LayoutProps) {
 
   const user = await getMe()
 
@@ -34,6 +35,7 @@ export default async function Layout({ children }: LayoutProps) {
           <div className="w-full">
             {children}
           </div>
+          {modal}
           <Panel />
         </SidebarProvider>
       </HydrationBoundary>

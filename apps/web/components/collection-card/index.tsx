@@ -2,15 +2,16 @@
 import RefContent from "@/app/(panel)/components/ref-content"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
-import { resolveAssetImageUrl } from "@/lib/image-loader"
 import { getAssetsProxyUrl } from "@/lib/url"
-import { promoteViewTransitionGroup, withViewTransition } from "@/lib/view-transition"
+import { attachmentPath } from "@/lib/routes"
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments"
-import { useQueryClient } from "@tanstack/react-query"
+import { Button } from "@workspace/ui/components/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
+import { DownloadIcon, EllipsisIcon } from "lucide-react"
 import { AnimatePresence } from "motion/react"
-import { parseAsString, useQueryState } from "nuqs"
+import Link from "next/link"
 import CardContextMenu from "./card-context-menu"
 import CardFooter from "./card-footer"
 import CardHeader from "./card-header"
@@ -45,93 +46,58 @@ export function CollectionCardSkeleton({ className = "", containerClassName = ""
 }
 
 export type CollectionCardProps = {
-  scope?: string
+  visibility?: "private" | "public"
   className?: string
   style?: React.CSSProperties
-  preview?: boolean
   noLink?: boolean
   containerClassName?: string
   readonly?: boolean
   collectionSelector?: boolean
 } & AttachmentWithMaybeTagsAndSource
 
-export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, scope = "", className, blurhash, duration_ms, style = {}, label, source, preview = false, noLink = false, containerClassName = "", collectionSelector = false, ...rest }: CollectionCardProps) {
+export default function CollectionCard({ readonly = false, tags = [], mime_type, id, src, visibility = "private", className, blurhash, duration_ms, style = {}, label, source, noLink = false, containerClassName = "", collectionSelector = false, ...rest }: CollectionCardProps) {
 
   const attachment: AttachmentWithMaybeTagsAndSource = { tags, id, src, mime_type, blurhash, duration_ms, label, source, ...rest }
-  const href = scope ? `/${scope}/${id}` : `/${id}`
+  const href = attachmentPath(id, visibility)
 
   const cardTags = tags ?? []
 
   const isVideo = mime_type.startsWith("video/")
-  const isGif = mime_type.startsWith("image/gif")
 
-  const queryClient = useQueryClient()
-  const [activeAttachmentId, setActiveAttachmentId] = useQueryState("attachment", parseAsString)
-  const isActive = activeAttachmentId === id
-
-  // Seed the preview's query cache synchronously from data the grid already has,
-  // so opening never races the view transition against a network fetch.
-  const seedPreviewCache = () => {
-    queryClient.setQueryData(["attachments", "ref", id], {
-      ...rest,
-      id,
-      src,
-      mime_type,
-      blurhash,
-      duration_ms,
-      label,
-      source,
-      tags: cardTags,
-    })
-  }
-
-  // The preview mounts a brand new <img>. If it hasn't decoded yet when the
-  // view transition captures its "after" state, the browser has nothing to
-  // morph into and the transition silently no-ops (or flashes a placeholder).
-  // preview/attachment.tsx always requests quality=100 (gifs go through
-  // unoptimized, so they keep the bare URL) — resolve the same URL here so
-  // this actually warms the cache entry the preview's <Image> will use,
-  // rather than a differently-sized/qualified variant of the same asset.
-  const preloadMedia = async () => {
-    if (isVideo || typeof window === "undefined") return
-    const rawUrl = getAssetsProxyUrl(`/${id}`)
-    const img = new window.Image()
-    img.src = isGif ? rawUrl : resolveAssetImageUrl(rawUrl, 100)
+  const downloadAttachment = async () => {
     try {
-      await Promise.race([
-        img.decode(),
-        new Promise((_, reject) => setTimeout(reject, 800)),
-      ])
-    } catch {
-      // Ignore decode/network/timeout failures — worst case the transition no-ops.
-    }
-  }
-  const openPreview = async () => {
-    await preloadMedia()
-    // Every card in the grid carries a view-transition-name (so any of them
-    // can be a future transition source), which means this specific card's
-    // group would otherwise stack in plain DOM order among all the others —
-    // visually underneath later siblings while its box still overlaps them.
-    // Force it to the front for just this transition.
-    const unpromote = promoteViewTransitionGroup(`attachment-${id}`)
-    const transition = withViewTransition(() => setActiveAttachmentId(id))
-    if (transition) {
-      transition.finished.finally(unpromote)
-    } else {
-      unpromote()
+      const resolvedId = id // getRefSrc(src) || src;
+      const refSrc = getAssetsProxyUrl(`/${resolvedId || src}`)
+      const response = await fetch(refSrc)
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`)
+      }
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement("a")
+
+      link.href = url
+      link.download = label || "attachment"
+      link.click()
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    } catch (error) {
+      console.error(error)
     }
   }
 
 
   return (
-    <div className="flex flex-col group">
+    <div className="flex flex-col group break-inside-avoid">
       <CardContextMenu
         attachmentId={id}
         label={label}
         readonly={readonly}
         className={cn(
-          "w-full p-1 bg-muted rounded-lg relative break-inside-avoid",
-          activeAttachmentId ? "-z-10" : "data-popup-open:z-50 z-auto",
+          "w-full p-1 bg-muted rounded-lg relative",
+          "data-popup-open:z-50 z-auto",
           containerClassName
         )}
       >
@@ -157,7 +123,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
                 )}
                 blurhash={blurhash}
                 style={style}
-                viewTransitionName={!isActive ? `attachment-${id}` : undefined}
+                viewTransitionName={`attachment-${id}`}
                 // Mirrors the @sm..@7xl column counts in CardGridWrapper, offset
                 // by the fixed sidebar + page padding (~320px) so next/image
                 // doesn't fetch a full-viewport-wide image for a grid thumbnail.
@@ -165,19 +131,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
               >
                 {
                   !noLink &&
-                  <div
-                    className="absolute inset-0 z-10"
-                    onClick={preview ? (e) => {
-                      e.preventDefault()
-                      // CardContextMenu's DropdownMenuTrigger wraps this whole
-                      // card and reacts to this same click bubbling up to it
-                      // (calls preventBaseUIHandler()) — claim the click here
-                      // so it never reaches that handler.
-                      e.stopPropagation()
-                      seedPreviewCache()
-                      openPreview()
-                    } : undefined}
-                  />
+                  <Link href={href} className="absolute inset-0 z-10" onClick={event => event.stopPropagation()} />
                 }
                 <CardHeader attachment={attachment} collectionSelector={collectionSelector} />
                 <CardFooter duration_ms={duration_ms} href={href} source={source} label={label} />
@@ -189,8 +143,19 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
           </OptionalVideoProvider>
         </div>
       </CardContextMenu>
-      <div className="flex px-2 items-center py-1.5 gap-2">
+      <div className="flex px-2 items-center justify-between py-1.5 gap-2">
         <span className="text-sm line-clamp-1">{label}</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button size="icon-xs" variant="ghost"><EllipsisIcon /></Button>}
+          />
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={downloadAttachment}>
+              <DownloadIcon />
+              <span>Скачать файл</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )

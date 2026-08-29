@@ -1,5 +1,6 @@
 "use client"
 import { useMoveAttachmentToCollection } from "@/hooks/use-move-to-collection"
+import { attachmentPath } from "@/lib/routes"
 import { moveToTrashAttachment, permanentlyDeleteAttachment } from "@/lib/api/attachments"
 import { getCollections } from "@/lib/api/collections"
 import { useKeyHold } from "@tanstack/react-hotkeys"
@@ -84,6 +85,11 @@ export default function CardDropdownMenu({ readonly = false, className = "", chi
         render={children}
         nativeButton={false}
         onClick={e => {
+          if (e.target instanceof Element && e.target.closest("a")) {
+            e.stopPropagation()
+            e.preventBaseUIHandler()
+            return
+          }
           if (open) {
             setOpen(false)
           } else {
@@ -103,7 +109,7 @@ export default function CardDropdownMenu({ readonly = false, className = "", chi
       <DropdownMenuContent
         className={cn("w-(--anchor-width)", open && "z-50")}
       >
-        <DropdownMenuItem nativeButton={false} render={<Link href={`/ref/${attachmentId}`} />}>
+        <DropdownMenuItem nativeButton={false} render={<Link href={attachmentPath(attachmentId)} />}>
           <ExternalLinkIcon />
           <span>
             Открыть

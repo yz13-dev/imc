@@ -54,10 +54,9 @@ function patchAttachmentCollections(
     (data) => data?.map(patch)
   )
 
-  // The preview overlay's single-attachment cache (see seedPreviewCache in
-  // components/collection-card/index.tsx).
+  // Keep the open attachment modal in sync as well.
   queryClient.setQueryData<AttachmentWithMaybeTagsAndSource>(
-    ["attachments", "ref", attachmentId],
+    ["attachments", "attachment", attachmentId],
     (data) => data && patch(data)
   )
 }

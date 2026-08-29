@@ -10,7 +10,7 @@ import { Edit3Icon, ExternalLinkIcon, Link2Icon, PlusIcon, Trash2Icon } from "lu
 import { AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import RefContent from "../../components/ref-content"
+import RefContent from "../components/ref-content"
 import CollectionsSelect from "./components/collections-select"
 import RefHeader from "./components/ref-header"
 import NewTags from "./components/tags/new-tags"
@@ -19,13 +19,13 @@ import UpdateModal from "./components/update-modal"
 
 type PageProps = {
   params: Promise<{
-    refId: string
+    id: string
   }>
 }
 export default async function Page({ params }: PageProps) {
-  const { refId } = await params
+  const { id } = await params
 
-  const attachment = await getAttachment(refId)
+  const attachment = await getAttachment(id)
   if (!attachment) return notFound()
 
   const refSrc = getRefSrc(attachment.src)
@@ -36,7 +36,7 @@ export default async function Page({ params }: PageProps) {
   const tags = attachmentTags.map(tag => tag.tag)
 
   return (
-    <div className="relative">
+    <div className="relative @container">
       {
         attachment.blurhash &&
         <div
@@ -54,7 +54,7 @@ export default async function Page({ params }: PageProps) {
       }
       <RefHeader />
       <div className="w-full min-h-svh">
-        <div className="size-full flex lg:flex-row flex-col">
+        <div className="size-full flex @max-xl:flex-col flex-row">
           <OptionalVideoProvider duration={attachment.duration_ms}>
             <div className="h-fit xl:w-2/3 lg:w-1/2 w-full md:p-12 p-4 flex items-center justify-center">
               <AnimatePresence>
@@ -111,7 +111,7 @@ export default async function Page({ params }: PageProps) {
                     <span className="capitalize text-base text-muted-foreground">
                       Тэги
                     </span>
-                    <NewTags attachmentId={refId} initialTags={tags}>
+                    <NewTags attachmentId={id} initialTags={tags}>
                       <Button variant="secondary" size="xs"><span>Добавить</span><PlusIcon /></Button>
                     </NewTags>
                   </div>

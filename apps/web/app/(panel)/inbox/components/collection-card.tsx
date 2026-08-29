@@ -1,5 +1,6 @@
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { getCollectionAttachments } from "@/lib/api/attachments"
+import { collectionPath } from "@/lib/routes"
 import { useUser } from "@/lib/stores/user"
 import type { Collection } from "@/types/collections"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -27,7 +28,7 @@ export default function CollectionCard({ collection }: CollectionCardProps) {
     queryFn: () => getCollectionAttachments(collection.id)
   })
   const attachments = (data || []).slice(0, 3)
-  const href = `/${user?.username}/${collection?.id}`
+  const href = collectionPath(collection.id)
 
   if (isLoading) return <CollectionCardSkeleton />
   return (

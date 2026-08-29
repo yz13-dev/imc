@@ -1,5 +1,6 @@
 "use client"
 import type { Collection } from "@/types/collections";
+import { collectionPath } from "@/lib/routes";
 import { Button } from "@workspace/ui/components/button";
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@workspace/ui/components/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
@@ -33,7 +34,7 @@ export default function CollectionsGroup({ userId, data }: CollectionsGroupProps
           <DropdownMenuLabel>Коллекции</DropdownMenuLabel>
           {
             (data || []).map(item => {
-              return <DropdownMenuItem key={item.id} nativeButton={false} render={<Link href={`/${userId}/${item.id}`} />}>
+              return <DropdownMenuItem key={item.id} nativeButton={false} render={<Link href={collectionPath(item.id)} />}>
                 <LibrarySquareIcon />
                 {item.name}
               </DropdownMenuItem>
@@ -58,7 +59,7 @@ export default function CollectionsGroup({ userId, data }: CollectionsGroupProps
           ?
           <Tooltip>
             <TooltipTrigger render={
-              <Button size="icon" variant="ghost" nativeButton={false} render={<Link href={`/${userId}/${collection.id}`} />}>
+              <Button size="icon" variant="ghost" nativeButton={false} render={<Link href={collectionPath(collection.id)} />}>
                 <LibrarySquareIcon className="size-5" />
               </Button>
             }

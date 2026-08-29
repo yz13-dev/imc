@@ -99,6 +99,7 @@ func main() {
 			r.Post("/source/new", handlers.PostNewSource)
 
 			r.Get("/collections/{collectionID}/attachments", handlers.GetPublicCollectionAttachments)
+			r.Get("/attachments/{attachmentID}", handlers.GetPublicAttachment)
 			// my routes
 			r.Route("/my", func(r chi.Router) {
 				r.Get("/events", handlers.EventsHandler(hub))

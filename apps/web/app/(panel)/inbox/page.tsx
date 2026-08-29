@@ -2,11 +2,10 @@ import { getCollectionAttachments, getInboxAttachments } from "@/lib/api/attachm
 import { getCollections } from "@/lib/api/collections"
 import { dehydrateState, getQueryClient } from "@/lib/query-client"
 import { HydrationBoundary } from "@tanstack/react-query"
-import { AnimatePresence } from "motion/react"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group"
+import { SearchIcon } from "lucide-react"
 import { Suspense } from "react"
 import DefaultHeader from "../components/default-header"
-import Attachment, { AttachmentSkeleton } from "../components/preview/attachment"
-import Cover from "../components/preview/cover"
 import TagPicker from "../components/tag-picker"
 import { InboxTagStats } from "../components/tags-stats"
 import Collections, { CollectionsSkeleton } from "./components/collections"
@@ -37,17 +36,17 @@ export default async function Page() {
 
   return (
     <HydrationBoundary state={dehydrateState(queryClient)}>
-      <DefaultHeader />
+      <DefaultHeader>
+        <InputGroup className="max-w-2xl hidden mx-auto">
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupInput placeholder="Поиск" />
+        </InputGroup>
+      </DefaultHeader>
       <TagPicker className="top-14 sticky">
         <InboxTagStats />
       </TagPicker>
-      <AnimatePresence mode="popLayout">
-        <Cover coverKey="attachment">
-          <Suspense fallback={<AttachmentSkeleton />}>
-            <Attachment />
-          </Suspense>
-        </Cover>
-      </AnimatePresence>
       <div className="w-full p-6">
         <Suspense fallback={<CollectionsSkeleton />}>
           <Collections />

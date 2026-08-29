@@ -1,10 +1,10 @@
 "use client"
 
-import * as React from "react"
 import { Menu as MenuPrimitive } from "@base-ui/react/menu"
+import * as React from "react"
 
+import { CheckIcon, ChevronRightIcon } from "lucide-react"
 import { cn } from "../lib/utils"
-import { ChevronRightIcon, CheckIcon } from "lucide-react"
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />
@@ -42,9 +42,9 @@ function DropdownMenuContent({
         <MenuPrimitive.Popup
           data-slot="dropdown-menu-content"
           className={cn(
-                                            "dark z-50 max-h-(--available-height) w-(--anchor-width) min-w-32 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg p-1 text-popover-foreground shadow-md ring-1 ring-primary/10 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95 animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-primary/10 **:data-[slot$=-item]:data-highlighted:bg-primary/10 **:data-[slot$=-separator]:bg-primary/5 **:data-[slot$=-trigger]:focus:bg-primary/10 **:data-[slot$=-trigger]:aria-expanded:bg-primary/10! **:data-[variant=error]:focus:bg-primary/10! **:data-[variant=error]:text-primary! **:data-[variant=error]:**:text-primary!",
-                                            className
-                                          )}
+            "dark z-50 max-h-(--available-height) w-(--anchor-width) min-w-42 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg p-1 text-popover-foreground shadow-md ring-1 ring-primary/10 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95 animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-primary/10 **:data-[slot$=-item]:data-highlighted:bg-primary/10 **:data-[slot$=-separator]:bg-primary/5 **:data-[slot$=-trigger]:focus:bg-primary/10 **:data-[slot$=-trigger]:aria-expanded:bg-primary/10! **:data-[variant=error]:focus:bg-primary/10! **:data-[variant=error]:text-primary! **:data-[variant=error]:**:text-primary!",
+            className
+          )}
           {...props}
         />
       </MenuPrimitive.Positioner>
@@ -139,9 +139,9 @@ function DropdownMenuSubContent({
     <DropdownMenuContent
       data-slot="dropdown-menu-sub-content"
       className={cn(
-                        "dark w-auto min-w-[96px] rounded-lg p-1 text-popover-foreground shadow-lg ring-1 ring-primary/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-primary/10 **:data-[slot$=-item]:data-highlighted:bg-primary/10 **:data-[slot$=-separator]:bg-primary/5 **:data-[slot$=-trigger]:focus:bg-primary/10 **:data-[slot$=-trigger]:aria-expanded:bg-primary/10! **:data-[variant=error]:focus:bg-primary/10! **:data-[variant=error]:text-primary! **:data-[variant=error]:**:text-primary!",
-                        className
-                      )}
+        "dark w-auto min-w-[96px] rounded-lg p-1 text-popover-foreground shadow-lg ring-1 ring-primary/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-primary/10 **:data-[slot$=-item]:data-highlighted:bg-primary/10 **:data-[slot$=-separator]:bg-primary/5 **:data-[slot$=-trigger]:focus:bg-primary/10 **:data-[slot$=-trigger]:aria-expanded:bg-primary/10! **:data-[variant=error]:focus:bg-primary/10! **:data-[variant=error]:text-primary! **:data-[variant=error]:**:text-primary!",
+        className
+      )}
       align={align}
       alignOffset={alignOffset}
       side={side}
@@ -256,19 +256,11 @@ function DropdownMenuShortcut({
 }
 
 export {
-  DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioGroup,
+  DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent,
+  DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuPortal, DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
+  DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger
 }
+

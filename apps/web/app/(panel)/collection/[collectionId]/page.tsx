@@ -10,34 +10,31 @@ import CollectionGrid from "./components/collection-grid"
 
 type PageProps = {
   params: Promise<{
-    user: string
-    collection: string
+    collectionId: string
   }>
   searchParams: Promise<{
     id: string
   }>
 }
 export default async function Page({ params, searchParams }: PageProps) {
-  const { user, collection } = await params
+  const { collectionId } = await params
   const { id } = await searchParams
 
   const queryClient = getQueryClient()
 
   await queryClient
     .prefetchQuery({
-      queryKey: ["attachments", "collections", collection, []],
+      queryKey: ["attachments", "collections", collectionId, []],
       queryFn: () => {
-        const data = getCollectionAttachments(collection, [])
+        const data = getCollectionAttachments(collectionId, [])
         return data
       }
     })
 
   await queryClient.prefetchQuery({
-    queryKey: ["tags", collection],
-    queryFn: async () => (await getTagsWithCounts(collection)) || []
+    queryKey: ["tags", collectionId],
+    queryFn: async () => (await getTagsWithCounts(collectionId)) || []
   })
-
-  const scope = `${user}/${collection}`
   return (
     <HydrationBoundary state={dehydrateState(queryClient)}>
       <DefaultHeader />
@@ -50,7 +47,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       }
       <div className="w-full px-6 pt-6">
         <CollectionGrid
-          collection={collection}
+          collection={collectionId}
           defaultAttachments={[]}
         />
       </div>

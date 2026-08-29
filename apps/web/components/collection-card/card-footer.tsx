@@ -46,8 +46,8 @@ export default function CardFooter({
         {!!duration && <ReferenceBadge>{duration}</ReferenceBadge>}
         <ReferenceButton
           nativeButton={false}
-          className="group-hover:flex group-focus:flex hidden"
-          render={<Link href={href} />}
+          className="lg:group-hover:flex lg:group-focus:flex lg:hidden flex"
+          render={<Link href={href} onClick={event => event.stopPropagation()} />}
         >
           <ArrowUpRightIcon />
         </ReferenceButton>

@@ -1,5 +1,6 @@
 "use client"
 import { getCollections } from "@/lib/api/collections"
+import { collectionPath } from "@/lib/routes"
 import { useUser } from "@/lib/stores/user"
 import { useHotkey } from "@tanstack/react-hotkeys"
 import { useQuery } from "@tanstack/react-query"
@@ -61,7 +62,7 @@ export default function CommandMenu() {
               </CommandItem>
               {
                 (collections || []).map(collection => (
-                  <CommandItem key={collection.id} value={collection.id} onSelect={() => go(`/${userId}/${collection.id}`)}>
+                  <CommandItem key={collection.id} value={collection.id} onSelect={() => go(collectionPath(collection.id))}>
                     <LibrarySquareIcon />
                     <span>{collection.name}</span>
                   </CommandItem>

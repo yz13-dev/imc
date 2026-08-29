@@ -461,6 +461,37 @@ func GetAttachment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetPublicAttachment(w http.ResponseWriter, r *http.Request) {
+	attachmentID := r.PathValue("attachmentID")
+	if attachmentID == "" {
+		http.Error(w, "attachmentID is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := uuid.Parse(attachmentID)
+	if err != nil {
+		http.Error(w, "invalid attachmentID", http.StatusBadRequest)
+		return
+	}
+
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+
+	attachment, err := services.GetPublicAttachment(id, db)
+	if err != nil {
+		http.Error(w, "attachment not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(attachment); err != nil {
+		http.Error(w, "failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func PatchAttachment(w http.ResponseWriter, r *http.Request) {
 
 	var data models.UpdateAttachment

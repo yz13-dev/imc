@@ -36,8 +36,7 @@ export default function InboxGrid() {
   return (
     <CardGrid
       attachments={attachments || []}
-      scope="ref"
-      withPreview
+      visibility="private"
     />
   )
 }

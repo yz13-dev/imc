@@ -60,8 +60,7 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
       <CardGrid
         collectionSelector
         attachments={allAttachments}
-        scope="ref"
-        withPreview
+        visibility="private"
       />
       <div ref={ref} className="w-full py-6" />
     </>

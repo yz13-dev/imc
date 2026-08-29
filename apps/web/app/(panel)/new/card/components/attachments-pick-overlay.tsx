@@ -44,7 +44,7 @@ export default function AttachmentsPickOverlay() {
 
         }}
       >
-        <CardGrid attachments={withoutSelected} withPreview={false} card={{ noLink: true }} />
+        <CardGrid attachments={withoutSelected} card={{ noLink: true }} />
       </div>
     </Overlay>
   );

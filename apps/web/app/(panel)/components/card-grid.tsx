@@ -5,16 +5,15 @@ import CardGridWrapper from "./card-grid-wrapper";
 
 
 type CardGridProps = {
-  scope?: string
+  visibility?: "private" | "public"
   attachments: AttachmentWithMaybeTagsAndSource[]
-  withPreview?: boolean
   className?: string
   card?: Partial<CollectionCardProps>
   readonly?: boolean
   collectionSelector?: boolean
 }
 
-export default function CardGrid({ readonly = false, card, attachments, scope, withPreview = false, className = "", collectionSelector = false }: CardGridProps) {
+export default function CardGrid({ readonly = false, card, attachments, visibility, className = "", collectionSelector = false }: CardGridProps) {
   return (
     <CardGridWrapper className={className}>
       {
@@ -26,8 +25,7 @@ export default function CardGrid({ readonly = false, card, attachments, scope, w
                 key={item.id}
                 {...item}
                 {...(card ?? {})}
-                scope={scope}
-                preview={withPreview}
+                visibility={visibility}
                 readonly={readonly}
                 collectionSelector={collectionSelector}
                 style={{

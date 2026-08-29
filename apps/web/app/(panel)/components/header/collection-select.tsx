@@ -1,7 +1,7 @@
 "use client"
 
 import { getCollections } from "@/lib/api/collections"
-import { useUser } from "@/lib/stores/user"
+import { collectionPath } from "@/lib/routes"
 import { useQuery } from "@tanstack/react-query"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { LockIcon, LockOpenIcon } from "lucide-react"
@@ -15,7 +15,6 @@ type CollectionSelectProps = {
 
 export default function CollectionSelect({ defaultCollection }: CollectionSelectProps) {
 
-  const user = useUser((state) => state.user)
   const [collectionId, setCollectionId] = useState<string | null>(defaultCollection || null)
   const { data } = useQuery({
     queryKey: ["attachments", "collections"],
@@ -46,7 +45,7 @@ export default function CollectionSelect({ defaultCollection }: CollectionSelect
                 <SelectItem
                   key={collection.id}
                   value={collection.id}
-                  render={<Link href={`/${user?.username || ""}/${collection.id}`} />}
+                  render={<Link href={collectionPath(collection.id)} />}
                 >
                   {collection?.public ? <LockOpenIcon /> : <LockIcon />}
                   <span>{collection.name}</span>
