@@ -17,28 +17,28 @@ type CardGridProps = {
 
 export default function CardGrid({ readonly = false, card, attachments, visibility, inTrash = false, className = "", collectionSelector = false, selectable = false }: CardGridProps) {
   return (
-    <CardGridWrapper className={className}>
-      {
-        attachments
-          .map((item) => {
-            // const alt = getRefSrc(item.src)
-            return (
-              <CollectionCard
-                key={item.id}
-                {...item}
-                {...(card ?? {})}
-                visibility={visibility}
-                inTrash={inTrash}
-                readonly={readonly}
-                collectionSelector={collectionSelector}
-                selectable={selectable}
-                style={{
-                  aspectRatio: `${item.width}/${item.height}`
-                }}
-              />
-            )
-          })
-      }
-    </CardGridWrapper>
+    <CardGridWrapper
+      className={className}
+      count={attachments.length}
+      getAspectRatio={(index) => attachments[index]!.width / attachments[index]!.height}
+      renderItem={(index) => {
+        const item = attachments[index]!
+        return (
+          <CollectionCard
+            key={item.id}
+            {...item}
+            {...(card ?? {})}
+            visibility={visibility}
+            inTrash={inTrash}
+            readonly={readonly}
+            collectionSelector={collectionSelector}
+            selectable={selectable}
+            style={{
+              aspectRatio: `${item.width}/${item.height}`
+            }}
+          />
+        )
+      }}
+    />
   )
 }

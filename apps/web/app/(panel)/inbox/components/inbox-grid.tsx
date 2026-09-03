@@ -13,7 +13,13 @@ import CardGridWrapper from "../../components/card-grid-wrapper"
 import { InboxSelectionDockSync } from "./bulk-actions"
 
 export function InboxGridSkeleton() {
-  return <CardGridWrapper>{[...Array(24)].map((_, i) => <CollectionCardSkeleton key={i} className="aspect-square" />)}</CardGridWrapper>
+  return (
+    <CardGridWrapper
+      count={24}
+      getAspectRatio={() => 1}
+      renderItem={(i) => <CollectionCardSkeleton key={i} className="aspect-square" />}
+    />
+  )
 }
 
 export default function InboxGrid() {

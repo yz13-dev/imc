@@ -42,7 +42,13 @@ export default function CollectionGrid({ collection, readonly = false }: Collect
     if (!disabled && debouncedInView && hasNextPage) void fetchNextPage()
   }, [debouncedInView, disabled, fetchNextPage, hasNextPage])
 
-  if (isLoading) return <CardGridWrapper>{[...Array(24)].map((_, i) => <CollectionCardSkeleton key={i} className="aspect-square" />)}</CardGridWrapper>
+  if (isLoading) return (
+    <CardGridWrapper
+      count={24}
+      getAspectRatio={() => 1}
+      renderItem={(i) => <CollectionCardSkeleton key={i} className="aspect-square" />}
+    />
+  )
   return <>
     <CardGrid attachments={attachments} visibility={readonly ? "public" : "private"} readonly={readonly} />
     <div ref={ref} className="w-full py-6" />
