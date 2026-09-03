@@ -57,7 +57,7 @@ export default async function Page({ params, searchParams }: PageProps) {
         </div>
       }
       {/*<RefHeader />*/}
-      <div className={cn("w-full", fill === "false" && "container mx-auto")}>
+      <div className={cn("w-full min-h-dvh", fill === "false" && "max-w-4xl mx-auto")}>
         <div className="size-full flex flex-col">
           <OptionalVideoProvider duration={attachment.duration_ms}>
             <div className="h-fit w-full md:px-12 px-4 flex items-center justify-center">
