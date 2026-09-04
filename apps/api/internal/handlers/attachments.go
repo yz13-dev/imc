@@ -333,10 +333,15 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	obj, err := s3Client.GetObject(r.Context(), &s3.GetObjectInput{
+	getObjectInput := &s3.GetObjectInput{
 		Bucket: aws.String(storage.GetBucketName()),
 		Key:    aws.String(key),
-	})
+	}
+	if requestedRange := r.Header.Get("Range"); requestedRange != "" {
+		getObjectInput.Range = aws.String(requestedRange)
+	}
+
+	obj, err := s3Client.GetObject(r.Context(), getObjectInput)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -381,7 +386,16 @@ func GetAttachmentFile(w http.ResponseWriter, r *http.Request) {
 	if obj.ContentLength != nil {
 		w.Header().Set("Content-Length", strconv.FormatInt(*obj.ContentLength, 10))
 	}
+	if obj.AcceptRanges != nil {
+		w.Header().Set("Accept-Ranges", *obj.AcceptRanges)
+	}
+	if obj.ContentRange != nil {
+		w.Header().Set("Content-Range", *obj.ContentRange)
+	}
 	w.Header().Set("Content-Disposition", "inline")
+	if obj.ContentRange != nil {
+		w.WriteHeader(http.StatusPartialContent)
+	}
 	_, err = io.Copy(w, obj.Body)
 	if err != nil {
 		log.Printf("copy object body: %v", err)

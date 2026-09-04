@@ -3,7 +3,7 @@ import RefContent from "@/app/(panel)/components/ref-content"
 import { OptionalVideoProvider } from "@/components/video-provider"
 import { toBlurDataURL } from "@/lib/blurhash"
 import { restoreAttachment } from "@/lib/api/attachments"
-import { getAssetsProxyUrl } from "@/lib/url"
+import { downloadAttachment } from "@/lib/download-attachment"
 import { attachmentPath } from "@/lib/routes"
 import ShareAttachmentMenuItem from "@/components/share-attachment-menu-item"
 import { useSelection } from "@/lib/stores/selection-store"
@@ -75,30 +75,6 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
   const isSelected = useSelection(state => state.selectedIds.has(id))
   const hasSelection = useSelection(state => state.selectedIds.size > 0)
   const toggleSelected = useSelection(state => state.toggle)
-
-  const downloadAttachment = async () => {
-    try {
-      const resolvedId = id // getRefSrc(src) || src;
-      const refSrc = getAssetsProxyUrl(`/${resolvedId || src}`)
-      const response = await fetch(refSrc)
-
-      if (!response.ok) {
-        throw new Error(`Download failed: ${response.status}`)
-      }
-
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-
-      link.href = url
-      link.download = label || "attachment"
-      link.click()
-
-      setTimeout(() => URL.revokeObjectURL(url), 1000)
-    } catch (error) {
-      console.error(error)
-    }
-  }
 
   const restore = async () => {
     await restoreAttachment(id)
@@ -192,7 +168,7 @@ export default function CollectionCard({ readonly = false, tags = [], mime_type,
           <DropdownMenuContent>
             {inTrash && <DropdownMenuItem onClick={restore}><RotateCcwIcon /><span>Восстановить</span></DropdownMenuItem>}
             {!inTrash && <ShareAttachmentMenuItem attachmentId={id} title={label} isPublic={rest.public} />}
-            <DropdownMenuItem onClick={downloadAttachment}><DownloadIcon /><span>Скачать файл</span></DropdownMenuItem>
+            <DropdownMenuItem onClick={() => downloadAttachment(id, label)}><DownloadIcon /><span>Скачать файл</span></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

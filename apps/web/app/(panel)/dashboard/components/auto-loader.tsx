@@ -24,7 +24,12 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
     }
   })
 
-  const allAttachments = data.pages.flatMap(page => page.items)
+  // A refetch can overlap an already loaded cursor page while server state is
+  // changing (for example when an attachment becomes public). The attachment
+  // id is the stable identity, so never render the same record twice.
+  const allAttachments = Array.from(
+    new Map(data.pages.flatMap(page => page.items).map(attachment => [attachment.id, attachment])).values()
+  )
 
   const ref = useRef(null)
   // Extends the sentinel's detection zone downward past the actual viewport

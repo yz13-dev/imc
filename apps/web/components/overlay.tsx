@@ -1,7 +1,7 @@
 import { cn } from "@workspace/ui/lib/utils"
-import { motion } from "motion/react"
+import { motion, type HTMLMotionProps } from "motion/react"
 
-export type OverlayProps = React.ComponentPropsWithoutRef<"div">
+export type OverlayProps = HTMLMotionProps<"div">
 
 
 

@@ -10,7 +10,7 @@ export default async function Page({ params }: PageProps) {
     <AttachmentModal id={id}>
       <AttachmentPage
         params={Promise.resolve({ id })}
-        searchParams={Promise.resolve({ hideTitle: "true" })}
+        searchParams={Promise.resolve({ hideTitle: "true", hideBlurhash: "true" })}
       />
     </AttachmentModal>
   )

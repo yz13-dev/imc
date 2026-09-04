@@ -15,8 +15,16 @@ async function handler(request: NextRequest, context: RouteContext) {
   const { path } = await context.params;
 
   if (path[0] === "assets") {
+    const attachmentId = path[1];
+    if (!attachmentId) {
+      return Response.json(
+        { message: "attachment id is required" },
+        { status: 400 },
+      );
+    }
+
     return assetsHandler(request, {
-      params: Promise.resolve({ path: ["v1", "attachments", path[1], "file"] }),
+      params: Promise.resolve({ path: ["v1", "attachments", attachmentId, "file"] }),
     });
   }
 
