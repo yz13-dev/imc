@@ -15,7 +15,7 @@ type PageProps = { params: Promise<{ id: string }> }
 export default async function Page({ params }: PageProps) {
   const { id } = await params
   const attachment = await getPublicAttachment(id)
-  if (!attachment) notFound()
+  if (!attachment?.src) notFound()
 
   const src = getRefSrc(attachment.src) || attachment.src
   const title = attachment.label || "Без названия"

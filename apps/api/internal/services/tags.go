@@ -44,3 +44,7 @@ func GetTagsWithCounts(userID string, collectionID *uuid.UUID, db *gorm.DB) ([]m
 	}
 	return tags, nil
 }
+
+func GetPublicCollectionTagsWithCounts(collectionID uuid.UUID, db *gorm.DB) ([]models.PublicTagWithCount, error) {
+	return repositories.GetPublicCollectionTagsWithCounts(collectionID, db)
+}

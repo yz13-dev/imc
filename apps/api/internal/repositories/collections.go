@@ -46,6 +46,20 @@ func GetPublicCollection(collectionID uuid.UUID, db *gorm.DB) (*models.Collectio
 	return &collection, nil
 }
 
+func GetPublicCollectionDetails(collectionID uuid.UUID, db *gorm.DB) (*models.PublicCollection, error) {
+	var collection models.PublicCollection
+	if err := db.Table("collections").
+		Select("collections.id, collections.name, collections.description, collections.updated_at, COUNT(DISTINCT attachments.id) AS attachment_count").
+		Joins("LEFT JOIN collections_attachments ON collections_attachments.collection_id = collections.id").
+		Joins("LEFT JOIN attachments ON attachments.id = collections_attachments.attachment_id AND attachments.is_deleted = false").
+		Where("collections.id = ? AND collections.public = true", collectionID).
+		Group("collections.id").
+		First(&collection).Error; err != nil {
+		return nil, err
+	}
+	return &collection, nil
+}
+
 func UpdateCollectionPublic(collectionID string, userID string, public bool, db *gorm.DB) (*models.Collection, error) {
 	var collection models.Collection
 	if err := db.Where("id = ? AND user_id = ?", collectionID, userID).First(&collection).Error; err != nil {

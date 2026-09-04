@@ -32,7 +32,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { hideTitle = "false", hideBlurhash = "false", fill = "false" } = await searchParams
 
   const attachment = await getAttachment(id)
-  if (!attachment) return notFound()
+  if (!attachment?.src) return notFound()
 
   const refSrc = getRefSrc(attachment.src)
   if (!refSrc) return notFound()

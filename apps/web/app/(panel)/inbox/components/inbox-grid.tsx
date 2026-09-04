@@ -3,8 +3,7 @@ import { CollectionCardSkeleton } from "@/components/collection-card"
 import { useDebounce } from "@/hooks/use-debounce"
 import { getInboxAttachments } from "@/lib/api/attachments"
 import { useSelection } from "@/lib/stores/selection-store"
-import type { InfiniteData, QueryKey } from "@tanstack/react-query"
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { useInView } from "motion/react"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 import { useEffect, useRef, useState } from "react"
@@ -25,7 +24,7 @@ export function InboxGridSkeleton() {
 export default function InboxGrid() {
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
   const tags = tagQuery ?? []
-  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery({
     initialPageParam: null as string | null,
     queryKey: ["attachments", "inbox", tags],
     queryFn: async ({ pageParam }) => {
@@ -37,7 +36,7 @@ export default function InboxGrid() {
     },
     getNextPageParam: (lastPage) => lastPage.next_cursor || undefined,
   })
-  const attachments = data.pages.flatMap(page => page.items)
+  const attachments = data?.pages.flatMap(page => page.items) ?? []
   const ref = useRef(null)
   const inView = useInView(ref, { margin: "0px 0px 100% 0px" })
   const [disabled, setDisabled] = useState(true)
@@ -49,6 +48,8 @@ export default function InboxGrid() {
 
   const clearSelection = useSelection(state => state.clear)
   useEffect(() => () => clearSelection(), [clearSelection])
+
+  if (isLoading) return <InboxGridSkeleton />
 
   return <>
     <InboxSelectionDockSync />

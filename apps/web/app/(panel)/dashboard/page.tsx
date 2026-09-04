@@ -50,7 +50,7 @@ export default async function Page() {
         visibility="private"
         />
         }*/}
-        <AutoLoader attachments={[]} />
+        <AutoLoader />
       </div>
     </HydrationBoundary>
   )

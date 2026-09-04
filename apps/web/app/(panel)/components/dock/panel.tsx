@@ -2,7 +2,7 @@
 import { getCollections } from "@/lib/api/collections";
 import { useUser } from "@/lib/stores/user";
 import { useHotkey } from "@tanstack/react-hotkeys";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip";
@@ -31,7 +31,7 @@ export default function Panel() {
 function PanelContent() {
 
   const user = useUser(state => state.user)
-  const { data } = useSuspenseQuery({
+  const { data } = useQuery({
     queryKey: ["attachments", "collections"],
     queryFn: () => getCollections(),
   })

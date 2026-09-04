@@ -24,3 +24,13 @@ type UpdateCollection struct {
 	Description string `json:"description"`
 	Public      *bool  `json:"public"`
 }
+
+// PublicCollection contains only metadata that is safe to expose without an
+// authenticated user session.
+type PublicCollection struct {
+	ID              uuid.UUID `json:"id"`
+	Name            string    `json:"name"`
+	Description     string    `json:"description"`
+	UpdatedAt       string    `json:"updated_at"`
+	AttachmentCount int64     `json:"attachment_count"`
+}

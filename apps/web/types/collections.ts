@@ -8,3 +8,7 @@ export type Collection = {
   public: boolean
   user_id: string
 }
+
+export type PublicCollection = Pick<Collection, "id" | "name" | "description" | "updated_at"> & {
+  attachment_count: number
+}

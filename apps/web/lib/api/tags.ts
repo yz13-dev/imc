@@ -25,6 +25,19 @@ export async function getTagsWithCounts(collectionID?: string): Promise<TagWithC
   }
 }
 
+export async function getPublicCollectionTags(collectionID: string): Promise<Pick<TagWithCount, "id" | "name" | "count">[] | null> {
+  try {
+    const { data, error } = await fetch<Pick<TagWithCount, "id" | "name" | "count">[]>({
+      url: getApiProxyUrl(`/v1/collections/${collectionID}/tags`)
+    })
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
 export async function getSearchTags(query: string): Promise<Tag[] | null> {
   try {
     const { data, error } = await fetch<Tag[]>({

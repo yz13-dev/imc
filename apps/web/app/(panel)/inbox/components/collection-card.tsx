@@ -3,7 +3,7 @@ import { getCollectionAttachments } from "@/lib/api/attachments"
 import { collectionPath } from "@/lib/routes"
 import { useUser } from "@/lib/stores/user"
 import type { Collection } from "@/types/collections"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { ReferenceBadge, ReferenceButton } from "@workspace/ui/components/reference"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
@@ -23,7 +23,7 @@ type CollectionCardProps = {
 export default function CollectionCard({ collection }: CollectionCardProps) {
 
   const user = useUser((state) => state.user)
-  const { data, isLoading } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["attachments", "collections", collection.id],
     queryFn: () => getCollectionAttachments(collection.id, { limit: 3 })
   })

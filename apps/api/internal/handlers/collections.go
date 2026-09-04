@@ -12,6 +12,46 @@ import (
 	"github.com/yz13-dev/imc/api/internal/services"
 )
 
+func GetPublicCollectionHandler(w http.ResponseWriter, r *http.Request) {
+	collectionID, err := uuid.Parse(r.PathValue("collectionID"))
+	if err != nil {
+		http.Error(w, "invalid collectionID", http.StatusBadRequest)
+		return
+	}
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+	collection, err := services.GetPublicCollectionDetails(collectionID, db)
+	if err != nil {
+		http.Error(w, "collection not found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(collection)
+}
+
+func GetPublicCollectionTagsHandler(w http.ResponseWriter, r *http.Request) {
+	collectionID, err := uuid.Parse(r.PathValue("collectionID"))
+	if err != nil {
+		http.Error(w, "invalid collectionID", http.StatusBadRequest)
+		return
+	}
+	db, ok := middleware.GetDB(r.Context())
+	if !ok {
+		http.Error(w, "database not found", http.StatusInternalServerError)
+		return
+	}
+	tags, err := services.GetPublicCollectionTagsWithCounts(collectionID, db)
+	if err != nil {
+		http.Error(w, "failed to load collection tags", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(tags)
+}
+
 func GetMyCollectionsHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := middleware.GetUser(r.Context())
 	log.Println("collections", user, ok)

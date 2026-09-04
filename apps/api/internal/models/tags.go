@@ -22,3 +22,9 @@ type TagWithCount struct {
 	Tag
 	Count int64 `json:"count"`
 }
+
+type PublicTagWithCount struct {
+	ID    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Count int64     `json:"count"`
+}

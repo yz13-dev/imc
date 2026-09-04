@@ -1,5 +1,5 @@
 import { getApiProxyUrl } from "@/lib/url";
-import type { Collection } from "@/types/collections";
+import type { Collection, PublicCollection } from "@/types/collections";
 import { getFetchClient } from "../fetch";
 
 const fetch = <T,>(...args: Parameters<ReturnType<typeof getFetchClient<T>>>) => getFetchClient<T>()(...args)
@@ -16,6 +16,19 @@ export async function getCollections(): Promise<Collection[] | null> {
 
     return data;
 
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+export async function getPublicCollection(collectionID: string): Promise<PublicCollection | null> {
+  try {
+    const { data, error } = await fetch<PublicCollection>({
+      url: getApiProxyUrl(`/v1/collections/${collectionID}`)
+    })
+    if (error) throw error
+    return data
   } catch (error) {
     console.error(error)
     return null

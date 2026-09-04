@@ -1,20 +1,21 @@
 "use client";
 import { useDebounce } from "@/hooks/use-debounce";
+import CardGridSkeleton from "@/app/(panel)/components/card-grid-skeleton";
 import { getAllAttachments, type Page } from "@/lib/api/attachments";
 import type { AttachmentWithMaybeTagsAndSource } from "@/types/attachments";
 import type { InfiniteData, QueryKey } from "@tanstack/react-query";
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "motion/react";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import CardGrid from "../../components/card-grid";
 
-export default function AutoLoader({ attachments = [] }: { attachments?: AttachmentWithMaybeTagsAndSource[] }) {
+export default function AutoLoader() {
 
   const [tagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
   const tags = tagQuery ?? []
 
-  const { data, fetchNextPage, hasNextPage } = useSuspenseInfiniteQuery<Page<AttachmentWithMaybeTagsAndSource>, Error, InfiniteData<Page<AttachmentWithMaybeTagsAndSource>, string | null>, QueryKey, string | null>({
+  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery<Page<AttachmentWithMaybeTagsAndSource>, Error, InfiniteData<Page<AttachmentWithMaybeTagsAndSource>, string | null>, QueryKey, string | null>({
     getNextPageParam: (lastPage) => lastPage?.next_cursor || undefined,
     initialPageParam: null,
     queryKey: ["attachments", tags],
@@ -28,7 +29,7 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
   // changing (for example when an attachment becomes public). The attachment
   // id is the stable identity, so never render the same record twice.
   const allAttachments = Array.from(
-    new Map(data.pages.flatMap(page => page.items).map(attachment => [attachment.id, attachment])).values()
+    new Map((data?.pages ?? []).flatMap(page => page.items).map(attachment => [attachment.id, attachment])).values()
   )
 
   const ref = useRef(null)
@@ -57,6 +58,9 @@ export default function AutoLoader({ attachments = [] }: { attachments?: Attachm
       step()
     }
   }, [debouncedInView, disabled])
+
+  if (isLoading) return <CardGridSkeleton />
+
   return (
     <>
       <CardGrid

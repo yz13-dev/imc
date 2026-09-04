@@ -83,6 +83,23 @@ func GetTagsWithCounts(userID string, collectionID *uuid.UUID, db *gorm.DB) ([]m
 	return results, nil
 }
 
+func GetPublicCollectionTagsWithCounts(collectionID uuid.UUID, db *gorm.DB) ([]models.PublicTagWithCount, error) {
+	var results []models.PublicTagWithCount
+	if err := db.Table("tags").
+		Select("tags.id, tags.name, COUNT(DISTINCT attachments.id) AS count").
+		Joins("JOIN attachments_tags ON attachments_tags.tag_id = tags.id").
+		Joins("JOIN attachments ON attachments.id = attachments_tags.attachment_id AND attachments.is_deleted = false").
+		Joins("JOIN collections_attachments ON collections_attachments.attachment_id = attachments.id AND collections_attachments.collection_id = ?", collectionID).
+		Joins("JOIN collections ON collections.id = collections_attachments.collection_id AND collections.public = true AND collections.user_id = tags.user_id").
+		Group("tags.id").
+		Order("count DESC").
+		Order("tags.name ASC").
+		Scan(&results).Error; err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
 func ConnectTagToAttachment(tagID uuid.UUID, attachmentID uuid.UUID, db *gorm.DB) error {
 	var attachmentTag models.NewAttachmentTag = models.NewAttachmentTag{
 		AttachmentID: attachmentID,

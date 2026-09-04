@@ -1,11 +1,13 @@
 "use client"
 import { getTagsWithCounts } from "@/lib/api/tags";
 import type { TagWithCount } from "@/types/attachments";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 
-function Tags({ tags = [] }: { tags?: TagWithCount[] }) {
+type TagFilter = Pick<TagWithCount, "id" | "name" | "count">
+
+export function TagFilters({ tags = [] }: { tags?: TagFilter[] }) {
 
   const [tagQuery, setTagQuery] = useQueryState("tags", parseAsArrayOf(parseAsString))
 
@@ -35,14 +37,14 @@ type TagStatsProps = {
 }
 export default function TagStats({ collection }: TagStatsProps) {
 
-  const { data } = useSuspenseQuery<TagWithCount[]>({
+  const { data } = useQuery<TagWithCount[]>({
     queryKey: collection ? ["tags", collection] : ["tags", "all"],
     queryFn: async () => (await getTagsWithCounts(collection)) || []
   })
 
   return (
     <div className="w-full flex items-center gap-2">
-      <Tags tags={data} />
+      <TagFilters tags={data || []} />
     </div>
   )
 }
@@ -56,7 +58,7 @@ export function InboxTagStats() {
 
   return (
     <div className="w-full flex items-center gap-2">
-      <Tags tags={data} />
+      <TagFilters tags={data} />
     </div>
   )
 }

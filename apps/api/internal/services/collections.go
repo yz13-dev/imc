@@ -31,6 +31,10 @@ func GetCollection(collectionID string, UserID string, db *gorm.DB) (*models.Col
 	return collection, nil
 }
 
+func GetPublicCollectionDetails(collectionID uuid.UUID, db *gorm.DB) (*models.PublicCollection, error) {
+	return repositories.GetPublicCollectionDetails(collectionID, db)
+}
+
 func UpdateCollectionPublic(collectionID string, userID string, public bool, db *gorm.DB) (*models.Collection, error) {
 	return repositories.UpdateCollectionPublic(collectionID, userID, public, db)
 }

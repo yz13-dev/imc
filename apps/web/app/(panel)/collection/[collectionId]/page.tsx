@@ -3,6 +3,7 @@ import { getCollectionAttachments } from "@/lib/api/attachments"
 import { getTagsWithCounts } from "@/lib/api/tags"
 import { dehydrateState, getQueryClient } from "@/lib/query-client"
 import { HydrationBoundary } from "@tanstack/react-query"
+import { parseAsArrayOf, parseAsString } from "nuqs/server"
 import DefaultHeader from "../../components/default-header"
 import TagPicker from "../../components/tag-picker"
 import TagStats from "../../components/tags-stats"
@@ -14,19 +15,17 @@ type PageProps = {
   }>
   searchParams: Promise<{
     id: string
+    tags?: string | string[]
   }>
 }
 export default async function Page({ params, searchParams }: PageProps) {
   const { collectionId } = await params
-  const { id } = await searchParams
+  const { id, tags: rawTags } = await searchParams
+  const tags = parseAsArrayOf(parseAsString).parseServerSide(rawTags) ?? []
 
   const queryClient = getQueryClient()
-
-  await queryClient.prefetchInfiniteQuery({
-    initialPageParam: null as string | null,
-    queryKey: ["attachments", "collections", collectionId, []],
-    queryFn: ({ pageParam }) => getCollectionAttachments(collectionId, { cursor: pageParam, limit: 25, tags: [] }),
-  })
+  const initialPage = await getCollectionAttachments(collectionId, { limit: 25, tags })
+    ?? { items: [], next_cursor: "" }
 
   await queryClient.prefetchQuery({
     queryKey: ["tags", collectionId],
@@ -36,7 +35,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     <HydrationBoundary state={dehydrateState(queryClient)}>
       <DefaultHeader />
       <TagPicker className="top-14 sticky">
-        <TagStats />
+        <TagStats collection={collectionId} />
       </TagPicker>
       {
         id &&
@@ -45,6 +44,8 @@ export default async function Page({ params, searchParams }: PageProps) {
       <div className="w-full px-6 pt-6">
         <CollectionGrid
           collection={collectionId}
+          initialPage={initialPage}
+          initialTags={tags}
         />
       </div>
       <footer className="p-6">

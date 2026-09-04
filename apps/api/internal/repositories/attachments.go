@@ -65,6 +65,20 @@ func filterByTagNames(db *gorm.DB, userID string, tagNames []string) *gorm.DB {
 	return db.Where("attachments.id IN (?)", sub)
 }
 
+func filterByPublicTagNames(db *gorm.DB, tagNames []string) *gorm.DB {
+	if len(tagNames) == 0 {
+		return db
+	}
+	sub := db.Session(&gorm.Session{NewDB: true}).
+		Table("attachments_tags").
+		Select("attachments_tags.attachment_id").
+		Joins("JOIN tags ON tags.id = attachments_tags.tag_id").
+		Where("tags.name IN ?", tagNames).
+		Group("attachments_tags.attachment_id").
+		Having("COUNT(DISTINCT tags.name) = ?", len(tagNames))
+	return db.Where("attachments.id IN (?)", sub)
+}
+
 func GetAttachmentsWithTags(ids []uuid.UUID, UserID string, tagNames []string, db *gorm.DB) ([]models.AttachmentWithTags, error) {
 	var attachments []models.AttachmentWithTags
 	query := db.
@@ -160,6 +174,7 @@ func GetPublicCollectionAttachments(collectionID uuid.UUID, listQuery ListQuery,
 		Preload("AttachmentTags.Tag").
 		Preload("AttachmentSource.Source").
 		Where("collections_attachments.collection_id = ? AND attachments.is_deleted = false", collectionID)
+	q = filterByPublicTagNames(q, listQuery.Tags)
 	q = applyCursor(q, listQuery.Cursor, "attachments", "id")
 	if err := q.
 		Order(clause.OrderByColumn{Desc: true, Column: clause.Column{Table: "attachments", Name: "created_at"}}).

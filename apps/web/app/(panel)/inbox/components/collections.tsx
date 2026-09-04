@@ -1,6 +1,6 @@
 "use client"
 import { getCollections } from "@/lib/api/collections";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import CollectionCard, { CollectionCardSkeleton } from "./collection-card";
 
 export function CollectionsSkeleton() {
@@ -17,7 +17,7 @@ export function CollectionsSkeleton() {
 
 export default function Collections() {
 
-  const { data, isLoading } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["attachments", "collections"],
     queryFn: () => getCollections(),
   })
