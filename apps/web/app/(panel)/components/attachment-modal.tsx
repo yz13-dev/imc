@@ -35,7 +35,7 @@ export default function AttachmentModal({ children, id }: { children: ReactNode,
     }
   })
   return (
-    <div className="fixed inset-0 z-50 flex flex-col h-svh items-center justify-start bg-linear-to-t from-background to-transparent backdrop-blur-sm" onClick={close}>
+    <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto h-svh items-center justify-start bg-linear-to-t from-background to-transparent backdrop-blur-sm" onClick={close}>
       <div className="w-full">
         <div className="w-full mx-auto flex py-3 md:px-12 px-4 items-center justify-between">
           <h1 className="md:text-4xl text-xl font-medium line-clamp-1">
@@ -53,10 +53,8 @@ export default function AttachmentModal({ children, id }: { children: ReactNode,
           </div>
         </div>
       </div>
-      <div className="w-full">
-        <div className="w-full mx-auto overflow-y-auto" onClick={stopPropagation}>
-          {children}
-        </div>
+      <div className="w-full mx-auto" onClick={stopPropagation}>
+        {children}
       </div>
     </div>
   )
