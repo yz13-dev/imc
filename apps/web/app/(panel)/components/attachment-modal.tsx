@@ -1,6 +1,6 @@
 "use client"
 
-import { getAttachment } from "@/lib/api/attachments"
+import { getAttachment, getPublicAttachment } from "@/lib/api/attachments"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@workspace/ui/components/button"
 import { XIcon } from "lucide-react"
@@ -16,11 +16,17 @@ const unlockScroll = () => {
   document.body.style.overflow = "auto"
 }
 
-export default function AttachmentModal({ children, id }: { children: ReactNode, id: string }) {
+type AttachmentModalProps = {
+  children: ReactNode
+  id: string
+  visibility?: "private" | "public"
+}
+
+export default function AttachmentModal({ children, id, visibility = "private" }: AttachmentModalProps) {
   const router = useRouter()
   const { data } = useQuery({
-    queryKey: ["attachment", id],
-    queryFn: () => getAttachment(id),
+    queryKey: [visibility, "attachment", id],
+    queryFn: () => visibility === "public" ? getPublicAttachment(id) : getAttachment(id),
   })
 
   const title = data?.label;

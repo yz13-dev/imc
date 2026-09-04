@@ -10,10 +10,20 @@ import { ExternalLinkIcon, GlobeIcon } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-type PageProps = { params: Promise<{ id: string }> }
+type PageProps = {
+  params: Promise<{ id: string }>
+  searchParams?: Promise<{
+    hideTitle?: string
+    hideBlurhash?: string
+  }>
+}
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({ params, searchParams }: PageProps) {
   const { id } = await params
+  const resolvedSearchParams: { hideTitle?: string; hideBlurhash?: string } = searchParams
+    ? await searchParams
+    : {}
+  const { hideTitle = "false", hideBlurhash = "false" } = resolvedSearchParams
   const attachment = await getPublicAttachment(id)
   if (!attachment?.src) notFound()
 
@@ -25,7 +35,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <div className="relative min-h-svh">
-      {attachment.blurhash && <div className="absolute inset-0 -z-10 overflow-hidden opacity-25 blur-3xl" style={{ backgroundImage: `url(${toBlurDataURL(attachment.blurhash)})`, backgroundSize: "cover" }} />}
+      {attachment.blurhash && hideBlurhash === "false" && <div className="absolute inset-0 -z-10 overflow-hidden opacity-25 blur-3xl" style={{ backgroundImage: `url(${toBlurDataURL(attachment.blurhash)})`, backgroundSize: "cover" }} />}
       <div className="min-h-svh flex flex-col lg:flex-row">
         <OptionalVideoProvider duration={attachment.duration_ms}>
           <div className="w-full lg:w-2/3 p-4 md:p-12 flex items-center justify-center">
@@ -43,7 +53,7 @@ export default async function Page({ params }: PageProps) {
         </OptionalVideoProvider>
         <div className="w-full lg:w-1/3 p-4 md:p-12 flex items-start">
           <div className="w-full max-w-xl mx-auto space-y-4">
-            <h1 className="text-2xl md:text-4xl font-medium line-clamp-2">{title}</h1>
+            {hideTitle === "false" && <h1 className="text-2xl md:text-4xl font-medium line-clamp-2">{title}</h1>}
             <div className="w-full bg-card border rounded-2xl py-3 space-y-4">
               <div className="px-3 space-y-2">
                 <span className="text-sm text-muted-foreground">Тэги</span>
