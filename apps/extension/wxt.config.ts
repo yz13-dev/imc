@@ -16,7 +16,7 @@ export default defineConfig({
     name: "__MSG_extName__",
     short_name: "__MSG_extShortName__",
 
-    version: "0.1.3",
+    version: "0.2.0",
 
     description: "__MSG_extDescription__",
 
@@ -50,7 +50,11 @@ export default defineConfig({
           "required": ["authenticationInfo", "websiteContent"],
           "optional": []
         }
-      }
+      },
+      // Presence of this key (even empty) is what tells AMO the extension
+      // is Android-compatible — without it, AMO won't list it on mobile.
+      // https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/
+      "gecko_android": {}
     },
 
     icons: {

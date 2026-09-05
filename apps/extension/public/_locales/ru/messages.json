@@ -14,5 +14,37 @@
   "contextMenuSave": {
     "message": "Сохранить в IMC",
     "description": "Context menu item on images/videos"
+  },
+  "popupLoading": {
+    "message": "Загрузка…",
+    "description": "Popup: loading state"
+  },
+  "popupNoMedia": {
+    "message": "На этой странице не найдено изображений или видео.",
+    "description": "Popup: shown when no media was found on the page"
+  },
+  "popupPickHint": {
+    "message": "Нажмите на элемент, чтобы сохранить его в инбокс",
+    "description": "Popup: hint above the media grid"
+  },
+  "popupVideoBadge": {
+    "message": "видео",
+    "description": "Popup: badge on video thumbnails"
+  },
+  "popupSaving": {
+    "message": "Сохранение…",
+    "description": "Save in progress (long-press toast / popup item)"
+  },
+  "popupSaved": {
+    "message": "Сохранено",
+    "description": "Save succeeded (long-press toast / popup item)"
+  },
+  "popupSignInOpened": {
+    "message": "Вход открыт в новой вкладке",
+    "description": "Shown when the user isn't signed in and a sign-in tab was opened"
+  },
+  "popupError": {
+    "message": "Не удалось сохранить",
+    "description": "Save failed (long-press toast / popup item)"
   }
 }

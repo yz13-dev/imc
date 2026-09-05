@@ -14,5 +14,37 @@
   "contextMenuSave": {
     "message": "Save to IMC",
     "description": "Context menu item on images/videos"
+  },
+  "popupLoading": {
+    "message": "Loading…",
+    "description": "Popup: loading state"
+  },
+  "popupNoMedia": {
+    "message": "No images or videos found on this page.",
+    "description": "Popup: shown when no media was found on the page"
+  },
+  "popupPickHint": {
+    "message": "Tap an item to save it to your inbox",
+    "description": "Popup: hint above the media grid"
+  },
+  "popupVideoBadge": {
+    "message": "video",
+    "description": "Popup: badge on video thumbnails"
+  },
+  "popupSaving": {
+    "message": "Saving…",
+    "description": "Save in progress (long-press toast / popup item)"
+  },
+  "popupSaved": {
+    "message": "Saved",
+    "description": "Save succeeded (long-press toast / popup item)"
+  },
+  "popupSignInOpened": {
+    "message": "Sign in opened in a new tab",
+    "description": "Shown when the user isn't signed in and a sign-in tab was opened"
+  },
+  "popupError": {
+    "message": "Couldn't save",
+    "description": "Save failed (long-press toast / popup item)"
   }
 }

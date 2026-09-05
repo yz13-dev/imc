@@ -1,4 +1,6 @@
 import { getSourceData } from "@/utils/source";
+import { getPageMedia } from "@/utils/media";
+import { setupMediaContextFallback } from "@/utils/media-context-fallback";
 
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
@@ -24,10 +26,15 @@ export default defineContentScript({
         case "GET_SOURCE_DATA":
           return getSourceData();
 
+        case "GET_PAGE_MEDIA":
+          return getPageMedia();
+
         default:
           return undefined;
       }
     });
+
+    setupMediaContextFallback();
 
     // Слушаем токен только на доверенных origin'ах — на остальных страницах
     // content-script даже не подписывается на эти события.

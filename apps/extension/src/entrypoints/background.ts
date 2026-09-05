@@ -1,10 +1,16 @@
-import { getUser } from "@/utils/auth";
-import { APP_URL, USE_TEST } from "@/utils/env";
-import { parseImageUrl } from "@/utils/images";
+import { USE_TEST } from "@/utils/env";
+import { saveTabMedia } from "@/utils/save";
 
 export default defineBackground(() => {
   if (USE_TEST) console.log("USE_TEST is enabled");
+
+  // contextMenus не поддерживается в Firefox для Android — там точки входа
+  // для сохранения это long-press (src/utils/long-press.ts) и попап-пикер
+  // (src/entrypoints/popup).
+  const hasContextMenus = typeof browser.contextMenus !== "undefined";
+
   function createContextMenu() {
+    if (!hasContextMenus) return;
     browser.contextMenus.create({
       id: "save-to-imc",
       title: browser.i18n.getMessage("contextMenuSave"),
@@ -21,6 +27,7 @@ export default defineBackground(() => {
   // background-скрипта — оно выполняется заново при установке,
   // старте браузера и каждом пробуждении service worker'а (MV3).
   createContextMenu();
+
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // Проверяем тип сообщения, которое прислал наш контент-скрипт
@@ -34,69 +41,40 @@ export default defineBackground(() => {
 
       return true; // Держим канал связи открытым для асинхронного ответа
     }
+
+    // Фолбэк из контент-скрипта (см. utils/media-context-fallback.ts) —
+    // long-press на Android или заблокированное сайтом контекстное меню на
+    // десктопе. Сам fetch/upload делаем здесь, а не в контент-скрипте,
+    // чтобы не упираться в CSP посещаемой страницы.
+    if (message && message.type === "SAVE_FROM_CONTEXT_FALLBACK" && message.srcUrl) {
+      const tab = sender.tab;
+      if (!tab) {
+        sendResponse({ status: "error", step: "fetch" });
+        return;
+      }
+      saveTabMedia(tab, message.srcUrl).then(sendResponse);
+      return true;
+    }
+
+    return undefined;
   });
-  browser.contextMenus.onClicked.addListener(
-    async (info, tab) => {
-      if (info.menuItemId !== "save-to-imc") {
-        return;
-      }
-      if (!tab) return;
 
-      const isImageOrVideo = info.mediaType === "image" || info.mediaType === "video";
-      if (!isImageOrVideo) return;
-
-      const url = new URL(tab!.url!);
-      const { status, data: user } = await getUser();
-      if (status !== 200 || !user) {
-        browser.tabs.create({
-          url: `${APP_URL}/auth/signin?next=${url.toString()}`,
-        });
-        return;
-      }
-
-      const sourceTitle = tab?.title
-
-      const sourceUrl = url.toString()
-      const sourceBaseUrl = url.origin
-
-      let sourceFavicon = tab?.favIconUrl?.startsWith("data:") ? null : tab?.favIconUrl;
-      if (!sourceFavicon && tab.id) {
-        const response = await browser.tabs.sendMessage(tab.id!, {
-          type: "GET_SOURCE_DATA",
-        });
-        sourceFavicon = response?.favicon;
-      }
-
-      if (info.srcUrl) {
-        const checkedSource = await checkSource({ url: sourceUrl })
-        const attachmentUrl = parseImageUrl({ url: info.srcUrl, base: sourceBaseUrl })
-        if (USE_TEST) console.log("attachmentUrl", attachmentUrl)
-        const blob = await fetchAttachments(attachmentUrl)
-        if (!blob) {
-          console.error("[ ATTACHMENT-FETCH-FAILED ]", attachmentUrl)
-          return
+  if (hasContextMenus) {
+    browser.contextMenus.onClicked.addListener(
+      async (info, tab) => {
+        if (info.menuItemId !== "save-to-imc") {
+          return;
         }
+        if (!tab) return;
 
-        const attachment = await uploadAttachment(blob)
-        if (!attachment) {
-          console.error("[ ATTACHMENT-UPLOAD-FAILED ]", attachmentUrl)
-          return
+        const isImageOrVideo = info.mediaType === "image" || info.mediaType === "video";
+        if (!isImageOrVideo || !info.srcUrl) return;
+
+        const result = await saveTabMedia(tab, info.srcUrl);
+        if (result.status === "error") {
+          console.error(`[ ATTACHMENT-${result.step.toUpperCase()}-FAILED ]`, info.srcUrl);
         }
-
-        const id = attachment.id
-
-        if (id && !USE_TEST) {
-          await inboxAttachment(id)
-          if (checkedSource?.exist === true) {
-            await connectSource({ sourceID: checkedSource.id, attachmentID: id })
-          } else {
-            const source = await createSource({ title: sourceTitle || url.hostname, url: attachmentUrl, favicon: sourceFavicon || undefined, attachment_id: id })
-            if (source) {
-              await connectSource({ sourceID: source.id, attachmentID: id })
-            }
-          }
-        }
-      }
-    },
-  );
+      },
+    );
+  }
 });
