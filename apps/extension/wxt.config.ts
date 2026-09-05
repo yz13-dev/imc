@@ -16,7 +16,7 @@ export default defineConfig({
     name: "__MSG_extName__",
     short_name: "__MSG_extShortName__",
 
-    version: "0.2.0",
+    version: "0.2.1",
 
     description: "__MSG_extDescription__",
 

@@ -90,3 +90,38 @@ body {
   color: #fff;
   font-size: 16px;
 }
+
+@media (pointer: coarse) {
+  body {
+    width: auto;
+  }
+
+  .imc-popup {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .imc-hint {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .imc-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+    gap: 12px;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .imc-item {
+    min-width: 0;
+  }
+
+  .imc-badge {
+    font-size: 12px;
+  }
+
+  .imc-overlay {
+    font-size: 24px;
+  }
+}
