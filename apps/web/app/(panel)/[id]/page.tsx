@@ -75,6 +75,7 @@ export default async function Page({ params, searchParams }: PageProps) {
                   style={{
                     aspectRatio: `${attachment.width}/${attachment.height}`
                   }}
+                  quality={100}
                   sizes="100vw"
                 />
               </AnimatePresence>
