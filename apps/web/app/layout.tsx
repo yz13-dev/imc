@@ -14,6 +14,8 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 import "./view-transitions.css";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const metadata: Metadata = {
   title: "IMC | Хранилище ваших вдохновлений",
   description: "IMC — это онлайн-репозиторий для хранения и управления коллекциями вдохновлений.",
@@ -45,6 +47,16 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", sans.variable, mono.variable, serif.variable, pixel.variable)}
     >
+      <head>
+        {isProduction && (
+          <script
+            async
+            src="https://c.analytics.yz13.dev/oa.js"
+            data-key="oa_pk_k0QGq7uRyZkDhfRFOCh6j7Y4w-vWwLe6"
+            data-collector="https://c.analytics.yz13.dev"
+          />
+        )}
+      </head>
       <body>
         <Suspense fallback={<></>}>
           <ThemeProvider>
