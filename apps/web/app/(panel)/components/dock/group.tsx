@@ -18,7 +18,7 @@ export default function Group({ children, group }: GroupProps) {
             </Button>
           }
         />
-        <DropdownMenuContent>
+        <DropdownMenuContent className="min-w-48">
           {group}
         </DropdownMenuContent>
       </DropdownMenu>

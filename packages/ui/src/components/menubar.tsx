@@ -187,7 +187,7 @@ function MenubarLabel({
       data-slot="menubar-label"
       data-inset={inset}
       className={cn(
-        "px-1.5 py-1 text-sm font-medium data-inset:pl-7",
+        "px-1.5 py-1 font-medium data-inset:pl-7",
         className
       )}
       {...props}
