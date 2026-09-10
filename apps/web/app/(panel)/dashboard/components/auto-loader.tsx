@@ -59,15 +59,17 @@ export default function AutoLoader() {
     }
   }, [debouncedInView, disabled])
 
-  if (isLoading) return <CardGridSkeleton />
-
   return (
     <>
-      <CardGrid
-        collectionSelector
-        attachments={allAttachments}
-        visibility="private"
-      />
+      {isLoading ? (
+        <CardGridSkeleton />
+      ) : (
+        <CardGrid
+          collectionSelector
+          attachments={allAttachments}
+          visibility="private"
+        />
+      )}
       <div ref={ref} className="w-full py-6" />
     </>
   )

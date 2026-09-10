@@ -49,11 +49,13 @@ export default function InboxGrid() {
   const clearSelection = useSelection(state => state.clear)
   useEffect(() => () => clearSelection(), [clearSelection])
 
-  if (isLoading) return <InboxGridSkeleton />
-
   return <>
     <InboxSelectionDockSync />
-    <CardGrid attachments={attachments} visibility="private" selectable />
+    {isLoading ? (
+      <InboxGridSkeleton />
+    ) : (
+      <CardGrid attachments={attachments} visibility="private" selectable />
+    )}
     <div ref={ref} className="w-full py-6" />
   </>
 }

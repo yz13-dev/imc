@@ -50,14 +50,16 @@ export default function CollectionGrid({ collection, initialPage, initialTags = 
     if (!disabled && debouncedInView && hasNextPage) void fetchNextPage()
   }, [debouncedInView, disabled, fetchNextPage, hasNextPage])
 
-  if (isLoading) return <CardGridSkeleton />
-  if (attachments.length === 0) return (
-    <div className="flex min-h-64 items-center justify-center px-6 text-center text-muted-foreground">
-      {tags.length ? "В коллекции нет материалов с выбранными тегами" : "В этой коллекции пока нет материалов"}
-    </div>
-  )
   return <>
-    <CardGrid attachments={attachments} visibility={readonly ? "public" : "private"} readonly={readonly} />
+    {isLoading ? (
+      <CardGridSkeleton />
+    ) : attachments.length === 0 ? (
+      <div className="flex min-h-64 items-center justify-center px-6 text-center text-muted-foreground">
+        {tags.length ? "В коллекции нет материалов с выбранными тегами" : "В этой коллекции пока нет материалов"}
+      </div>
+    ) : (
+      <CardGrid attachments={attachments} visibility={readonly ? "public" : "private"} readonly={readonly} />
+    )}
     <div ref={ref} className="w-full py-6" />
   </>
 }
